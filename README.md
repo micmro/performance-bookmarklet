@@ -16,8 +16,15 @@ The table contains the following data:
 
 (*some data* is not always available)
 
+It also prints out a table counting the number of filetypes and filetypes local vs external.
+
 
 How to use this snippet
 -----------------------
 Just copy and paste the content of [resourceTable.js](https://raw.githubusercontent.com/micmro/resourceTable/master/resourceTable.js) in your browser console and off you go.
 
+
+Resource Timing API 
+--------------------
+- [Introduction](http://googledevelopers.blogspot.ca/2013/12/measuring-network-performance-with.html)
+- [Browser Support](http://caniuse.com/#feat=resource-timing)
