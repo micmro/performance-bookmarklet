@@ -16,8 +16,14 @@ The table contains the following data:
 
 (*some data* is not always available)
 
+
+![alt text](https://raw.githubusercontent.com/micmro/resourceTable/screenshots/readme-assets/resourceTable-tables-ressources.png "tabular output of all ressources in the page")
+
+
 It also prints out a table counting the number of filetypes and filetypes local vs external.
 
+
+![alt text](https://raw.githubusercontent.com/micmro/resourceTable/screenshots/readme-assets/resourceTable-tables-file-extensions.png "two tables with ressources type count globally and but local / external")
 
 How to use this snippet
 -----------------------
