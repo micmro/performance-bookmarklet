@@ -22,7 +22,6 @@ var allRessourcesCalc = allRessources.map(function(currR, i, arr){
 	if (currR.secureConnectionStart) {
 		currRes.ssl = currR.connectEnd - currR.secureConnectionStart;
 	}
-	console.log(currRes);
 	return currRes;
 });
 
