@@ -48,11 +48,13 @@
 		var urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/);
 		var maybeFileName = urlFragments[2].split("/").pop();
 		var urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/);
+		var fileExtension = maybeFileName.substr((Math.max(0, maybeFileName.lastIndexOf(".")) || Infinity) + 1)
 
 		var currRes = {
 			name : currR.name,
 			domain : urlFragments[1],
-			fileExtension : maybeFileName.substr((Math.max(0, maybeFileName.lastIndexOf(".")) || Infinity) + 1) || "XHR or Not Defined",
+			initiatorType : currR.initiatorType || fileExtension || "SourceMap or Not Defined",
+			fileExtension : fileExtension || "XHR or Not Defined",
 			loadtime : currR.duration,
 			isLocalDomain : urlFragments[1] === location.host
 		};
@@ -76,11 +78,11 @@
 	});
 	
 	var fileExtensionCounts = getItemCount(allRessourcesCalc.map(function(currR, i, arr){
-		return currR.fileExtension;
+		return currR.initiatorType;
 	}));
 
 	var fileExtensionCountLocalExt = getItemCount(allRessourcesCalc.map(function(currR, i, arr){
-		return currR.fileExtension + " " + (currR.isLocalDomain ? "(local)" : "(extenal)");
+		return currR.initiatorType + " " + (currR.isLocalDomain ? "(local)" : "(extenal)");
 	}));
 
 	var requestsByDomain = getItemCount(allRessourcesCalc.map(function(currR, i, arr){
@@ -90,11 +92,11 @@
 	console.log("\n\n\nAll loaded ressources:");
 	console.table(allRessourcesCalc);
 
-	console.log("\n\n\nFile extension count:");
-	console.table(pivotObject(fileExtensionCounts, "extension"));
+	console.log("\n\n\nFile type count:");
+	console.table(pivotObject(fileExtensionCounts, "fileType"));
 
-	console.log("\n\n\nFile extension count (local / external):");
-	console.table(pivotObject(fileExtensionCountLocalExt, "extension"));
+	console.log("\n\n\nFile type count (local / external):");
+	console.table(pivotObject(fileExtensionCountLocalExt, "fileType"));
 
 
 	console.log("\n\n\nRequests by domain");
