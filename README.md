@@ -23,7 +23,9 @@ The table contains the following data:
 It also prints out a table counting the number of filetypes and filetypes local vs external as well as requests by domain.
 
 
-![alt text](https://raw.githubusercontent.com/micmro/resourceTable/screenshots/readme-assets/resourceTable-tables-file-extensions.png "two tables with ressources type count globally and but local / external")
+![alt text](https://raw.githubusercontent.com/micmro/resourceTable/screenshots/readme-assets/resourceTable-tables-file-type.png "two tables with ressources type count globally and but local / external")
+
+![alt text](https://raw.githubusercontent.com/micmro/resourceTable/screenshots/readme-assets/resourceTable-tables-request-by-domain.png "tables with requests by domain")
 
 How to use this snippet
 -----------------------
