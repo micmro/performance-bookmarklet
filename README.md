@@ -7,7 +7,7 @@ The table contains the following data:
 - name
 - domain
 - fileExtension
-- oadtime
+- loadtime
 - *requestStart*
 - *dns*
 - *tcp*
@@ -20,7 +20,7 @@ The table contains the following data:
 ![alt text](https://raw.githubusercontent.com/micmro/resourceTable/screenshots/readme-assets/resourceTable-tables-ressources.png "tabular output of all ressources in the page")
 
 
-It also prints out a table counting the number of filetypes and filetypes local vs external.
+It also prints out a table counting the number of filetypes and filetypes local vs external as well as requests by domain.
 
 
 ![alt text](https://raw.githubusercontent.com/micmro/resourceTable/screenshots/readme-assets/resourceTable-tables-file-extensions.png "two tables with ressources type count globally and but local / external")
