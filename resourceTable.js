@@ -83,6 +83,9 @@
 		return currR.fileExtension + " " + (currR.isLocalDomain ? "(local)" : "(extenal)");
 	}));
 
+	var requestsByDomain = getItemCount(allRessourcesCalc.map(function(currR, i, arr){
+		return currR.domain;
+	}));
 
 	console.log("\n\n\nAll loaded ressources:");
 	console.table(allRessourcesCalc);
@@ -92,5 +95,9 @@
 
 	console.log("\n\n\nFile extension count (local / external):");
 	console.table(pivotObject(fileExtensionCountLocalExt, "extension"));
+
+
+	console.log("\n\n\nRequests by domain");
+	console.table(pivotObject(requestsByDomain, "domain"));
 
 })();
