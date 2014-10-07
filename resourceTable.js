@@ -4,7 +4,8 @@
 		externalResources = [],
 		allRessourcesCalc = [],
 		fileTypes = [],
-		fileTypesBySource = [];
+		fileTypesBySource = [],
+		resources;
 
 	
 	//helper functions
@@ -35,16 +36,18 @@
 
 
 	//feature check
-
-	if(!window.performance || !window.performance.getEntriesByType){
+	if(window.performance && window.performance.getEntriesByType !== undefined) {
+		resources = window.performance.getEntriesByType("resource");
+	}else if(window.performance && window.performance.webkitGetEntriesByType !== undefined) {
+		resources = window.performance.webkitGetEntriesByType("resource");
+	}else{
 		console.error("\n\nOups, looks like this browser does not support the Ressource Timing API - check http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
 		return;
 	}
 
-
 	//crunch the data
 
-	allRessourcesCalc = performance.getEntriesByType("resource").map(function(currR, i, arr){
+	allRessourcesCalc = resources.map(function(currR, i, arr){
 		var urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/);
 		var maybeFileName = urlFragments[2].split("/").pop();
 		var urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/);
@@ -59,12 +62,14 @@
 			isLocalDomain : urlFragments[1] === location.host
 		};
 
-		if (currR.requestStart) {
+		if(currR.requestStart){
+			currRes.requestStartDelay = currR.requestStart - currR.startTime;
 			currRes.dns = currR.domainLookupEnd - currR.domainLookupStart;
 			currRes.tcp = currR.connectEnd - currR.connectStart;
 			currRes.ttfb = currR.responseStart - currR.startTime;
+			currRes.requestDuration = currR.responseStart - currR.requestStart;
 		}
-		if (currR.secureConnectionStart) {
+		if(currR.secureConnectionStart){
 			currRes.ssl = currR.connectEnd - currR.secureConnectionStart;
 		}
 
@@ -97,7 +102,6 @@
 
 	console.log("\n\n\nFile type count (local / external):");
 	console.table(pivotObject(fileExtensionCountLocalExt, "fileType"));
-
 
 	console.log("\n\n\nRequests by domain");
 	console.table(pivotObject(requestsByDomain, "domain"));
