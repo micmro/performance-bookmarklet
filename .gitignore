@@ -2,6 +2,10 @@
 logs
 *.log
 
+# Editor Project Files
+*.sublime-project
+*.sublime-workspace
+
 # Runtime data
 pids
 *.pid
