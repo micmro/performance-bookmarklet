@@ -9,7 +9,7 @@ You can use it as bookmarklet:
 javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='//micmro.github.io/resourceTable/resourceTable.js';document.getElementsByTagName('body')[0].appendChild(el);})();
 ```
 
-![alt text](https://raw.githubusercontent.com/micmro/resourceTable/screenshots/gh-pages/screenshot-bookmarklet.png "screenshot of pie graph output of bookmarklet")
+![alt text](https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/screenshot-bookmarklet.png "screenshot of pie graph output of bookmarklet")
 
 
 
@@ -26,15 +26,15 @@ The table contains the following data:
 
 (*some data* is not always available)
 
-![alt text](https://raw.githubusercontent.com/micmro/resourceTable/screenshots/gh-pages/resourceTable-tables-ressources.png "tabular output of all ressources in the page")
+![alt text](https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resourceTable-tables-ressources.png "tabular output of all ressources in the page")
 
 
 It also prints out a table counting the number of filetypes and filetypes local vs external as well as requests by domain.
 
 
-![alt text](https://raw.githubusercontent.com/micmro/resourceTable/screenshots/gh-pages/resourceTable-tables-file-type.png "two tables with ressources type count globally and but local / external")
+![alt text](https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resourceTable-tables-file-type.png "two tables with ressources type count globally and but local / external")
 
-![alt text](https://raw.githubusercontent.com/micmro/resourceTable/screenshots/gh-pages/resourceTable-tables-request-by-domain.png "tables with requests by domain")
+![alt text](https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resourceTable-tables-request-by-domain.png "tables with requests by domain")
 
 
 How to use this snippet
