@@ -13,7 +13,7 @@
 	}else if(window.performance && window.performance.webkitGetEntriesByType !== undefined) {
 		resources = window.performance.webkitGetEntriesByType("resource");
 	}else{
-		console.error("\n\nOups, looks like this browser does not support the Ressource Timing API - check http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
+		alert("Oups, looks like this browser does not support the Ressource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
 		return;
 	}
 
@@ -98,7 +98,7 @@
 			// foreground circle
 			startAngle = endAngle;
 
-			return path
+			return path;
 		};
 		
 		//setup chart
@@ -194,7 +194,6 @@
 		outputHolder.appendChild(chartHolder);
 	};
 
-	//Requests By Domain
 	setupChart("Requests by Domain", requestsByDomain.map(function(domain){
 		domain.perc = domain.count / requestsUnit;
 		domain.label = domain.domain;
