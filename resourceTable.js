@@ -16,6 +16,11 @@
 		alert("Oups, looks like this browser does not support the Ressource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
 		return;
 	}
+	
+	//remove this bookmarklet from the result
+	resources = resources.filter(function(currR){
+		return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/resourceTable\/.*/);
+	});
 
 	var newTag = function(tagName, id, text, css){
 		var tag = document.createElement(tagName);
@@ -126,7 +131,9 @@
 		var urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/),
 			maybeFileName = urlFragments[2].split("/").pop(),
 			fileExtension = maybeFileName.substr((Math.max(0, maybeFileName.lastIndexOf(".")) || Infinity) + 1);
-
+		
+		
+		
 		var currRes = {
 			name : currR.name,
 			domain : urlFragments[1],
