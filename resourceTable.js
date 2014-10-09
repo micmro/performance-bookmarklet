@@ -98,7 +98,7 @@
 			// foreground circle
 			startAngle = endAngle;
 
-			return path
+			return path;
 		};
 		
 		//setup chart
