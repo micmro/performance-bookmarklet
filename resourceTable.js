@@ -220,12 +220,12 @@
 	console.table(allRessourcesCalc);
 
 	console.log("\n\n\nFile type count:");
-	console.table(fileExtensionCounts);
+	console.table(fileExtensionCounts, ["fileType", "count", "perc"]);
 
 	console.log("\n\n\nFile type count (local / external):");
-	console.table(fileExtensionCountLocalExt);
+	console.table(fileExtensionCountLocalExt, ["fileType", "count", "perc"]);
 
 	console.log("\n\n\nRequests by domain");
-	console.table(requestsByDomain);
+	console.table(requestsByDomain, ["domain", "count", "perc"]);
 
 })();
