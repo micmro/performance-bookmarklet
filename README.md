@@ -10,7 +10,7 @@ javascript:(function(){var el=document.createElement('script');el.type='text/jav
 ```
 
 
-![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/screenshot-bookmarklet.png "screenshot of pie graph output of bookmarklet")
+![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/resourceTable-bookmarklet-pies.png "screenshot of pie graph output of bookmarklet")
 
 
 
