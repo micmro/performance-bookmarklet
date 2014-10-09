@@ -1,7 +1,7 @@
 Resource Timing API - resourceTable
 ===================================
 
-Bookmarklet to lists all resources from the [Resource Timing API](http://www.w3.org/TR/resource-timing/) with load times etc (inspired by [this article from Steve Souders](http://www.stevesouders.com/blog/2014/08/21/resource-timing-practical-tips/)), in a table in the console and in a pie chart on the page.
+Bookmarklet to lists all resources from the [Resource Timing API](http://www.w3.org/TR/resource-timing/) with load times etc (inspired by [this article from Steve Souders](http://www.stevesouders.com/blog/2014/08/21/resource-timing-practical-tips/) and the [Waterfall Bookmarklet](https://github.com/andydavies/waterfall)), in a table in the console and in a pie chart on the page.
 
 Just add this into the URL section of a new bookmark:
 
