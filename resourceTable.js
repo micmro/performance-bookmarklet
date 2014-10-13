@@ -134,7 +134,7 @@
 				wedgeLabel.style.textShadow = "0 0 2px #fff";
 				wedgeLabel.style.pointerEvents = "none"
 
-				if(endAngle < Math.PI){
+				if(labelAngle < Math.PI){
 					wedgeLabel.setAttribute("x", x3 - getNodeTextWidth(wedgeLabel));
 				}else{
 					wedgeLabel.setAttribute("x", x3);
