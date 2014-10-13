@@ -112,6 +112,12 @@
 			var wedgeTitle = document.createElementNS(svgNs, "title");
 			wedgeTitle.textContent = labelTxt;
 			path.appendChild(wedgeTitle); // Add tile to wedge path
+			path.addEventListener("mouseover", function(evt){
+				evt.target.setAttribute("fill", "#ccc");
+			});
+			path.addEventListener("mouseout", function(evt){
+				evt.target.setAttribute("fill", colour);
+			});
 
 			startAngle = endAngle;
 			if(percentage > 10){
