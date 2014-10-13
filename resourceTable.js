@@ -228,12 +228,34 @@
 
 
 	var setupChart = function(title, data){
-		var chartHolder = newTag("div", "", "", "float:left; width:450px;");
+		var chartHolder = newTag("div", "", "", "float:left; width:400px; margin: 0 50px 0 0;");
 		var pieChartDoc = createPieChart(data, 400);
 
 		chartHolder.appendChild(newTag("h1", "", title, "font:bold 16px/18px sans-serif; margin:1em 0;"));
 		chartHolder.appendChild(pieChartDoc);
-		chartHolder.appendChild(newTag("p", "", "total: (" + resources.length + ")"));
+		chartHolder.appendChild(newTag("p", "", "total requests: (" + resources.length + ")"));
+
+		var thead = newTag("thead");
+		thead.appendChild(newTag("th", "", title, "text-align: left; padding:0 0.5em 0 0;"));
+		thead.appendChild(newTag("th", "", "Requests", "text-align: left; padding:0 0.5em 0 0;"));
+		thead.appendChild(newTag("th", "", "Percentage", "text-align: left; padding:0 0.5em 0 0;"));
+
+		var table = newTag("table", "", "", "float:left; width:400px;");
+		table.appendChild(thead);
+
+		var tbody = newTag("tbody");
+		data.forEach(function(y){
+			console.log(y);
+			var row = newTag("tr");
+			row.appendChild(newTag("td", "", y.label));
+			row.appendChild(newTag("td", "", y.count));
+			row.appendChild(newTag("td", "", y.perc.toPrecision(2) + "%"));
+			tbody.appendChild(row);
+		});
+
+		table.appendChild(tbody);
+
+		chartHolder.appendChild(table);
 		outputHolder.appendChild(chartHolder);
 	};
 
@@ -262,13 +284,13 @@
 	console.log("\n\n\nAll loaded ressources:");
 	console.table(allRessourcesCalc);
 
-	console.log("\n\n\nFile type count:");
-	console.table(fileExtensionCounts, ["fileType", "count", "perc"]);
+	console.log("\n\n\nRequests by domain");
+	console.table(requestsByDomain, ["domain", "count", "perc"]);
 
 	console.log("\n\n\nFile type count (local / external):");
 	console.table(fileExtensionCountLocalExt, ["fileType", "count", "perc"]);
 
-	console.log("\n\n\nRequests by domain");
-	console.table(requestsByDomain, ["domain", "count", "perc"]);
+	console.log("\n\n\nFile type count:");
+	console.table(fileExtensionCounts, ["fileType", "count", "perc"]);
 
 })();
