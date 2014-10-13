@@ -5,17 +5,21 @@
 		allRessourcesCalc = [],
 		fileTypes = [],
 		fileTypesBySource = [],
-		resources;
+		resources,
+		marks;
 
 	//feature check gate
 	if(window.performance && window.performance.getEntriesByType !== undefined) {
 		resources = window.performance.getEntriesByType("resource");
+		marks = window.performance.getEntriesByType("mark");
 	}else if(window.performance && window.performance.webkitGetEntriesByType !== undefined) {
 		resources = window.performance.webkitGetEntriesByType("resource");
+		marks = window.performance.webkitGetEntriesByType("mark");
 	}else{
 		alert("Oups, looks like this browser does not support the Ressource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
 		return;
 	}
+
 	var svgNs = "http://www.w3.org/2000/svg";
 
 	//remove this bookmarklet from the result
@@ -52,7 +56,6 @@
 		});
 	};
 
-
 	function createPieChart(data, size){
 		//inpired by http://jsfiddle.net/da5LN/62/
 
@@ -88,7 +91,7 @@
 			return nodeWidth;
 		};
 
-		var createWedge = function(size, percentage, labelTxt, colour){
+		var createWedge = function(id, size, percentage, labelTxt, colour){
 			var path = document.createElementNS(svgNs, "path"), // wedge path
 				endAngle = startAngle + (percentage * unit - 0.001),
 				labelAngle = startAngle + (percentage/2 * unit - 0.001),
@@ -108,15 +111,18 @@
 					" Z";								// Close path back to (cx,cy)
 			path.setAttribute("d", d); // Set this path 
 			path.setAttribute("fill", colour);
+			path.setAttribute("id", id);
 
 			var wedgeTitle = document.createElementNS(svgNs, "title");
 			wedgeTitle.textContent = labelTxt;
 			path.appendChild(wedgeTitle); // Add tile to wedge path
 			path.addEventListener("mouseover", function(evt){
 				evt.target.setAttribute("fill", "#ccc");
+				document.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
 			});
 			path.addEventListener("mouseout", function(evt){
 				evt.target.setAttribute("fill", colour);
+				document.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "transparent";
 			});
 
 			startAngle = endAngle;
@@ -149,7 +155,7 @@
 		//loop through data and create wedges
 		data.forEach(function(dataObj){
 			var label = dataObj.label + " (" + dataObj.count + ")";
-			var wedgeAndLabel = createWedge(size, dataObj.perc, label, getRandomColor());
+			var wedgeAndLabel = createWedge(dataObj.id, size, dataObj.perc, label, getRandomColor());
 			chart.appendChild(wedgeAndLabel[0]);
 
 			if(wedgeAndLabel[1]){
@@ -163,8 +169,31 @@
 		return chart;
 	};
 
+	var createTable = function(title, data){
+		//create table
+		var table = newTag("table", "", "", "float:left; width:400px;");
+		var thead = newTag("thead");
+		var tbody = newTag("tbody");
+		thead.appendChild(newTag("th", "", title, "text-align: left; padding:0 0.5em 0 0;"));
+		thead.appendChild(newTag("th", "", "Requests", "text-align: left; padding:0 0.5em 0 0;"));
+		thead.appendChild(newTag("th", "", "Percentage", "text-align: left; padding:0 0.5em 0 0;"));
+		table.appendChild(thead);
 
-	//crunch the data
+		data.forEach(function(y){
+			var row = newTag("tr", y.id + "-table");
+			row.appendChild(newTag("td", "", y.label));
+			row.appendChild(newTag("td", "", y.count));
+			row.appendChild(newTag("td", "", y.perc.toPrecision(2) + "%"));
+			tbody.appendChild(row);
+		});
+
+		table.appendChild(tbody);
+
+		return table;
+	}
+
+
+	//crunch the resources data into something easier to work with
 	allRessourcesCalc = resources.map(function(currR, i, arr){
 		var urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/),
 			maybeFileName = urlFragments[2].split("/").pop(),
@@ -212,9 +241,8 @@
 		return currR.domain;
 	}), "domain");
 
-	var requestsUnit = resources.length / 100;
 
-
+	// find or create holder element
 
 	var outputHolder = document.getElementById("resourceTable-holder");
 	if(!outputHolder){
@@ -226,61 +254,46 @@
 		}
 	}
 
-
+	// create a chart and table section
 	var setupChart = function(title, data){
 		var chartHolder = newTag("div", "", "", "float:left; width:400px; margin: 0 50px 0 0;");
-		var pieChartDoc = createPieChart(data, 400);
 
 		chartHolder.appendChild(newTag("h1", "", title, "font:bold 16px/18px sans-serif; margin:1em 0;"));
-		chartHolder.appendChild(pieChartDoc);
+		chartHolder.appendChild(createPieChart(data, 400));
 		chartHolder.appendChild(newTag("p", "", "total requests: (" + resources.length + ")"));
-
-		var thead = newTag("thead");
-		thead.appendChild(newTag("th", "", title, "text-align: left; padding:0 0.5em 0 0;"));
-		thead.appendChild(newTag("th", "", "Requests", "text-align: left; padding:0 0.5em 0 0;"));
-		thead.appendChild(newTag("th", "", "Percentage", "text-align: left; padding:0 0.5em 0 0;"));
-
-		var table = newTag("table", "", "", "float:left; width:400px;");
-		table.appendChild(thead);
-
-		var tbody = newTag("tbody");
-		data.forEach(function(y){
-			console.log(y);
-			var row = newTag("tr");
-			row.appendChild(newTag("td", "", y.label));
-			row.appendChild(newTag("td", "", y.count));
-			row.appendChild(newTag("td", "", y.perc.toPrecision(2) + "%"));
-			tbody.appendChild(row);
-		});
-
-		table.appendChild(tbody);
-
-		chartHolder.appendChild(table);
+		chartHolder.appendChild(createTable(title, data));
 		outputHolder.appendChild(chartHolder);
 	};
 
+
+	// init data for charts
+
+	var requestsUnit = resources.length / 100;
 	setupChart("Requests by Domain", requestsByDomain.map(function(domain){
 		domain.perc = domain.count / requestsUnit;
 		domain.label = domain.domain;
+		domain.id = "reqByDomain-" + domain.label.replace(/[^a-zA-Z]/g, "-");
 		return domain;
 	}));
 
 	setupChart("Requests by Type (local/external domain)", fileExtensionCountLocalExt.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
+		fileType.id = "reqByTypeLocEx-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}));
 
 	setupChart("Requests by Type", fileExtensionCounts.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
+		fileType.id = "reqByType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}));
 
+
 	document.body.appendChild(outputHolder);
 
-
-	//also output the data as table in console
+	// also output the data as table in console
 	console.log("\n\n\nAll loaded ressources:");
 	console.table(allRessourcesCalc);
 
