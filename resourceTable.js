@@ -16,7 +16,8 @@
 		alert("Oups, looks like this browser does not support the Ressource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
 		return;
 	}
-	
+	var svgNs = "http://www.w3.org/2000/svg";
+
 	//remove this bookmarklet from the result
 	resources = resources.filter(function(currR){
 		return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/resourceTable\/.*/);
@@ -55,8 +56,7 @@
 	function createPieChart(data, size){
 		//inpired by http://jsfiddle.net/da5LN/62/
 
-		var svgNs = "http://www.w3.org/2000/svg",
-			chart = document.createElementNS(svgNs, "svg:svg"),
+		var chart = document.createElementNS(svgNs, "svg:svg"),
 			unit = (Math.PI * 2) / 100,
 			startAngle = 0; // init startAngle
 
@@ -78,13 +78,26 @@
 			return circle;
 		};
 
-		var createWedge = function(percentage, label, colour){
+		var getNodeTextWidth = function(textNode){
+			var tmp = document.createElementNS(svgNs, "svg:svg");
+			tmp.style.visibility = "hidden";
+			tmp.appendChild(textNode);
+			document.body.appendChild(tmp);
+			var nodeWidth = textNode.getBBox().width;
+			tmp.parentNode.removeChild(tmp);
+			return nodeWidth;
+		};
+
+		var createWedge = function(size, percentage, labelTxt, colour){
 			var path = document.createElementNS(svgNs, "path"), // wedge path
 				endAngle = startAngle + (percentage * unit - 0.001),
+				labelAngle = startAngle + (percentage/2 * unit - 0.001),
 				x1 = (size/2) + (size/2) * Math.sin(startAngle),
 				y1 = (size/2) - (size/2) * Math.cos(startAngle),
 				x2 = (size/2) + (size/2) * Math.sin(endAngle),
 				y2 = (size/2) - (size/2) * Math.cos(endAngle),
+				x3 = (size/2) + (size/2.3) * Math.sin(labelAngle),
+				y3 = (size/2) - (size/2.3) * Math.cos(labelAngle),
 				big = (endAngle - startAngle > Math.PI) ? 1 : 0;
 
 			var d = "M " + (size/2) + "," + (size/2) +	// Start at circle center
@@ -97,31 +110,56 @@
 			path.setAttribute("fill", colour);
 
 			var wedgeTitle = document.createElementNS(svgNs, "title");
-			wedgeTitle.textContent = label;
+			wedgeTitle.textContent = labelTxt;
 			path.appendChild(wedgeTitle); // Add tile to wedge path
+			path.addEventListener("mouseover", function(evt){
+				evt.target.setAttribute("fill", "#ccc");
+			});
+			path.addEventListener("mouseout", function(evt){
+				evt.target.setAttribute("fill", colour);
+			});
 
-			// foreground circle
 			startAngle = endAngle;
+			if(percentage > 10){
+				var wedgeLabel = document.createElementNS(svgNs, "text");
+				wedgeLabel.style.pointerEvents = "none"
+				wedgeLabel.textContent = labelTxt;
+				wedgeLabel.setAttribute("y", y3);
+				wedgeLabel.style.textShadow = "0 0 2px #fff";
+				wedgeLabel.style.pointerEvents = "none"
 
-			return path;
+				if(endAngle < Math.PI){
+					wedgeLabel.setAttribute("x", x3 - getNodeTextWidth(wedgeLabel));
+				}else{
+					wedgeLabel.setAttribute("x", x3);
+				}
+
+				return [path, wedgeLabel];
+			}			
+			return [path];
 		};
 		
 		//setup chart
 		chart.setAttribute("width", size);
 		chart.setAttribute("height", size);
 		chart.setAttribute("viewBox", "0 0 " + size + " " + size);
-		//chart.appendChild(createCircle(size/2, size/2, size/2, "#ebebeb")); // add Background circle
+		var labelWrap = document.createElementNS(svgNs, "g");
+		labelWrap.style.pointerEvents = "none"
 
 		//loop through data and create wedges
 		data.forEach(function(dataObj){
 			var label = dataObj.label + " (" + dataObj.count + ")";
-			var wedge = createWedge(dataObj.perc, label, getRandomColor());
-			chart.appendChild(wedge); // create and add wedge to chart
+			var wedgeAndLabel = createWedge(size, dataObj.perc, label, getRandomColor());
+			chart.appendChild(wedgeAndLabel[0]);
+
+			if(wedgeAndLabel[1]){
+				labelWrap.appendChild(wedgeAndLabel[1]);
+			}
 		});
 
-		
-		chart.appendChild(createCircle(size/2, size/2, (size*0.1), "#fff"));
-		
+		// foreground circle
+		chart.appendChild(createCircle(size/2, size/2, (size*0.05), "#fff"));
+		chart.appendChild(labelWrap);
 		return chart;
 	};
 
@@ -131,8 +169,6 @@
 		var urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/),
 			maybeFileName = urlFragments[2].split("/").pop(),
 			fileExtension = maybeFileName.substr((Math.max(0, maybeFileName.lastIndexOf(".")) || Infinity) + 1);
-		
-		
 		
 		var currRes = {
 			name : currR.name,
@@ -192,12 +228,34 @@
 
 
 	var setupChart = function(title, data){
-		var chartHolder = newTag("div", "", "", "float:left; width:450px;");
+		var chartHolder = newTag("div", "", "", "float:left; width:400px; margin: 0 50px 0 0;");
 		var pieChartDoc = createPieChart(data, 400);
 
 		chartHolder.appendChild(newTag("h1", "", title, "font:bold 16px/18px sans-serif; margin:1em 0;"));
 		chartHolder.appendChild(pieChartDoc);
-		chartHolder.appendChild(newTag("p", "", "total: (" + resources.length + ")"));
+		chartHolder.appendChild(newTag("p", "", "total requests: (" + resources.length + ")"));
+
+		var thead = newTag("thead");
+		thead.appendChild(newTag("th", "", title, "text-align: left; padding:0 0.5em 0 0;"));
+		thead.appendChild(newTag("th", "", "Requests", "text-align: left; padding:0 0.5em 0 0;"));
+		thead.appendChild(newTag("th", "", "Percentage", "text-align: left; padding:0 0.5em 0 0;"));
+
+		var table = newTag("table", "", "", "float:left; width:400px;");
+		table.appendChild(thead);
+
+		var tbody = newTag("tbody");
+		data.forEach(function(y){
+			console.log(y);
+			var row = newTag("tr");
+			row.appendChild(newTag("td", "", y.label));
+			row.appendChild(newTag("td", "", y.count));
+			row.appendChild(newTag("td", "", y.perc.toPrecision(2) + "%"));
+			tbody.appendChild(row);
+		});
+
+		table.appendChild(tbody);
+
+		chartHolder.appendChild(table);
 		outputHolder.appendChild(chartHolder);
 	};
 
@@ -226,13 +284,13 @@
 	console.log("\n\n\nAll loaded ressources:");
 	console.table(allRessourcesCalc);
 
-	console.log("\n\n\nFile type count:");
-	console.table(fileExtensionCounts, ["fileType", "count", "perc"]);
+	console.log("\n\n\nRequests by domain");
+	console.table(requestsByDomain, ["domain", "count", "perc"]);
 
 	console.log("\n\n\nFile type count (local / external):");
 	console.table(fileExtensionCountLocalExt, ["fileType", "count", "perc"]);
 
-	console.log("\n\n\nRequests by domain");
-	console.table(requestsByDomain, ["domain", "count", "perc"]);
+	console.log("\n\n\nFile type count:");
+	console.table(fileExtensionCounts, ["fileType", "count", "perc"]);
 
 })();
