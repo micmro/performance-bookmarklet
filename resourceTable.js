@@ -114,7 +114,6 @@
 			path.appendChild(wedgeTitle); // Add tile to wedge path
 			path.style.pointerEvents = "none"
 
-
 			startAngle = endAngle;
 			if(percentage > 10){
 				var wedgeLabel = document.createElementNS(svgNs, "text");
@@ -139,7 +138,6 @@
 		chart.setAttribute("height", size);
 		chart.setAttribute("viewBox", "0 0 " + size + " " + size);
 		var labelWrap = document.createElementNS(svgNs, "g");
-		// chart.appendChild(createCircle(size/2, size/2, (size*0.05), "#fff"));
 
 		//loop through data and create wedges
 		data.forEach(function(dataObj){
