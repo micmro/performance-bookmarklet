@@ -6,7 +6,8 @@
 		fileTypes = [],
 		fileTypesBySource = [],
 		resources,
-		marks;
+		marks,
+		perfTiming;
 
 	//feature check gate
 	if(window.performance && window.performance.getEntriesByType !== undefined) {
@@ -18,6 +19,12 @@
 	}else{
 		alert("Oups, looks like this browser does not support the Ressource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
 		return;
+	}
+
+	if(window.performance.timing){
+		perfTiming = window.performance.timing;
+	}else{
+		alert("Oups, looks like this browser does not support performance timing");		
 	}
 
 	var svgNs = "http://www.w3.org/2000/svg";
@@ -291,6 +298,57 @@
 	}));
 
 
+	//marks // perfTiming
+	var perfTimingCalc = {
+		totals : {
+			"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.navigationStart,
+			"ttfb" : perfTiming.responseStart - perfTiming.navigationStart,
+			"domProcessing" : perfTiming.domComplete - perfTiming.domLoading
+		}
+	};
+	var startTime = perfTiming.navigationStart;
+	var propBaseName;
+	for (var perfProp in perfTiming) {
+		if(perfTiming.hasOwnProperty(perfProp)){
+			if(perfTiming[perfProp]){
+				perfTimingCalc[perfProp] = perfTiming[perfProp] - startTime;
+				propBaseName = perfProp.match(/(.*)End$/);
+				if(propBaseName && perfTiming[propBaseName[1] + "Start"]){
+					perfTimingCalc.totals[propBaseName[1]] = perfTiming[perfProp] - perfTiming[propBaseName[1]+"Start"];
+				}
+			}
+		} 
+	}
+
+
+	var timeBlock = function(name, start, end){
+		return {
+			name : name,
+			start : start,
+			end : end,
+			total : end - start
+		}
+	};
+
+	perfTimingCalc.blocks = [
+		//timeBlock("pageLoadTime", 0, perfTimingCalc.loadEventEnd),
+		timeBlock("DOM Processing", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventStart),
+
+		timeBlock("unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd),
+		timeBlock("redirect", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd),
+		timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart),
+		timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd),
+		timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd),
+		timeBlock("Request", perfTimingCalc.requestStart, perfTimingCalc.responseStart),
+		timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd),
+		timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete),
+		timeBlock("Onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd)
+	];
+	if(perfTimingCalc.secureConnectionStart){
+		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart));
+	}
+
+
 	document.body.appendChild(outputHolder);
 
 	// also output the data as table in console
@@ -306,4 +364,7 @@
 	console.log("\n\n\nFile type count:");
 	console.table(fileExtensionCounts, ["fileType", "count", "perc"]);
 
+	//timeling from window.performance.timing
+	console.log("\n\n\nNavigation Timeline:");
+	console.table(perfTimingCalc.blocks);
 })();

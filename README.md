@@ -62,3 +62,4 @@ Read more
 -----------
 - [Introduction to Resource Timing API](http://googledevelopers.blogspot.ca/2013/12/measuring-network-performance-with.html)
 - [Resource Timing API Browser Support](http://caniuse.com/#feat=resource-timing)
+- [HTML5 Rocks: Measuring Page Load Speed with Navigation Timing](http://www.html5rocks.com/en/tutorials/webperformance/basics)
