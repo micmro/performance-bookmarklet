@@ -298,7 +298,7 @@
 	}));
 
 
-	//marks // perfTiming
+	//marks WIP Start 
 	var perfTimingCalc = {
 		totals : {
 			"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.navigationStart,
@@ -347,7 +347,7 @@
 	if(perfTimingCalc.secureConnectionStart){
 		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart));
 	}
-
+	//marks WIP End
 
 	document.body.appendChild(outputHolder);
 
