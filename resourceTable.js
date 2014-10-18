@@ -367,4 +367,7 @@
 	//timeling from window.performance.timing
 	console.log("\n\n\nNavigation Timeline:");
 	console.table(perfTimingCalc.blocks);
+
+	console.log("\n\n\nAll times (in ms since navigationStart):");
+	console.log(perfTimingCalc);
 })();
