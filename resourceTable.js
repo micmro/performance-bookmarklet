@@ -347,6 +347,42 @@
 	if(perfTimingCalc.secureConnectionStart){
 		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart));
 	}
+
+	var setupTimeLine = function(){
+		var chartHolder = newTag("div", "", "", "float:left; width:100%; margin: 25px 0;");
+		var svgNs = "http://www.w3.org/2000/svg";
+		var outputHolder = document.getElementById("resourceTable-holder");
+		var timeLineHolder = document.createElementNS(svgNs, "svg:svg");
+		timeLineHolder.setAttributeNS(null, "width", "100%");
+		timeLineHolder.setAttributeNS(null, "fill", "#ccc");
+
+		var createRect = function(width, height, x, y, fill){
+			var rect = document.createElementNS(svgNs, "rect");
+			rect.setAttributeNS(null, "width", width);
+			rect.setAttributeNS(null, "height", height);
+			rect.setAttributeNS(null, "x", x);
+			rect.setAttributeNS(null, "y", y);
+			rect.setAttributeNS(null, "fill", fill);
+			return rect;
+		};
+
+
+		var bg = createRect("100%", "25px", 0, 0, "#ccc");
+
+
+		perfTimingCalc.blocks.forEach(function(block){			
+			bg.appendChild(createRect((block.total||1)+"px", "25px", (block.start||0)+"px", "0px", "#f00"));
+		});
+
+
+		timeLineHolder.appendChild(bg);
+		chartHolder.appendChild(timeLineHolder);
+		outputHolder.appendChild(chartHolder);
+	};
+	setupTimeLine();
+
+
+
 	//marks WIP End
 
 	document.body.appendChild(outputHolder);
