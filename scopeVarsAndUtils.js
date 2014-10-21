@@ -1,5 +1,5 @@
 
-//you can make these global to inspect them
+//scope wide vars
 var localResources = [],
 	externalResources = [],
 	allRessourcesCalc = [],
@@ -7,7 +7,8 @@ var localResources = [],
 	fileTypesBySource = [],
 	resources,
 	marks,
-	perfTiming;
+	perfTiming,
+	outputHolder;
 
 //feature check gate
 if(window.performance && window.performance.getEntriesByType !== undefined) {
@@ -34,6 +35,8 @@ resources = resources.filter(function(currR){
 	return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/resourceTable\/.*/);
 });
 
+
+//helper functions
 var newTag = function(tagName, id, text, css){
 	var tag = document.createElement(tagName);
 	tag.textContent = text || "";
@@ -73,7 +76,7 @@ var getItemCount = function(arr, keyName) {
 };
 
 // find or create holder element
-var outputHolder = document.getElementById("resourceTable-holder");
+outputHolder = document.getElementById("resourceTable-holder");
 if(!outputHolder){
 	outputHolder = newTag("div", "resourceTable-holder", "", "position:absolute; top:0; left:0; z-index: 9999; padding:1em 1em 3em; background:rgba(255,255,255, 0.95);");
 }else{

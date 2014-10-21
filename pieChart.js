@@ -1,4 +1,4 @@
-//Request pie charts
+//Logic for Request pie charts
 
 function createPieChart(data, size){
 	//inpired by http://jsfiddle.net/da5LN/62/

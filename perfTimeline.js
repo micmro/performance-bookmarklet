@@ -55,7 +55,11 @@ var perfTimingCalc;
 		//var outputHolder = document.getElementById("resourceTable-holder");
 		var timeLineHolder = document.createElementNS(svgNs, "svg:svg");
 		timeLineHolder.setAttributeNS(null, "width", "100%");
+		timeLineHolder.setAttributeNS(null, "height", perfTimingCalc.blocks.length * 15 + "px");
 		timeLineHolder.setAttributeNS(null, "fill", "#ccc");
+
+		var timeLineLabelHolder = document.createElementNS(svgNs, "svg:svg");
+		timeLineLabelHolder.setAttributeNS(null, "width", "100%");
 
 		var unit = perfTimingCalc.totals.pageLoadTime / 100;
 
@@ -78,12 +82,26 @@ var perfTimingCalc;
 		var bg = createRect(unit*100, 25, 0, 0, "#ccc");
 		timeLineHolder.appendChild(bg);
 
-		perfTimingCalc.blocks.forEach(function(block){
+		perfTimingCalc.blocks.forEach(function(block, i){
 			timeLineHolder.appendChild(createRect((block.total||1), 25, (block.start||0.001), 0, getRandomColor(), block.name + " (" + block.total + "ms)"));
-			timeLineHolder
+			
+			var wedgeLabel = document.createElementNS(svgNs, "text");
+			wedgeLabel.style.pointerEvents = "none"
+			wedgeLabel.textContent = block.name + " (" + block.total + "ms)";
+			wedgeLabel.setAttribute("y", (15 * i + 45) +"px");
+			wedgeLabel.style.textShadow = "0 0 2px #fff";
+			wedgeLabel.style.pointerEvents = "none"
+			wedgeLabel.setAttribute("x", ((block.start||0.001) / unit) + "%");
+
+			timeLineLabelHolder.appendChild(wedgeLabel);
+
 		});
 
+		timeLineHolder.appendChild(timeLineLabelHolder);
 		chartHolder.appendChild(timeLineHolder);
+
+
+
 
 		outputHolder.insertBefore(chartHolder, outputHolder.firstChild);
 	};
