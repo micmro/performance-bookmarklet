@@ -28,7 +28,7 @@ var perfTimingCalc;
 			name : name,
 			start : start,
 			end : end,
-			total : end - start
+			total : end - start//((typeof start !== "number" || typeof end !== "number") undefined : (end - start))
 		}
 	};
 

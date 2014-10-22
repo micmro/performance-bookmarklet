@@ -13,10 +13,26 @@ module.exports = function( grunt ) {
 				dest: "dist/resourceTable.js",
 			},
 		},
+		uglify : {
+			options: {
+				compress: {
+					global_defs: {
+						"DEBUG": false
+					},
+					dead_code: true
+				},
+				banner : "/*https://github.com/nurun/resourceTable*/\n"
+			},
+			my_target: {
+				files: {
+					'dist/resourceTable.min.js': ["dist/resourceTable.js"]
+				}
+			}
+		},
 		watch: {
 			scripts: {
 				files: ["*.js"],
-				tasks: ["concat"],
+				tasks: ["concat", "uglify"],
 				options: {
 					spawn: false,
 					interrupt : true
@@ -27,6 +43,7 @@ module.exports = function( grunt ) {
 
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-contrib-watch");
+	grunt.loadNpmTasks('grunt-contrib-uglify');
 
 	grunt.registerTask("default", ["concat", "watch"]);
 };
