@@ -31,7 +31,7 @@ module.exports = function( grunt ) {
 		},
 		watch: {
 			scripts: {
-				files: ["*.js"],
+				files: ["src/*.js"],
 				tasks: ["concat", "uglify"],
 				options: {
 					spawn: false,
@@ -45,5 +45,6 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks("grunt-contrib-watch");
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 
-	grunt.registerTask("default", ["concat", "watch"]);
+	grunt.registerTask("default", ["concat", "uglify", "watch"]);
+	grunt.registerTask("dist", ["concat", "uglify"]);
 };
