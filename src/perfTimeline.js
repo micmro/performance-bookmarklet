@@ -32,7 +32,7 @@ var timeBlock = function(name, start, end){
 
 perfTimingCalc.blocks = [
 	//timeBlock("pageLoadTime", 0, perfTimingCalc.loadEventEnd),
-	// /timeBlock("unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd),
+	timeBlock("unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd),
 	timeBlock("redirect", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd),
 	timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart),
 	timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd),
@@ -40,8 +40,46 @@ perfTimingCalc.blocks = [
 	timeBlock("Request", perfTimingCalc.requestStart, perfTimingCalc.responseStart),
 	timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd),
 	timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete),
+	timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd),
 	timeBlock("Onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd)
 ];
+/*
+
+  "totals": {
+    "pageLoadTime": 5520,
+    "ttfb": 714,
+    "domProcessing": 4601,
+    "loadEvent": 144,
+    "domContentLoadedEvent": 29,
+    "response": 32,
+    "connect": 0,
+    "domainLookup": 0,
+    "redirect": 374,
+    "unloadEvent": 9
+  },
+  "loadEventEnd": 5520,
+  "loadEventStart": 5376,
+  "domComplete": 5375,
+  "domContentLoadedEventEnd": 1615,
+  "domContentLoadedEventStart": 1586,
+  "domInteractive": 1586,
+  "domLoading": 774,
+  "responseEnd": 746,
+  "responseStart": 714,
+  "requestStart": 379,
+  "connectEnd": 377,
+  "connectStart": 377,
+  "domainLookupEnd": 377,
+  "domainLookupStart": 377,
+  "fetchStart": 377,
+  "redirectEnd": 377,
+  "redirectStart": 3,
+  "unloadEventEnd": 729,
+  "unloadEventStart": 720,
+  "navigationStart": 0,
+*/
+
+
 if(perfTimingCalc.secureConnectionStart){
 	perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart));
 }
@@ -78,7 +116,10 @@ var setupTimeLine = function(){
 
 	var barsToShow = perfTimingCalc.blocks.filter(function(block){
 		return (typeof block.start == "number" && typeof block.total == "number");
-	});//.unshift(timeBlock("total", 0, perfTimingCalc.totals.pageLoadTime));
+	}).sort(function(a, b){
+		return (a.start||0) - (b.start||0);
+	});
+	barsToShow.unshift(timeBlock("total", 0, perfTimingCalc.totals.pageLoadTime));
 
 	barsToShow.forEach(function(block, i){
 		var blockWidth = block.total||1;
@@ -97,8 +138,11 @@ var setupTimeLine = function(){
 		if(((block.total||1) / unit) > 10){
 			blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
 			blockLabel.setAttribute("width", (blockWidth / unit) + "%");
-		}else{
+		}else if(((block.start||0.001) / unit) + (blockWidth / unit) < 80){
 			blockLabel.setAttribute("x", ((block.start||0.001) / unit) + (blockWidth / unit) + 0.5 + "%");
+		}else {
+			blockLabel.setAttribute("x", (block.start||0.001) / unit - 0.5 + "%");
+			blockLabel.setAttribute("text-anchor", "end"); 
 		}
 
 		timeLineLabelHolder.appendChild(blockLabel);

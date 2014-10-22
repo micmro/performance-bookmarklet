@@ -16,15 +16,6 @@ function createPieChart(data, size){
 		return circle;
 	};
 
-	var getNodeTextWidth = function(textNode){
-		var tmp = document.createElementNS(svgNs, "svg:svg");
-		tmp.style.visibility = "hidden";
-		tmp.appendChild(textNode);
-		document.body.appendChild(tmp);
-		var nodeWidth = textNode.getBBox().width;
-		tmp.parentNode.removeChild(tmp);
-		return nodeWidth;
-	};
 
 	var createWedge = function(id, size, percentage, labelTxt, colour){
 		var path = document.createElementNS(svgNs, "path"), // wedge path

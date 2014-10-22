@@ -45,6 +45,16 @@ var newTag = function(tagName, id, text, css){
 	return tag;
 };
 
+var getNodeTextWidth = function(textNode){
+	var tmp = document.createElementNS(svgNs, "svg:svg");
+	tmp.style.visibility = "hidden";
+	tmp.appendChild(textNode);
+	document.body.appendChild(tmp);
+	var nodeWidth = textNode.getBBox().width;
+	tmp.parentNode.removeChild(tmp);
+	return nodeWidth;
+};
+
 var getRandomColor = function() {
 	var letters = '0123456789ABCDEF'.split(''),
 		color = '#';
