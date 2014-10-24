@@ -31,8 +31,6 @@ if(window.performance.timing){
 	alert("Oups, looks like this browser does not support performance timing");		
 }
 
-var svgNs = "http://www.w3.org/2000/svg";
-
 //remove this bookmarklet from the result
 resources = resources.filter(function(currR){
 	return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/resourceTable\/.*/);
@@ -40,17 +38,36 @@ resources = resources.filter(function(currR){
 
 
 //helper functions
-var newTag = function(tagName, id, text, css){
+
+//creat html tag
+var newTag = function(tagName, settings, css){
+	settings = settings || {};
 	var tag = document.createElement(tagName);
-	tag.textContent = text || "";
+	for(var attr in settings){
+		if(attr != "text"){
+			tag[attr] = settings[attr];
+		}
+	}
+	tag.textContent = settings.text;
 	tag.style.cssText = css || "";
-	tag.id = id || "";
 	return tag;
 };
 
+//create svg element
+var newElementNs = function(tagName, settings, css){
+	var el = document.createElementNS("http://www.w3.org/2000/svg", tagName);
+	for(var attr in settings){
+		if(attr != "text"){
+			el.setAttributeNS(null, attr, settings[attr]);
+		}
+	}
+	el.textContent = settings.text;
+	el.style.cssText = css || "";
+	return el;
+};
+
 var getNodeTextWidth = function(textNode){
-	var tmp = document.createElementNS(svgNs, "svg:svg");
-	tmp.style.visibility = "hidden";
+	var tmp = newElementNs("svg:svg", {}, "visibility:hidden;");
 	tmp.appendChild(textNode);
 	document.body.appendChild(tmp);
 	var nodeWidth = textNode.getBBox().width;
@@ -91,7 +108,7 @@ var getItemCount = function(arr, keyName) {
 // find or create holder element
 outputHolder = document.getElementById("resourceTable-holder");
 if(!outputHolder){
-	outputHolder = newTag("div", "resourceTable-holder", "", "position:absolute; top:0; left:0; z-index: 9999; padding:1em 1em 3em; background:rgba(255,255,255, 0.95);");
+	outputHolder = newTag("div", {id : "resourceTable-holder"}, "position:absolute; top:0; left:0; z-index: 9999; padding:1em 1em 3em; background:rgba(255,255,255, 0.95);");
 }else{
 	//clear existing data
 	while (outputHolder.firstChild) {
@@ -105,45 +122,43 @@ if(!outputHolder){
 function createPieChart(data, size){
 	//inpired by http://jsfiddle.net/da5LN/62/
 
-	var chart = document.createElementNS(svgNs, "svg:svg"),
-		unit = (Math.PI * 2) / 100,
+	var chart = newElementNs("svg:svg", {
+		width : "100%",
+		height : "100%",
+		viewBox : "0 0 " + size + " " + size
+	})
+
+	var unit = (Math.PI * 2) / 100,
 		startAngle = 0; // init startAngle
 
-	var createCircle = function(cx, cy, r, fill){
-		var circle = document.createElementNS(svgNs, "circle");
-		circle.setAttributeNS(null, "cx", cx);
-		circle.setAttributeNS(null, "cy", cy);
-		circle.setAttributeNS(null, "r",  r);
-		circle.setAttributeNS(null, "fill", fill);
-		return circle;
-	};
-
-
 	var createWedge = function(id, size, percentage, labelTxt, colour){
-		var path = document.createElementNS(svgNs, "path"), // wedge path
+		var radius = size/2,
 			endAngle = startAngle + (percentage * unit - 0.001),
 			labelAngle = startAngle + (percentage/2 * unit - 0.001),
-			x1 = (size/2) + (size/2) * Math.sin(startAngle),
-			y1 = (size/2) - (size/2) * Math.cos(startAngle),
-			x2 = (size/2) + (size/2) * Math.sin(endAngle),
-			y2 = (size/2) - (size/2) * Math.cos(endAngle),
-			x3 = (size/2) + (size/2.3) * Math.sin(labelAngle),
-			y3 = (size/2) - (size/2.3) * Math.cos(labelAngle),
+			x1 = radius + radius * Math.sin(startAngle),
+			y1 = radius - radius * Math.cos(startAngle),
+			x2 = radius + radius * Math.sin(endAngle),
+			y2 = radius - radius * Math.cos(endAngle),
+			x3 = radius + radius * 0.85 * Math.sin(labelAngle),
+			y3 = radius - radius * 0.85 * Math.cos(labelAngle),
 			big = (endAngle - startAngle > Math.PI) ? 1 : 0;
 
-		var d = "M " + (size/2) + "," + (size/2) +	// Start at circle center
+		var d = "M " + radius + "," + radius +	// Start at circle center
 				" L " + x1 + "," + y1 +				// Draw line to (x1,y1)
-				" A " + (size/2) + "," + (size/2) +	// Draw an arc of radius r
+				" A " + radius + "," + radius +	// Draw an arc of radius r
 				" 0 " + big + " 1 " +				// Arc details...
 				x2 + "," + y2 +						// Arc goes to to (x2,y2)
 				" Z";								// Close path back to (cx,cy)
-		path.setAttribute("d", d); // Set this path 
-		path.setAttribute("fill", colour);
-		path.setAttribute("id", id);
 
-		var wedgeTitle = document.createElementNS(svgNs, "title");
-		wedgeTitle.textContent = labelTxt;
-		path.appendChild(wedgeTitle); // Add tile to wedge path
+		var path = newElementNs("path", {
+			id : id,
+			d : d,
+			fill : colour
+		});
+
+		path.appendChild(newElementNs("title", {
+			text : labelTxt
+		})); // Add tile to wedge path
 		path.addEventListener("mouseover", function(evt){
 			evt.target.setAttribute("fill", "#ccc");
 			document.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
@@ -155,12 +170,11 @@ function createPieChart(data, size){
 
 		startAngle = endAngle;
 		if(percentage > 10){
-			var wedgeLabel = document.createElementNS(svgNs, "text");
-			wedgeLabel.style.pointerEvents = "none"
-			wedgeLabel.textContent = labelTxt;
-			wedgeLabel.setAttribute("y", y3);
-			wedgeLabel.style.textShadow = "0 0 2px #fff";
-			wedgeLabel.style.pointerEvents = "none"
+
+			var wedgeLabel = newElementNs("text", {
+				text : labelTxt,
+				y : y3
+			}, "pointer-events: none; text-shadow: 0 0 2px #fff;");
 
 			if(labelAngle < Math.PI){
 				wedgeLabel.setAttribute("x", x3 - getNodeTextWidth(wedgeLabel));
@@ -168,51 +182,52 @@ function createPieChart(data, size){
 				wedgeLabel.setAttribute("x", x3);
 			}
 
-			return [path, wedgeLabel];
+			return { path: path, wedgeLabel: wedgeLabel};
 		}			
-		return [path];
+		return { path: path };
 	};
 	
 	//setup chart
-	chart.setAttribute("width", "100%");
-	chart.setAttribute("height", "100%");
-	chart.setAttribute("viewBox", "0 0 " + size + " " + size);
-	var labelWrap = document.createElementNS(svgNs, "g");
-	labelWrap.style.pointerEvents = "none"
+	var labelWrap = newElementNs("g", {}, "pointer-events: none;");
+	console.log(labelWrap);
 
 	//loop through data and create wedges
 	data.forEach(function(dataObj){
-		var label = dataObj.label + " (" + dataObj.count + ")";
-		var wedgeAndLabel = createWedge(dataObj.id, size, dataObj.perc, label, getRandomColor());
-		chart.appendChild(wedgeAndLabel[0]);
+		var wedgeAndLabel = createWedge(dataObj.id, size, dataObj.perc, dataObj.label + " (" + dataObj.count + ")", getRandomColor());
+		chart.appendChild(wedgeAndLabel.path);
 
-		if(wedgeAndLabel[1]){
-			labelWrap.appendChild(wedgeAndLabel[1]);
+		if(wedgeAndLabel.wedgeLabel){
+			labelWrap.appendChild(wedgeAndLabel.wedgeLabel);
 		}
 	});
 
 	// foreground circle
-	chart.appendChild(createCircle(size/2, size/2, (size*0.05), "#fff"));
+	chart.appendChild(newElementNs("circle", {
+		cx : size/2,
+		cy : size/2,
+		r : size*0.05,
+		fill : "#fff"
+	}));
 	chart.appendChild(labelWrap);
 	return chart;
 };
 
 var createTable = function(title, data){
 	//create table
-	var tableHolder = newTag("div", "", "", "float:left; width:100%; overflow-x:auto");
-	var table = newTag("table", "", "", "float:left; width:100%;");
+	var tableHolder = newTag("div", {}, "float:left; width:100%; overflow-x:auto");
+	var table = newTag("table", {}, "float:left; width:100%;");
 	var thead = newTag("thead");
 	var tbody = newTag("tbody");
-	thead.appendChild(newTag("th", "", title, "text-align: left; padding:0 0.5em 0 0;"));
-	thead.appendChild(newTag("th", "", "Requests", "text-align: left; padding:0 0.5em 0 0;"));
-	thead.appendChild(newTag("th", "", "Percentage", "text-align: left; padding:0 0.5em 0 0;"));
+	thead.appendChild(newTag("th", {text : title}, "text-align: left; padding:0 0.5em 0 0;"));
+	thead.appendChild(newTag("th", {text : "Requests"}, "text-align: left; padding:0 0.5em 0 0;"));
+	thead.appendChild(newTag("th", {text : "Percentage"}, "text-align: left; padding:0 0.5em 0 0;"));
 	table.appendChild(thead);
 
 	data.forEach(function(y){
-		var row = newTag("tr", y.id + "-table");
-		row.appendChild(newTag("td", "", y.label));
-		row.appendChild(newTag("td", "", y.count));
-		row.appendChild(newTag("td", "", y.perc.toPrecision(2) + "%"));
+		var row = newTag("tr", {id : y.id + "-table"});
+		row.appendChild(newTag("td", {text : y.label}));
+		row.appendChild(newTag("td", {text : y.count}));
+		row.appendChild(newTag("td", {text : y.perc.toPrecision(2) + "%"}));
 		tbody.appendChild(row);
 	});
 
@@ -274,11 +289,10 @@ var requestsByDomain = getItemCount(allRessourcesCalc.map(function(currR, i, arr
 
 // create a chart and table section
 var setupChart = function(title, data){
-	var chartHolder = newTag("div", "", "", "float:left; width:28%; margin: 0 5.3333% 0 0;");
-
-	chartHolder.appendChild(newTag("h1", "", title, "font:bold 16px/18px sans-serif; margin:1em 0;"));
+	var chartHolder = newTag("div", {}, "float:left; width:28%; margin: 0 5.3333% 0 0;");
+	chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0;"));
 	chartHolder.appendChild(createPieChart(data, 400));
-	chartHolder.appendChild(newTag("p", "", "total requests: (" + resources.length + ")"));
+	chartHolder.appendChild(newTag("p", {text : "total requests: (" + resources.length + ")"}));
 	chartHolder.appendChild(createTable(title, data));
 	outputHolder.appendChild(chartHolder);
 };
@@ -396,30 +410,30 @@ if(perfTimingCalc.secureConnectionStart){
 }
 
 var setupTimeLine = function(){
-	var chartHolder = newTag("div", "", "", "float:left; width:100%; margin: 25px 0;");
-	var svgNs = "http://www.w3.org/2000/svg";
-	//var outputHolder = document.getElementById("resourceTable-holder");
-	var timeLineHolder = document.createElementNS(svgNs, "svg:svg");
-	timeLineHolder.setAttributeNS(null, "width", "100%");
-	timeLineHolder.setAttributeNS(null, "height", perfTimingCalc.blocks.length * 25 + 45 + "px");
-	timeLineHolder.setAttributeNS(null, "fill", "#ccc");
-
-	var timeLineLabelHolder = document.createElementNS(svgNs, "svg:svg");
-	timeLineLabelHolder.setAttributeNS(null, "width", "100%");
+	var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
+	var timeLineHolder = newElementNs("svg:svg", {
+		width : "100%",
+		height : perfTimingCalc.blocks.length * 25 + 45 + "px",
+		fill : "#ccc"
+	});
+	var timeLineLabelHolder = newElementNs("svg:svg", {
+		width : "100%"
+	});
 
 	var unit = perfTimingCalc.totals.pageLoadTime / 100;
 
 	var createRect = function(width, height, x, y, fill, label){
-		var rect = document.createElementNS(svgNs, "rect");
-		rect.setAttributeNS(null, "width", (width / unit) + "%");
-		rect.setAttributeNS(null, "height", height + "px");
-		rect.setAttributeNS(null, "x", (x / unit) + "%");NaN
-		rect.setAttributeNS(null, "y", y + "px");
-		rect.setAttributeNS(null, "fill", fill);
+		var rect = newElementNs("rect", {
+			width : (width / unit) + "%",
+			height : height + "px",
+			x :  (x / unit) + "%",
+			y : y + "px",
+			fill : fill
+		});
 		if(label){
-			var title = document.createElementNS(svgNs, "title");
-			title.textContent = label;
-			rect.appendChild(title); // Add tile to wedge path
+			rect.appendChild(newElementNs("title", {
+				text : label
+			})); // Add tile to wedge path
 		}
 		return rect;
 	};
@@ -436,15 +450,12 @@ var setupTimeLine = function(){
 		var blockWidth = block.total||1;
 		var y = 25 * (i+1);
 		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, getRandomColor(), block.name + " (" + block.total + "ms)"));
-		
-		var blockLabel = document.createElementNS(svgNs, "text");
-		blockLabel.style.pointerEvents = "none"
-		blockLabel.textContent = block.name + " (" + block.total + "ms)";			
-		blockLabel.style.textShadow = "0 0 2px #fff";
-		blockLabel.style.pointerEvents = "none";
-		
-		blockLabel.setAttribute("fill", "#000");
-		blockLabel.setAttribute("y", (y + 18) + "px");
+
+		var blockLabel = newElementNs("text", {
+			fill : "#000",
+			y : (y + 18) + "px",
+			text : block.name + " (" + block.total + "ms)"
+		}, "pointer-events:none; text-shadow:0 0 2px #fff;");
 
 		if(((block.total||1) / unit) > 10){
 			blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
@@ -455,9 +466,12 @@ var setupTimeLine = function(){
 			blockLabel.setAttribute("x", (block.start||0.001) / unit - 0.5 + "%");
 			blockLabel.setAttribute("text-anchor", "end"); 
 		}
-
 		timeLineLabelHolder.appendChild(blockLabel);
 	});
+
+	for(var i = 1, secs = Math.floor(perfTimingCalc.totals.pageLoadTime / 1000); i <= secs; i++){
+		console.log(i, secs);
+	}
 
 	timeLineHolder.appendChild(timeLineLabelHolder);
 	chartHolder.appendChild(timeLineHolder);

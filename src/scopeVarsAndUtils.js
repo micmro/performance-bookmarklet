@@ -28,8 +28,6 @@ if(window.performance.timing){
 	alert("Oups, looks like this browser does not support performance timing");		
 }
 
-var svgNs = "http://www.w3.org/2000/svg";
-
 //remove this bookmarklet from the result
 resources = resources.filter(function(currR){
 	return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/resourceTable\/.*/);
@@ -37,17 +35,36 @@ resources = resources.filter(function(currR){
 
 
 //helper functions
-var newTag = function(tagName, id, text, css){
+
+//creat html tag
+var newTag = function(tagName, settings, css){
+	settings = settings || {};
 	var tag = document.createElement(tagName);
-	tag.textContent = text || "";
+	for(var attr in settings){
+		if(attr != "text"){
+			tag[attr] = settings[attr];
+		}
+	}
+	tag.textContent = settings.text;
 	tag.style.cssText = css || "";
-	tag.id = id || "";
 	return tag;
 };
 
+//create svg element
+var newElementNs = function(tagName, settings, css){
+	var el = document.createElementNS("http://www.w3.org/2000/svg", tagName);
+	for(var attr in settings){
+		if(attr != "text"){
+			el.setAttributeNS(null, attr, settings[attr]);
+		}
+	}
+	el.textContent = settings.text;
+	el.style.cssText = css || "";
+	return el;
+};
+
 var getNodeTextWidth = function(textNode){
-	var tmp = document.createElementNS(svgNs, "svg:svg");
-	tmp.style.visibility = "hidden";
+	var tmp = newElementNs("svg:svg", {}, "visibility:hidden;");
 	tmp.appendChild(textNode);
 	document.body.appendChild(tmp);
 	var nodeWidth = textNode.getBBox().width;
@@ -88,7 +105,7 @@ var getItemCount = function(arr, keyName) {
 // find or create holder element
 outputHolder = document.getElementById("resourceTable-holder");
 if(!outputHolder){
-	outputHolder = newTag("div", "resourceTable-holder", "", "position:absolute; top:0; left:0; z-index: 9999; padding:1em 1em 3em; background:rgba(255,255,255, 0.95);");
+	outputHolder = newTag("div", {id : "resourceTable-holder"}, "position:absolute; top:0; left:0; z-index: 9999; padding:1em 1em 3em; background:rgba(255,255,255, 0.95);");
 }else{
 	//clear existing data
 	while (outputHolder.firstChild) {

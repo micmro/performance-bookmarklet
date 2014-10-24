@@ -85,30 +85,30 @@ if(perfTimingCalc.secureConnectionStart){
 }
 
 var setupTimeLine = function(){
-	var chartHolder = newTag("div", "", "", "float:left; width:100%; margin: 25px 0;");
-	var svgNs = "http://www.w3.org/2000/svg";
-	//var outputHolder = document.getElementById("resourceTable-holder");
-	var timeLineHolder = document.createElementNS(svgNs, "svg:svg");
-	timeLineHolder.setAttributeNS(null, "width", "100%");
-	timeLineHolder.setAttributeNS(null, "height", perfTimingCalc.blocks.length * 25 + 45 + "px");
-	timeLineHolder.setAttributeNS(null, "fill", "#ccc");
-
-	var timeLineLabelHolder = document.createElementNS(svgNs, "svg:svg");
-	timeLineLabelHolder.setAttributeNS(null, "width", "100%");
+	var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
+	var timeLineHolder = newElementNs("svg:svg", {
+		width : "100%",
+		height : perfTimingCalc.blocks.length * 25 + 45 + "px",
+		fill : "#ccc"
+	});
+	var timeLineLabelHolder = newElementNs("svg:svg", {
+		width : "100%"
+	});
 
 	var unit = perfTimingCalc.totals.pageLoadTime / 100;
 
 	var createRect = function(width, height, x, y, fill, label){
-		var rect = document.createElementNS(svgNs, "rect");
-		rect.setAttributeNS(null, "width", (width / unit) + "%");
-		rect.setAttributeNS(null, "height", height + "px");
-		rect.setAttributeNS(null, "x", (x / unit) + "%");NaN
-		rect.setAttributeNS(null, "y", y + "px");
-		rect.setAttributeNS(null, "fill", fill);
+		var rect = newElementNs("rect", {
+			width : (width / unit) + "%",
+			height : height + "px",
+			x :  (x / unit) + "%",
+			y : y + "px",
+			fill : fill
+		});
 		if(label){
-			var title = document.createElementNS(svgNs, "title");
-			title.textContent = label;
-			rect.appendChild(title); // Add tile to wedge path
+			rect.appendChild(newElementNs("title", {
+				text : label
+			})); // Add tile to wedge path
 		}
 		return rect;
 	};
@@ -125,15 +125,12 @@ var setupTimeLine = function(){
 		var blockWidth = block.total||1;
 		var y = 25 * (i+1);
 		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, getRandomColor(), block.name + " (" + block.total + "ms)"));
-		
-		var blockLabel = document.createElementNS(svgNs, "text");
-		blockLabel.style.pointerEvents = "none"
-		blockLabel.textContent = block.name + " (" + block.total + "ms)";			
-		blockLabel.style.textShadow = "0 0 2px #fff";
-		blockLabel.style.pointerEvents = "none";
-		
-		blockLabel.setAttribute("fill", "#000");
-		blockLabel.setAttribute("y", (y + 18) + "px");
+
+		var blockLabel = newElementNs("text", {
+			fill : "#000",
+			y : (y + 18) + "px",
+			text : block.name + " (" + block.total + "ms)"
+		}, "pointer-events:none; text-shadow:0 0 2px #fff;");
 
 		if(((block.total||1) / unit) > 10){
 			blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
@@ -144,9 +141,12 @@ var setupTimeLine = function(){
 			blockLabel.setAttribute("x", (block.start||0.001) / unit - 0.5 + "%");
 			blockLabel.setAttribute("text-anchor", "end"); 
 		}
-
 		timeLineLabelHolder.appendChild(blockLabel);
 	});
+
+	for(var i = 1, secs = Math.floor(perfTimingCalc.totals.pageLoadTime / 1000); i <= secs; i++){
+		console.log(i, secs);
+	}
 
 	timeLineHolder.appendChild(timeLineLabelHolder);
 	chartHolder.appendChild(timeLineHolder);
