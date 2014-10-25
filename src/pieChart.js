@@ -51,7 +51,7 @@ function createPieChart(data, size){
 
 		startAngle = endAngle;
 		if(percentage > 10){
-			var wedgeLabel = newTextElementNs(labelTxt, y3);
+			var wedgeLabel = newTextElementNs(labelTxt, y3, "pointer-events:none;");
 
 			if(labelAngle < Math.PI){
 				wedgeLabel.setAttribute("x", x3 - getNodeTextWidth(wedgeLabel));
@@ -166,11 +166,11 @@ var requestsByDomain = getItemCount(allRessourcesCalc.map(function(currR, i, arr
 // create a chart and table section
 var setupChart = function(title, data){
 	var chartHolder = newTag("div", {}, "float:left; width:28%; margin: 0 5.3333% 0 0;");
-	chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0;"));
+	chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
 	chartHolder.appendChild(createPieChart(data, 400));
 	chartHolder.appendChild(newTag("p", {text : "total requests: (" + resources.length + ")"}));
 	chartHolder.appendChild(createTable(title, data));
-	outputHolder.appendChild(chartHolder);
+	outputContent.appendChild(chartHolder);
 };
 
 

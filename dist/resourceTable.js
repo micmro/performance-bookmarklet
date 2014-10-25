@@ -2,7 +2,7 @@
 
 (function(){
 
-//scope wide vars
+//bookmarklet wide vars
 var localResources = [],
 	externalResources = [],
 	allRessourcesCalc = [],
@@ -11,7 +11,8 @@ var localResources = [],
 	resources,
 	marks,
 	perfTiming,
-	outputHolder;
+	outputHolder,
+	outputContent;
 
 //feature check gate
 if(window.performance && window.performance.getEntriesByType !== undefined) {
@@ -35,7 +36,6 @@ if(window.performance.timing){
 resources = resources.filter(function(currR){
 	return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/resourceTable\/.*/);
 });
-
 
 //helper functions
 
@@ -66,12 +66,12 @@ var newElementNs = function(tagName, settings, css){
 	return el;
 };
 
-var newTextElementNs = function(text, y){
+var newTextElementNs = function(text, y, css){
 	return newElementNs("text", {
-			fill : "#000",
+			fill : "#111",
 			y : y,
 			text : text
-		}, "pointer-events:none; text-shadow:0 0 2px #fff;");
+		}, (css||"") + " text-shadow:0 0 2px #fff;");
 };
 
 var getNodeTextWidth = function(textNode){
@@ -113,16 +113,31 @@ var getItemCount = function(arr, keyName) {
 	});
 };
 
+
 // find or create holder element
 outputHolder = document.getElementById("resourceTable-holder");
 if(!outputHolder){
-	outputHolder = newTag("div", {id : "resourceTable-holder"}, "position:absolute; top:0; left:0; z-index: 9999; padding:1em 1em 3em; background:rgba(255,255,255, 0.95);");
+	outputHolder = newTag("div", {id : "resourceTable-holder"}, "position:absolute; top:0; left:0; z-index: 9999; font:normal 12px/18px sans-serif; padding:1em 1em 3em; background:rgba(255, 255, 255, 1);");
+	outputContent = newTag("div", {id : "resourceTable-content"}, "position:relative;");
+		
+	var closeBtn = newTag("button", {
+		id : "resourceTable-close",
+		text: "close"
+	}, "position:absolute; top:0; right:0; padding:1em 0.5em; z-index:1; background:transparent; border:0;");
+	closeBtn.addEventListener("click", function(){
+		outputHolder.parentNode.removeChild(outputHolder);
+	});
+
+	outputHolder.appendChild(closeBtn);
+	outputHolder.appendChild(outputContent);
 }else{
+	outputContent = document.getElementById("resourceTable-content");
 	//clear existing data
-	while (outputHolder.firstChild) {
-		outputHolder.removeChild(outputHolder.firstChild);
+	while (outputContent.firstChild) {
+		outputContent.removeChild(outputContent.firstChild);
 	}
 }
+
 
 
 //Logic for Request pie charts
@@ -178,7 +193,7 @@ function createPieChart(data, size){
 
 		startAngle = endAngle;
 		if(percentage > 10){
-			var wedgeLabel = newTextElementNs(labelTxt, y3);
+			var wedgeLabel = newTextElementNs(labelTxt, y3, "pointer-events:none;");
 
 			if(labelAngle < Math.PI){
 				wedgeLabel.setAttribute("x", x3 - getNodeTextWidth(wedgeLabel));
@@ -293,11 +308,11 @@ var requestsByDomain = getItemCount(allRessourcesCalc.map(function(currR, i, arr
 // create a chart and table section
 var setupChart = function(title, data){
 	var chartHolder = newTag("div", {}, "float:left; width:28%; margin: 0 5.3333% 0 0;");
-	chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0;"));
+	chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
 	chartHolder.appendChild(createPieChart(data, 400));
 	chartHolder.appendChild(newTag("p", {text : "total requests: (" + resources.length + ")"}));
 	chartHolder.appendChild(createTable(title, data));
-	outputHolder.appendChild(chartHolder);
+	outputContent.appendChild(chartHolder);
 };
 
 
@@ -349,67 +364,32 @@ for (var perfProp in perfTiming) {
 	} 
 }
 
-var timeBlock = function(name, start, end){
+var timeBlock = function(name, start, end, colour){
 	return {
 		name : name,
 		start : start,
 		end : end,
-		total : ((typeof start !== "number" || typeof end !== "number") ? undefined : (end - start))
+		total : ((typeof start !== "number" || typeof end !== "number") ? undefined : (end - start)),
+		colour : colour
 	}
 };
 
 perfTimingCalc.blocks = [
 	//timeBlock("pageLoadTime", 0, perfTimingCalc.loadEventEnd),
-	timeBlock("unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd),
-	timeBlock("redirect", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd),
-	timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart),
-	timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd),
-	timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd),
-	timeBlock("Request", perfTimingCalc.requestStart, perfTimingCalc.responseStart),
-	timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd),
-	timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete),
-	timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd),
-	timeBlock("Onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd)
+	timeBlock("unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd, "#909"),
+	timeBlock("redirect", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd, "#009"),
+	timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart, "#099"),
+	timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd, "#090"),
+	timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd, "#990"),
+	timeBlock("Request", perfTimingCalc.requestStart, perfTimingCalc.responseStart, "#c90"),
+	timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd, "#6c0"),
+	timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete, "#9cc"),
+	timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd, "#c33"),
+	timeBlock("Onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd, "#cf3")
 ];
-/*
-
-  "totals": {
-    "pageLoadTime": 5520,
-    "ttfb": 714,
-    "domProcessing": 4601,
-    "loadEvent": 144,
-    "domContentLoadedEvent": 29,
-    "response": 32,
-    "connect": 0,
-    "domainLookup": 0,
-    "redirect": 374,
-    "unloadEvent": 9
-  },
-  "loadEventEnd": 5520,
-  "loadEventStart": 5376,
-  "domComplete": 5375,
-  "domContentLoadedEventEnd": 1615,
-  "domContentLoadedEventStart": 1586,
-  "domInteractive": 1586,
-  "domLoading": 774,
-  "responseEnd": 746,
-  "responseStart": 714,
-  "requestStart": 379,
-  "connectEnd": 377,
-  "connectStart": 377,
-  "domainLookupEnd": 377,
-  "domainLookupStart": 377,
-  "fetchStart": 377,
-  "redirectEnd": 377,
-  "redirectStart": 3,
-  "unloadEventEnd": 729,
-  "unloadEventStart": 720,
-  "navigationStart": 0,
-*/
-
 
 if(perfTimingCalc.secureConnectionStart){
-	perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart));
+	perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "#990"));
 }
 
 var setupTimeLine = function(){
@@ -440,18 +420,38 @@ var setupTimeLine = function(){
 		return rect;
 	};
 
+	for(var i = 0, secs = perfTimingCalc.totals.pageLoadTime / 1000, secPerc = 100 / secs; i <= secs; i++){
+		var lineLabel = newTextElementNs(i + "sec", "100%");
+		if(i > secs - 0.2){
+			lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
+			lineLabel.setAttribute("text-anchor", "end");
+		}else{
+			lineLabel.setAttribute("x", secPerc * i + 0.5 + "%"); 
+		}
+		
+		var lineEl = newElementNs("line", {
+			x1 : secPerc * i + "%",
+			y1 : "0px",
+			x2 : secPerc * i + "%",
+			y2 : "100%"
+		}, "stroke:#ccc; stroke-width:1");
+		timeHolder.appendChild(lineEl);
+		timeHolder.appendChild(lineLabel);
+	}
+	timeLineHolder.appendChild(timeHolder);
+
 
 	var barsToShow = perfTimingCalc.blocks.filter(function(block){
 		return (typeof block.start == "number" && typeof block.total == "number");
 	}).sort(function(a, b){
 		return (a.start||0) - (b.start||0);
 	});
-	barsToShow.unshift(timeBlock("total", 0, perfTimingCalc.totals.pageLoadTime));
+	barsToShow.unshift(timeBlock("total", 0, perfTimingCalc.totals.pageLoadTime, "#ccc"));
 
 	barsToShow.forEach(function(block, i){
 		var blockWidth = block.total||1;
 		var y = 25 * i;
-		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, getRandomColor(), block.name + " (" + block.total + "ms)"));
+		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.total + "ms)"));
 
 		var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 18) + "px");
 
@@ -467,27 +467,12 @@ var setupTimeLine = function(){
 		timeLineLabelHolder.appendChild(blockLabel);
 	});
 
-	var secs = Math.floor(perfTimingCalc.totals.pageLoadTime / 1000);
-	var secLength = 100 / (perfTimingCalc.totals.pageLoadTime / 1000);
-	for(var i = 1; i <= secs; i++){
-		var lineLabel = newTextElementNs(i + "sec", "100%");
-		lineLabel.setAttribute("x", secLength * i + 0.5 + "%"); 
-		
-		console.log(lineLabel);
-		var lineEl = newElementNs("line", {
-			x1 : secLength * i + "%",
-			y1 : "0px",
-			x2 : secLength * i + "%",
-			y2 : "100%"
-		}, "stroke:#ccc; stroke-width:1");
-		timeHolder.appendChild(lineEl);
-		timeHolder.appendChild(lineLabel);
-	}
-
-	timeLineHolder.appendChild(timeHolder);
 	timeLineHolder.appendChild(timeLineLabelHolder);
+	chartHolder.appendChild(newTag("h1", {
+		text : "Navigation Timing"
+	}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
 	chartHolder.appendChild(timeLineHolder);
-	outputHolder.insertBefore(chartHolder, outputHolder.firstChild);
+	outputContent.insertBefore(chartHolder, outputContent.firstChild);
 };
 setupTimeLine();
 

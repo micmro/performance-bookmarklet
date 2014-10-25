@@ -1,5 +1,5 @@
 
-//scope wide vars
+//bookmarklet wide vars
 var localResources = [],
 	externalResources = [],
 	allRessourcesCalc = [],
@@ -8,7 +8,8 @@ var localResources = [],
 	resources,
 	marks,
 	perfTiming,
-	outputHolder;
+	outputHolder,
+	outputContent;
 
 //feature check gate
 if(window.performance && window.performance.getEntriesByType !== undefined) {
@@ -32,7 +33,6 @@ if(window.performance.timing){
 resources = resources.filter(function(currR){
 	return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/resourceTable\/.*/);
 });
-
 
 //helper functions
 
@@ -63,12 +63,12 @@ var newElementNs = function(tagName, settings, css){
 	return el;
 };
 
-var newTextElementNs = function(text, y){
+var newTextElementNs = function(text, y, css){
 	return newElementNs("text", {
-			fill : "#000",
+			fill : "#111",
 			y : y,
 			text : text
-		}, "pointer-events:none; text-shadow:0 0 2px #fff;");
+		}, (css||"") + " text-shadow:0 0 2px #fff;");
 };
 
 var getNodeTextWidth = function(textNode){
@@ -110,13 +110,27 @@ var getItemCount = function(arr, keyName) {
 	});
 };
 
+
 // find or create holder element
 outputHolder = document.getElementById("resourceTable-holder");
 if(!outputHolder){
-	outputHolder = newTag("div", {id : "resourceTable-holder"}, "position:absolute; top:0; left:0; z-index: 9999; padding:1em 1em 3em; background:rgba(255,255,255, 0.95);");
+	outputHolder = newTag("div", {id : "resourceTable-holder"}, "position:absolute; top:0; left:0; z-index: 9999; font:normal 12px/18px sans-serif; padding:1em 1em 3em; background:rgba(255, 255, 255, 1);");
+	outputContent = newTag("div", {id : "resourceTable-content"}, "position:relative;");
+		
+	var closeBtn = newTag("button", {
+		id : "resourceTable-close",
+		text: "close"
+	}, "position:absolute; top:0; right:0; padding:1em 0.5em; z-index:1; background:transparent; border:0;");
+	closeBtn.addEventListener("click", function(){
+		outputHolder.parentNode.removeChild(outputHolder);
+	});
+
+	outputHolder.appendChild(closeBtn);
+	outputHolder.appendChild(outputContent);
 }else{
+	outputContent = document.getElementById("resourceTable-content");
 	//clear existing data
-	while (outputHolder.firstChild) {
-		outputHolder.removeChild(outputHolder.firstChild);
+	while (outputContent.firstChild) {
+		outputContent.removeChild(outputContent.firstChild);
 	}
 }
