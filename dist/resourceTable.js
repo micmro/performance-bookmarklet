@@ -66,6 +66,14 @@ var newElementNs = function(tagName, settings, css){
 	return el;
 };
 
+var newTextElementNs = function(text, y){
+	return newElementNs("text", {
+			fill : "#000",
+			y : y,
+			text : text
+		}, "pointer-events:none; text-shadow:0 0 2px #fff;");
+};
+
 var getNodeTextWidth = function(textNode){
 	var tmp = newElementNs("svg:svg", {}, "visibility:hidden;");
 	tmp.appendChild(textNode);
@@ -126,7 +134,7 @@ function createPieChart(data, size){
 		width : "100%",
 		height : "100%",
 		viewBox : "0 0 " + size + " " + size
-	})
+	});
 
 	var unit = (Math.PI * 2) / 100,
 		startAngle = 0; // init startAngle
@@ -170,11 +178,7 @@ function createPieChart(data, size){
 
 		startAngle = endAngle;
 		if(percentage > 10){
-
-			var wedgeLabel = newElementNs("text", {
-				text : labelTxt,
-				y : y3
-			}, "pointer-events: none; text-shadow: 0 0 2px #fff;");
+			var wedgeLabel = newTextElementNs(labelTxt, y3);
 
 			if(labelAngle < Math.PI){
 				wedgeLabel.setAttribute("x", x3 - getNodeTextWidth(wedgeLabel));
@@ -189,7 +193,6 @@ function createPieChart(data, size){
 	
 	//setup chart
 	var labelWrap = newElementNs("g", {}, "pointer-events: none;");
-	console.log(labelWrap);
 
 	//loop through data and create wedges
 	data.forEach(function(dataObj){
@@ -413,12 +416,11 @@ var setupTimeLine = function(){
 	var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
 	var timeLineHolder = newElementNs("svg:svg", {
 		width : "100%",
-		height : perfTimingCalc.blocks.length * 25 + 45 + "px",
+		height : perfTimingCalc.blocks.length * 25  + "px",
 		fill : "#ccc"
 	});
-	var timeLineLabelHolder = newElementNs("svg:svg", {
-		width : "100%"
-	});
+	var timeLineLabelHolder = newElementNs("g", { width : "100%" });
+	var timeHolder = newElementNs("g", { width : "100%" });
 
 	var unit = perfTimingCalc.totals.pageLoadTime / 100;
 
@@ -448,14 +450,10 @@ var setupTimeLine = function(){
 
 	barsToShow.forEach(function(block, i){
 		var blockWidth = block.total||1;
-		var y = 25 * (i+1);
+		var y = 25 * i;
 		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, getRandomColor(), block.name + " (" + block.total + "ms)"));
 
-		var blockLabel = newElementNs("text", {
-			fill : "#000",
-			y : (y + 18) + "px",
-			text : block.name + " (" + block.total + "ms)"
-		}, "pointer-events:none; text-shadow:0 0 2px #fff;");
+		var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 18) + "px");
 
 		if(((block.total||1) / unit) > 10){
 			blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
@@ -469,10 +467,24 @@ var setupTimeLine = function(){
 		timeLineLabelHolder.appendChild(blockLabel);
 	});
 
-	for(var i = 1, secs = Math.floor(perfTimingCalc.totals.pageLoadTime / 1000); i <= secs; i++){
-		console.log(i, secs);
+	var secs = Math.floor(perfTimingCalc.totals.pageLoadTime / 1000);
+	var secLength = 100 / (perfTimingCalc.totals.pageLoadTime / 1000);
+	for(var i = 1; i <= secs; i++){
+		var lineLabel = newTextElementNs(i + "sec", "100%");
+		lineLabel.setAttribute("x", secLength * i + 0.5 + "%"); 
+		
+		console.log(lineLabel);
+		var lineEl = newElementNs("line", {
+			x1 : secLength * i + "%",
+			y1 : "0px",
+			x2 : secLength * i + "%",
+			y2 : "100%"
+		}, "stroke:#ccc; stroke-width:1");
+		timeHolder.appendChild(lineEl);
+		timeHolder.appendChild(lineLabel);
 	}
 
+	timeLineHolder.appendChild(timeHolder);
 	timeLineHolder.appendChild(timeLineLabelHolder);
 	chartHolder.appendChild(timeLineHolder);
 	outputHolder.insertBefore(chartHolder, outputHolder.firstChild);

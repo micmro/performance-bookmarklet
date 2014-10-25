@@ -63,6 +63,14 @@ var newElementNs = function(tagName, settings, css){
 	return el;
 };
 
+var newTextElementNs = function(text, y){
+	return newElementNs("text", {
+			fill : "#000",
+			y : y,
+			text : text
+		}, "pointer-events:none; text-shadow:0 0 2px #fff;");
+};
+
 var getNodeTextWidth = function(textNode){
 	var tmp = newElementNs("svg:svg", {}, "visibility:hidden;");
 	tmp.appendChild(textNode);

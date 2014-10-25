@@ -7,7 +7,7 @@ function createPieChart(data, size){
 		width : "100%",
 		height : "100%",
 		viewBox : "0 0 " + size + " " + size
-	})
+	});
 
 	var unit = (Math.PI * 2) / 100,
 		startAngle = 0; // init startAngle
@@ -51,11 +51,7 @@ function createPieChart(data, size){
 
 		startAngle = endAngle;
 		if(percentage > 10){
-
-			var wedgeLabel = newElementNs("text", {
-				text : labelTxt,
-				y : y3
-			}, "pointer-events: none; text-shadow: 0 0 2px #fff;");
+			var wedgeLabel = newTextElementNs(labelTxt, y3);
 
 			if(labelAngle < Math.PI){
 				wedgeLabel.setAttribute("x", x3 - getNodeTextWidth(wedgeLabel));
@@ -70,7 +66,6 @@ function createPieChart(data, size){
 	
 	//setup chart
 	var labelWrap = newElementNs("g", {}, "pointer-events: none;");
-	console.log(labelWrap);
 
 	//loop through data and create wedges
 	data.forEach(function(dataObj){

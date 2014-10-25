@@ -88,12 +88,11 @@ var setupTimeLine = function(){
 	var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
 	var timeLineHolder = newElementNs("svg:svg", {
 		width : "100%",
-		height : perfTimingCalc.blocks.length * 25 + 45 + "px",
+		height : perfTimingCalc.blocks.length * 25  + "px",
 		fill : "#ccc"
 	});
-	var timeLineLabelHolder = newElementNs("svg:svg", {
-		width : "100%"
-	});
+	var timeLineLabelHolder = newElementNs("g", { width : "100%" });
+	var timeHolder = newElementNs("g", { width : "100%" });
 
 	var unit = perfTimingCalc.totals.pageLoadTime / 100;
 
@@ -123,14 +122,10 @@ var setupTimeLine = function(){
 
 	barsToShow.forEach(function(block, i){
 		var blockWidth = block.total||1;
-		var y = 25 * (i+1);
+		var y = 25 * i;
 		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, getRandomColor(), block.name + " (" + block.total + "ms)"));
 
-		var blockLabel = newElementNs("text", {
-			fill : "#000",
-			y : (y + 18) + "px",
-			text : block.name + " (" + block.total + "ms)"
-		}, "pointer-events:none; text-shadow:0 0 2px #fff;");
+		var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 18) + "px");
 
 		if(((block.total||1) / unit) > 10){
 			blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
@@ -144,10 +139,24 @@ var setupTimeLine = function(){
 		timeLineLabelHolder.appendChild(blockLabel);
 	});
 
-	for(var i = 1, secs = Math.floor(perfTimingCalc.totals.pageLoadTime / 1000); i <= secs; i++){
-		console.log(i, secs);
+	var secs = Math.floor(perfTimingCalc.totals.pageLoadTime / 1000);
+	var secLength = 100 / (perfTimingCalc.totals.pageLoadTime / 1000);
+	for(var i = 1; i <= secs; i++){
+		var lineLabel = newTextElementNs(i + "sec", "100%");
+		lineLabel.setAttribute("x", secLength * i + 0.5 + "%"); 
+		
+		console.log(lineLabel);
+		var lineEl = newElementNs("line", {
+			x1 : secLength * i + "%",
+			y1 : "0px",
+			x2 : secLength * i + "%",
+			y2 : "100%"
+		}, "stroke:#ccc; stroke-width:1");
+		timeHolder.appendChild(lineEl);
+		timeHolder.appendChild(lineLabel);
 	}
 
+	timeLineHolder.appendChild(timeHolder);
 	timeLineHolder.appendChild(timeLineLabelHolder);
 	chartHolder.appendChild(timeLineHolder);
 	outputHolder.insertBefore(chartHolder, outputHolder.firstChild);
