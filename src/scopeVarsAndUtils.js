@@ -1,10 +1,7 @@
+//Bookmarklet Init
 
 //bookmarklet wide vars
-var localResources = [],
-	externalResources = [],
-	allRessourcesCalc = [],
-	fileTypes = [],
-	fileTypesBySource = [],
+var tablesToLog = [],
 	resources,
 	marks,
 	perfTiming,
@@ -80,7 +77,7 @@ var getNodeTextWidth = function(textNode){
 	return nodeWidth;
 };
 
-var getRandomColor = function() {
+var getRandomColor = function(){
 	var letters = '0123456789ABCDEF'.split(''),
 		color = '#';
 	for (var i = 0; i < 6; i++ ) {
@@ -89,7 +86,7 @@ var getRandomColor = function() {
 	return color;
 };
 
-var getItemCount = function(arr, keyName) {
+var getItemCount = function(arr, keyName){
 	var counts = {},
 		resultArr = [];
 
@@ -114,7 +111,7 @@ var getItemCount = function(arr, keyName) {
 // find or create holder element
 outputHolder = document.getElementById("resourceTable-holder");
 if(!outputHolder){
-	outputHolder = newTag("div", {id : "resourceTable-holder"}, "position:absolute; top:0; left:0; z-index: 9999; font:normal 12px/18px sans-serif; padding:1em 1em 3em; background:rgba(255, 255, 255, 1);");
+	outputHolder = newTag("div", {id : "resourceTable-holder"}, "position:absolute; top:0; left:0; z-index: 9999; font:normal 12px/18px sans-serif; width:100%; padding:1em 1em 3em; box-sizing:border-box; background:rgba(255, 255, 255, 1);");
 	outputContent = newTag("div", {id : "resourceTable-content"}, "position:relative;");
 		
 	var closeBtn = newTag("button", {
