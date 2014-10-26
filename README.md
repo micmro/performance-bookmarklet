@@ -6,7 +6,7 @@ Bookmarklet to analyze the current page through on the [Resource Timing API](htt
 Just add this into the URL section of a new bookmark:
 
 ```
-javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='//nurun.github.io/resourceTable/resourceTable.js';document.getElementsByTagName('body')[0].appendChild(el);})();
+javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='//nurun.github.io/resourceTable/dist/resourceTable.min.js';document.getElementsByTagName('body')[0].appendChild(el);})();
 ```
 
 DOM Output
@@ -53,7 +53,7 @@ How to use this snippet
 You can use it as bookmarklet. Mozilla has a [step by step description](https://support.mozilla.org/en-US/kb/bookmarklets-perform-common-web-page-tasks#w_how-do-i-install-a-bookmarklet) on how to add a bookmarklet.
 
 ```
-javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='//nurun.github.io/resourceTable/resourceTable.js';document.getElementsByTagName('body')[0].appendChild(el);})();
+javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='//nurun.github.io/resourceTable/dist/resourceTable.min.js';document.getElementsByTagName('body')[0].appendChild(el);})();
 ```
 
 Or alternatifly just copy and paste the content of [resourceTable.js](https://raw.githubusercontent.com/nurun/resourceTable/master/resourceTable.js) to your browser console and off you go.
