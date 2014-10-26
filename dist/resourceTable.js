@@ -349,9 +349,9 @@ if(!outputHolder){
 		"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.navigationStart,
 		"output" : []
 	};
-
 	var startTime = perfTiming.navigationStart;
 	var propBaseName;
+
 	for (var perfProp in perfTiming) {
 		if(perfTiming.hasOwnProperty(perfProp)){
 			if(perfTiming[perfProp]){
@@ -398,16 +398,22 @@ if(!outputHolder){
 	}
 
 	var setupTimeLine = function(){
+		var unit = perfTimingCalc.pageLoadTime / 100;
+		var barsToShow = perfTimingCalc.blocks.filter(function(block){
+			return (typeof block.start == "number" && typeof block.total == "number");
+		}).sort(function(a, b){
+			return (a.start||0) - (b.start||0);
+		});
+
+		var diagramHeight = (barsToShow.length + 2) * 25;
 		var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
 		var timeLineHolder = newElementNs("svg:svg", {
 			width : "100%",
-			height : perfTimingCalc.blocks.length * 25  + "px",
+			height : diagramHeight  + "px",
 			fill : "#ccc"
 		});
-		var timeLineLabelHolder = newElementNs("g", { width : "100%" });
+		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
 		
-
-		var unit = perfTimingCalc.pageLoadTime / 100;
 
 		var createRect = function(width, height, x, y, fill, label){
 			var rect = newElementNs("rect", {
@@ -426,9 +432,9 @@ if(!outputHolder){
 		};
 
 		var createTimeWrapper = function(){
-			var timeHolder = newElementNs("g", { width : "100%" });
+			var timeHolder = newElementNs("g", { width : "100%", class : "time-scale" });
 			for(var i = 0, secs = perfTimingCalc.pageLoadTime / 1000, secPerc = 100 / secs; i <= secs; i++){
-				var lineLabel = newTextElementNs(i + "sec", "100%");
+				var lineLabel = newTextElementNs(i + "sec",  diagramHeight  + "px");
 				if(i > secs - 0.2){
 					lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
 					lineLabel.setAttribute("text-anchor", "end");
@@ -441,22 +447,48 @@ if(!outputHolder){
 					y1 : "0px",
 					x2 : secPerc * i + "%",
 					y2 : "100%"
-				}, "stroke:#ccc; stroke-width:1");
+				}, "stroke:#0cc; stroke-width:1");
 				timeHolder.appendChild(lineEl);
 				timeHolder.appendChild(lineLabel);
 			}
 			return timeHolder;
 		};
 
+		var renderMarks = function(){
+			var marksHolder = newElementNs("g", { width : "100%", class : "marker" });
+
+
+			marks.forEach(function(mark){
+				//mark.duration
+				var x = mark.startTime / unit;
+				var lineLabel = newTextElementNs(mark.name,  diagramHeight  + "px");
+				if(x > 95){
+					lineLabel.setAttribute("x", x - 0.5 + "%");
+					lineLabel.setAttribute("text-anchor", "end");
+				}else{
+					lineLabel.setAttribute("x", x + 0.5 + "%"); 
+				}
+
+				var line = newElementNs("line", {
+					x1 : x + "%",
+					y1 : "0px",
+					x2 : x + "%",
+					y2 : diagramHeight + "px"
+				}, "stroke:#f00; stroke-width:1");
+
+				line.appendChild(newElementNs("title", {
+					text : mark.name,
+				}));
+
+				marksHolder.appendChild(line);
+				marksHolder.appendChild(lineLabel)
+			});
+
+			return marksHolder;
+		};
 		
 		timeLineHolder.appendChild(createTimeWrapper());
-
-
-		var barsToShow = perfTimingCalc.blocks.filter(function(block){
-			return (typeof block.start == "number" && typeof block.total == "number");
-		}).sort(function(a, b){
-			return (a.start||0) - (b.start||0);
-		});
+		timeLineHolder.appendChild(renderMarks());
 
 		barsToShow.forEach(function(block, i){
 			var blockWidth = block.total||1;
@@ -500,8 +532,8 @@ document.body.appendChild(outputHolder);
 
 // also output the data as table in console
 tablesToLog.forEach(function(table, i){
-	console.log("\n\n\n" + table.name + ":");
-	console.table(table.data, table.columns);
+	// console.log("\n\n\n" + table.name + ":");
+	// console.table(table.data, table.columns);
 });
 
 })();
