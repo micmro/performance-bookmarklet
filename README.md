@@ -1,7 +1,7 @@
 Resource Timing API - resourceTable
 ===================================
 
-Bookmarklet to analyze resources from the [Resource Timing API](http://www.w3.org/TR/resource-timing/) by type, domain, load times etc (inspired by [this article from Steve Souders](http://www.stevesouders.com/blog/2014/08/21/resource-timing-practical-tips/) and the [Waterfall Bookmarklet](https://github.com/andydavies/waterfall)).
+Bookmarklet to analyze the current page through on the [Resource Timing API](http://www.w3.org/TR/resource-timing) and [Navigation Timing API](http://www.w3.org/TR/navigation-timing) - requests by type, domain, load times and more.
 
 Just add this into the URL section of a new bookmark:
 
@@ -62,3 +62,4 @@ Read more
 -----------
 - [Introduction to Resource Timing API](http://googledevelopers.blogspot.ca/2013/12/measuring-network-performance-with.html)
 - [Resource Timing API Browser Support](http://caniuse.com/#feat=resource-timing)
+- [HTML5 Rocks: Measuring Page Load Speed with Navigation Timing](http://www.html5rocks.com/en/tutorials/webperformance/basics)
