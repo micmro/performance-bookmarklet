@@ -12,6 +12,9 @@ javascript:(function(){var el=document.createElement('script');el.type='text/jav
 DOM Output
 ----------
 
+
+![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/resourceTable-bookmarklet-navigation-timing.png "screenshot of navigation timing output of bookmarklet")
+
 ![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/resourceTable-bookmarklet-pies.png "screenshot of pie graph output of bookmarklet")
 *Screenshot of bookmarklet run on [http://velocityconf.com/velocityny2014](http://velocityconf.com/velocityny2014)*
 
