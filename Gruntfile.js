@@ -5,12 +5,12 @@ module.exports = function( grunt ) {
 		concat: {
 			options: {
 				separator: "\n\n\n",
-				banner: "/*https://github.com/nurun/resourceTable*/\n\n(function(){\n",
+				banner: "/*https://github.com/nurun/performance-bookmarklet\n by Michael Mrowetz @MicMro*/\n\n(function(){\n",
 				footer: "\n\n})();",
 			},
 			dist: {
 				src: ["src/scopeVarsAndUtils.js", "src/pieChart.js", "src/perfTimeline.js", "src/consoleOutput.js"],
-				dest: "dist/resourceTable.js",
+				dest: "dist/performanceBookmarklet.js",
 			},
 		},
 		uglify : {
@@ -21,11 +21,11 @@ module.exports = function( grunt ) {
 					},
 					dead_code: true
 				},
-				banner : "/*https://github.com/nurun/resourceTable*/\n"
+				banner : "/*https://github.com/nurun/performance-bookmarklet by Michael Mrowetz @MicMro*/\n"
 			},
 			my_target: {
 				files: {
-					'dist/resourceTable.min.js': ["dist/resourceTable.js"]
+					'dist/performanceBookmarklet.min.js': ["dist/performanceBookmarklet.js"]
 				}
 			}
 		},
