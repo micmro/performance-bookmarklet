@@ -61,9 +61,9 @@
 		}).sort(function(a, b){
 			return (a.start||0) - (b.start||0);
 		});
-		var maxMarkTextLength = marks.reduce(function(currMax, currValue) {
+		var maxMarkTextLength = marks.length > 0 ? marks.reduce(function(currMax, currValue) {
 			return Math.max((typeof currMax == "number" ? currMax : 0), getNodeTextWidth( newTextElementNs(currValue.name, "0")));
-		});
+		}) : 0;
 
 		var diagramHeight = (barsToShow.length + 2) * 25;
 		var chartHolderHeight = diagramHeight + maxMarkTextLength + 25;
