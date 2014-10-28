@@ -28,7 +28,7 @@ if(window.performance.timing){
 
 //remove this bookmarklet from the result
 resources = resources.filter(function(currR){
-	return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/resourceTable\/.*/);
+	return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
 });
 
 //helper functions
