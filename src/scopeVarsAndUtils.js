@@ -50,6 +50,7 @@ var newTag = function(tagName, settings, css){
 //create svg element
 var newElementNs = function(tagName, settings, css){
 	var el = document.createElementNS("http://www.w3.org/2000/svg", tagName);
+	settings = settings || {};
 	for(var attr in settings){
 		if(attr != "text"){
 			el.setAttributeNS(null, attr, settings[attr]);

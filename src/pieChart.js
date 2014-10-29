@@ -42,18 +42,21 @@
 				text : labelTxt
 			})); // Add tile to wedge path
 			path.addEventListener("mouseover", function(evt){
-				evt.target.setAttribute("fill", "#ccc");
+				//evt.target.setAttribute("fill", "#ccc");
+				evt.target.style.opacity = "0.5";
 				document.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
 			});
 			path.addEventListener("mouseout", function(evt){
-				evt.target.setAttribute("fill", colour);
+				//evt.target.setAttribute("fill", colour);
+				evt.target.style.opacity = "1";
 				document.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "transparent";
 			});
 
 			startAngle = endAngle;
 			if(percentage > 10){
-				var wedgeLabel = newTextElementNs(labelTxt, y3, "pointer-events:none;");
+				var wedgeLabel = newTextElementNs(labelTxt, y3);
 
+				//first half or second half
 				if(labelAngle < Math.PI){
 					wedgeLabel.setAttribute("x", x3 - getNodeTextWidth(wedgeLabel));
 				}else{
@@ -66,12 +69,13 @@
 		};
 		
 		//setup chart
-		var labelWrap = newElementNs("g", {}, "pointer-events: none;");
+		var labelWrap = newElementNs("g", {}, "pointer-events:none; font-weight:bold;");
+		var wedgeWrap = newElementNs("g");
 
 		//loop through data and create wedges
 		data.forEach(function(dataObj){
 			var wedgeAndLabel = createWedge(dataObj.id, size, dataObj.perc, dataObj.label + " (" + dataObj.count + ")", getRandomColor());
-			chart.appendChild(wedgeAndLabel.path);
+			wedgeWrap.appendChild(wedgeAndLabel.path);
 
 			if(wedgeAndLabel.wedgeLabel){
 				labelWrap.appendChild(wedgeAndLabel.wedgeLabel);
@@ -79,12 +83,13 @@
 		});
 
 		// foreground circle
-		chart.appendChild(newElementNs("circle", {
+		wedgeWrap.appendChild(newElementNs("circle", {
 			cx : size/2,
 			cy : size/2,
 			r : size*0.05,
 			fill : "#fff"
 		}));
+		chart.appendChild(wedgeWrap);
 		chart.appendChild(labelWrap);
 		return chart;
 	};
