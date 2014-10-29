@@ -463,7 +463,7 @@ if(!outputHolder){
 		
 		var renderMarks = function(){
 			var marksHolder = newElementNs("g", { width : "100%", transform : "scale(1, 1)", class : "marker-holder" });
-			var markerColour = "#cc0";
+			var markerColour = "#aac";
 
 			marks.forEach(function(mark, i){
 				//mark.duration
@@ -496,20 +496,22 @@ if(!outputHolder){
 					y2 : diagramHeight + 23 + "px"
 				}));
 
-
-				lineHolder.appendChild(newElementNs("title", {
-					text : mark.name + " (" + Math.round(mark.startTime) + "ms)",
-				}));
-
 				lineLabel.addEventListener("mouseover", function(evt){
 					//evt.target.parent.
-					lineHolder.style.stroke = "#f00";
+					lineHolder.style.stroke = "#009";
 					lineHolder.style.strokeWidth = "2";
+
+					//markHolder.parentNode.insertBefore(markHolder,markHolder.parentNode.firstChild);
+					markHolder.parentNode.appendChild(markHolder); 
+					//marksHolder.appendChild(markHolder);
 				});
 				lineLabel.addEventListener("mouseout", function(evt){
 					lineHolder.style.stroke = markerColour;
 				});
 
+				markHolder.appendChild(newElementNs("title", {
+					text : mark.name + " (" + Math.round(mark.startTime) + "ms)",
+				}));
 				markHolder.appendChild(lineHolder);
 				markHolder.appendChild(lineLabel);
 				marksHolder.appendChild(markHolder);
