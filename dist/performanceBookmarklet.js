@@ -54,6 +54,7 @@ var newTag = function(tagName, settings, css){
 //create svg element
 var newElementNs = function(tagName, settings, css){
 	var el = document.createElementNS("http://www.w3.org/2000/svg", tagName);
+	settings = settings || {};
 	for(var attr in settings){
 		if(attr != "text"){
 			el.setAttributeNS(null, attr, settings[attr]);
@@ -182,18 +183,21 @@ if(!outputHolder){
 				text : labelTxt
 			})); // Add tile to wedge path
 			path.addEventListener("mouseover", function(evt){
-				evt.target.setAttribute("fill", "#ccc");
+				//evt.target.setAttribute("fill", "#ccc");
+				evt.target.style.opacity = "0.5";
 				document.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
 			});
 			path.addEventListener("mouseout", function(evt){
-				evt.target.setAttribute("fill", colour);
+				//evt.target.setAttribute("fill", colour);
+				evt.target.style.opacity = "1";
 				document.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "transparent";
 			});
 
 			startAngle = endAngle;
 			if(percentage > 10){
-				var wedgeLabel = newTextElementNs(labelTxt, y3, "pointer-events:none;");
+				var wedgeLabel = newTextElementNs(labelTxt, y3);
 
+				//first half or second half
 				if(labelAngle < Math.PI){
 					wedgeLabel.setAttribute("x", x3 - getNodeTextWidth(wedgeLabel));
 				}else{
@@ -206,12 +210,13 @@ if(!outputHolder){
 		};
 		
 		//setup chart
-		var labelWrap = newElementNs("g", {}, "pointer-events: none;");
+		var labelWrap = newElementNs("g", {}, "pointer-events:none; font-weight:bold;");
+		var wedgeWrap = newElementNs("g");
 
 		//loop through data and create wedges
 		data.forEach(function(dataObj){
 			var wedgeAndLabel = createWedge(dataObj.id, size, dataObj.perc, dataObj.label + " (" + dataObj.count + ")", getRandomColor());
-			chart.appendChild(wedgeAndLabel.path);
+			wedgeWrap.appendChild(wedgeAndLabel.path);
 
 			if(wedgeAndLabel.wedgeLabel){
 				labelWrap.appendChild(wedgeAndLabel.wedgeLabel);
@@ -219,12 +224,13 @@ if(!outputHolder){
 		});
 
 		// foreground circle
-		chart.appendChild(newElementNs("circle", {
+		wedgeWrap.appendChild(newElementNs("circle", {
 			cx : size/2,
 			cy : size/2,
 			r : size*0.05,
 			fill : "#fff"
 		}));
+		chart.appendChild(wedgeWrap);
 		chart.appendChild(labelWrap);
 		return chart;
 	};
@@ -415,7 +421,7 @@ if(!outputHolder){
 		var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
 		var timeLineHolder = newElementNs("svg:svg", {
 			width : "100%",
-			height : chartHolderHeight + "px",
+			height : chartHolderHeight,
 			fill : "#ccc"
 		});
 		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
@@ -424,9 +430,9 @@ if(!outputHolder){
 		var createRect = function(width, height, x, y, fill, label){
 			var rect = newElementNs("rect", {
 				width : (width / unit) + "%",
-				height : height + "px",
+				height : height,
 				x :  (x / unit) + "%",
-				y : y + "px",
+				y : y,
 				fill : fill
 			});
 			if(label){
@@ -440,7 +446,7 @@ if(!outputHolder){
 		var createTimeWrapper = function(){
 			var timeHolder = newElementNs("g", { width : "100%", class : "time-scale" });
 			for(var i = 0, secs = perfTimingCalc.pageLoadTime / 1000, secPerc = 100 / secs; i <= secs; i++){
-				var lineLabel = newTextElementNs(i + "sec",  diagramHeight  + "px");
+				var lineLabel = newTextElementNs(i + "sec",  diagramHeight, "font-weight:bold;");
 				if(i > secs - 0.2){
 					lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
 					lineLabel.setAttribute("text-anchor", "end");
@@ -450,10 +456,10 @@ if(!outputHolder){
 				
 				var lineEl = newElementNs("line", {
 					x1 : secPerc * i + "%",
-					y1 : "0px",
+					y1 : "0",
 					x2 : secPerc * i + "%",
-					y2 : "100%"
-				}, "stroke:#0cc; stroke-width:1");
+					y2 : diagramHeight
+				}, "stroke:#0cc; stroke-width:1;");
 				timeHolder.appendChild(lineEl);
 				timeHolder.appendChild(lineLabel);
 			}
@@ -471,7 +477,7 @@ if(!outputHolder){
 				var lineHolder = newElementNs("g", {}, "stroke:"+markerColour+"; stroke-width:1");
 				var x = mark.startTime / unit;
 				mark.x = x;
-				var lineLabel = newTextElementNs(mark.name,  diagramHeight + 25  + "px");
+				var lineLabel = newTextElementNs(mark.name,  diagramHeight + 25 );
 				lineLabel.setAttribute("writing-mode", "tb");
 				lineLabel.setAttribute("x", x + "%");
 				lineLabel.setAttribute("stroke", "");
@@ -480,7 +486,7 @@ if(!outputHolder){
 					x1 : x + "%",
 					y1 : "0px",
 					x2 : x + "%",
-					y2 : diagramHeight + "px"
+					y2 : diagramHeight
 				}));
 
 				if(marks[i-1] && mark.x - marks[i-1].x < 1){
@@ -491,21 +497,19 @@ if(!outputHolder){
 				//would use polyline but can't use percentage for points 
 				lineHolder.appendChild(newElementNs("line", {
 					x1 : x + "%",
-					y1 : diagramHeight + "px",
+					y1 : diagramHeight,
 					x2 : mark.x + "%",
-					y2 : diagramHeight + 23 + "px"
+					y2 : diagramHeight + 23
 				}));
 
 				lineLabel.addEventListener("mouseover", function(evt){
 					//evt.target.parent.
 					lineHolder.style.stroke = "#009";
 					lineHolder.style.strokeWidth = "2";
-
-					//markHolder.parentNode.insertBefore(markHolder,markHolder.parentNode.firstChild);
-					markHolder.parentNode.appendChild(markHolder); 
-					//marksHolder.appendChild(markHolder);
+					markHolder.parentNode.appendChild(markHolder);
 				});
 				lineLabel.addEventListener("mouseout", function(evt){
+					lineHolder.style.strokeWidth = "1";
 					lineHolder.style.stroke = markerColour;
 				});
 
@@ -528,7 +532,7 @@ if(!outputHolder){
 			var y = 25 * i;
 			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)"));
 
-			var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 18) + "px");
+			var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 18));
 
 			if(((block.total||1) / unit) > 10){
 				blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
