@@ -119,34 +119,7 @@
 		return tableHolder;
 	};
 
-	//crunch the resources data into something easier to work with
-	var allRessourcesCalc = resources.map(function(currR, i, arr){
-		var urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/),
-			maybeFileName = urlFragments[2].split("/").pop(),
-			fileExtension = maybeFileName.substr((Math.max(0, maybeFileName.lastIndexOf(".")) || Infinity) + 1);
-		
-		var currRes = {
-			name : currR.name,
-			domain : urlFragments[1],
-			initiatorType : currR.initiatorType || fileExtension || "SourceMap or Not Defined",
-			fileExtension : fileExtension || "XHR or Not Defined",
-			loadtime : currR.duration,
-			isLocalDomain : urlFragments[1] === location.host
-		};
 
-		if(currR.requestStart){
-			currRes.requestStartDelay = currR.requestStart - currR.startTime;
-			currRes.dns = currR.domainLookupEnd - currR.domainLookupStart;
-			currRes.tcp = currR.connectEnd - currR.connectStart;
-			currRes.ttfb = currR.responseStart - currR.startTime;
-			currRes.requestDuration = currR.responseStart - currR.requestStart;
-		}
-		if(currR.secureConnectionStart){
-			currRes.ssl = currR.connectEnd - currR.secureConnectionStart;
-		}
-		
-		return currRes;
-	});
 
 	//get counts
 	fileExtensionCounts = getItemCount(allRessourcesCalc.map(function(currR, i, arr){
@@ -199,7 +172,6 @@
 	}));
 
 	tablesToLog = tablesToLog.concat(tablesToLog, [
-		{name : "All loaded ressources", data : allRessourcesCalc},
 		{name : "Requests by domain", data : requestsByDomain},
 		{name : "File type count (local / external)", data : fileExtensionCounts},
 		{name : "File type count", data : fileExtensionCountLocalExt}

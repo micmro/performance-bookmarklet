@@ -9,7 +9,7 @@ module.exports = function( grunt ) {
 				footer: "\n\n})();",
 			},
 			dist: {
-				src: ["src/scopeVarsAndUtils.js", "src/pieChart.js", "src/perfTimeline.js", "src/consoleOutput.js"],
+				src: ["src/scopeVarsAndUtils.js", "src/resourcesTimeline.js", "src/pieChart.js", "src/perfTimeline.js", "src/consoleOutput.js"],
 				dest: "dist/performanceBookmarklet.js",
 			},
 		},

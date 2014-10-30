@@ -3,6 +3,7 @@
 //bookmarklet wide vars
 var tablesToLog = [],
 	resources,
+	allRessourcesCalc,
 	marks,
 	perfTiming,
 	outputHolder,
@@ -30,6 +31,60 @@ if(window.performance.timing){
 resources = resources.filter(function(currR){
 	return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
 });
+
+//crunch the resources data into something easier to work with
+allRessourcesCalc = resources.map(function(currR, i, arr){
+	var urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/),
+		maybeFileName = urlFragments[2].split("/").pop(),
+		fileExtension = maybeFileName.substr((Math.max(0, maybeFileName.lastIndexOf(".")) || Infinity) + 1);
+	
+	var currRes = {
+		name : currR.name,
+		domain : urlFragments[1],
+		initiatorType : currR.initiatorType || fileExtension || "SourceMap or Not Defined",
+		fileExtension : fileExtension || "XHR or Not Defined",
+		loadtime : currR.duration,
+		isLocalDomain : urlFragments[1] === location.host
+	};
+
+	for(var attr in currR){
+		if(currR.hasOwnProperty(attr)) {
+			currRes[attr] = currR[attr];
+		}
+	}
+
+	if(currR.requestStart){
+		currRes.requestStartDelay = currR.requestStart - currR.startTime;
+		currRes.dns = currR.domainLookupEnd - currR.domainLookupStart;
+		currRes.tcp = currR.connectEnd - currR.connectStart;
+		currRes.ttfb = currR.responseStart - currR.startTime;
+		currRes.requestDuration = currR.responseStart - currR.requestStart;
+	}
+	if(currR.secureConnectionStart){
+		currRes.ssl = currR.connectEnd - currR.secureConnectionStart;
+	}
+	
+	return currRes;
+});
+
+tablesToLog.push({
+	name : "All loaded ressources",
+	data : allRessourcesCalc,
+	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isLocalDomain", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
+});
+console.table(allRessourcesCalc.map(function(i){
+	var r = {};
+	for(var a in i){
+		if(i.hasOwnProperty(a)) {
+			if(typeof i[a] == "number"){
+				r[a] = Math.round(i[a]);
+			}else{
+				r[a] = i[a];
+			}
+		}
+	}
+	return r;
+}));
 
 //helper functions
 
