@@ -198,12 +198,12 @@ if(!outputHolder){
 
 (function(){
 
-	var resTimingCalc = {
+	var calc = {
 		"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.responseStart,
 		"lastResponseEnd" : perfTiming.loadEventEnd - perfTiming.responseStart,
 	};
 
-	var timeBlock = function(name, start, end, colour){
+	var resourceSectionSegment = function(name, start, end, colour){
 		return {
 			name : name,
 			start : start,
@@ -211,27 +211,64 @@ if(!outputHolder){
 			total : ((typeof start !== "number" || typeof end !== "number") ? undefined : (end - start)),
 			colour : colour
 		}
+	}
+
+	var resourceSection = function(name, start, end, colour, segments, rawResource){
+		return {
+			name : name,
+			start : start,
+			end : end,
+			total : ((typeof start !== "number" || typeof end !== "number") ? undefined : (end - start)),
+			colour : colour,
+			segments : segments,
+			rawResource : rawResource
+		}
 	};
 
-	resTimingCalc.blocks = [
-		timeBlock("Navigation API total", 0, resTimingCalc.pageLoadTime, "#ccc"),
-		timeBlock("domContentLoaded Event", resTimingCalc.domContentLoadedEventStart, resTimingCalc.domContentLoadedEventEnd, "#c33"),
-		timeBlock("Response", perfTiming.responseStart, perfTiming.responseEnd, "#6c0"),
-		timeBlock("Onload Event", perfTiming.loadEventStart, perfTiming.loadEventEnd, "#cf3")
+	calc.blocks = [
+		resourceSection("Navigation API total", 0, calc.pageLoadTime, "#ccc"),
+		resourceSection("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "#c33"),
+		resourceSection("Response", perfTiming.responseStart, perfTiming.responseEnd, "#6c0"),
+		resourceSection("Onload Event", perfTiming.loadEventStart, perfTiming.loadEventEnd, "#cf3")
 	];
 
 	allRessourcesCalc.forEach(function(resource, i){
-		resTimingCalc.blocks.push(timeBlock(resource.name, Math.round(resource.startTime),Math.round(resource.responseEnd), "#f00"));
-		resTimingCalc.lastResponseEnd = Math.max(resTimingCalc.lastResponseEnd,resource.responseEnd);
+		console.log(resource);
+		var segments = [
+			resourceSectionSegment("redirect", resource.redirectStart, resource.redirectEnd, "#030"),
+			resourceSectionSegment("domainLookup", resource.domainLookupStart, resource.domainLookupEnd, "#060"),
+			resourceSectionSegment("connect", resource.connectStart, resource.connectEnd, "#090"),
+			resourceSectionSegment("secureConnect", resource.secureConnectionStart, resource.connectEnd, "#0c0"),
+			resourceSectionSegment("requestToResponseStart", resource.requestStart, resource.responseStart, "#0f0"),
+			resourceSectionSegment("response", resource.responseStart, resource.responseEnd, "#0fc")
+		];
+
+		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime),Math.round(resource.responseEnd), "#f00", segments, resource));
+		calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
 	});
 
-	resTimingCalc.loadDuration = Math.round(resTimingCalc.lastResponseEnd);// - perfTiming.navigationStart
-	console.log(resTimingCalc.loadDuration, perfTiming.loadEventEnd);
+	calc.loadDuration = Math.round(calc.lastResponseEnd);// - perfTiming.navigationStart
+	console.log(calc.loadDuration, perfTiming.loadEventEnd);
 	
+	/*
 
-	var setupTimeLine = function(){
-		var unit = resTimingCalc.loadDuration / 100;
-		var barsToShow = resTimingCalc.blocks.filter(function(block){
+	startTime
+	redirectStart;
+	redirectEnd;
+	fetchStart;
+	domainLookupStart;
+	domainLookupEnd;
+	connectStart;
+	connectEnd;
+	secureConnectionStart;
+	requestStart;
+	responseStart;
+	responseEnd;
+	*/
+
+	var setupTimeLine = function(durationMs, blocks){
+		var unit = durationMs / 100;
+		var barsToShow = blocks.filter(function(block){
 			return (typeof block.start == "number" && typeof block.total == "number");
 		}).sort(function(a, b){
 			return (a.start||0) - (b.start||0);
@@ -252,7 +289,8 @@ if(!outputHolder){
 		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
 		
 
-		var createRect = function(width, height, x, y, fill, label){
+		var createRect = function(width, height, x, y, fill, label, segments){
+			var rectHolder;
 			var rect = newElementNs("rect", {
 				width : (width / unit) + "%",
 				height : height,
@@ -265,12 +303,26 @@ if(!outputHolder){
 					text : label
 				})); // Add tile to wedge path
 			}
-			return rect;
+			if(segments && segments.length > 0){
+				rectHolder = newElementNs("g");
+				segments.forEach(function(segment){
+					//if(segment.total > 0 && block.start){
+						rectHolder.appendChild(createRect(segment.total||1, height-5, segment.start||0.001, y+5,  segment.colour, segment.name));
+					//}
+//			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
+
+				});
+				rectHolder.appendChild(rect);
+				return rectHolder;
+			}else{
+				return rect;
+			}
+			
 		};
 
 		var createTimeWrapper = function(){
 			var timeHolder = newElementNs("g", { width : "100%", class : "time-scale" });
-			for(var i = 0, secs = resTimingCalc.loadDuration / 1000, secPerc = 100 / secs; i <= secs; i++){
+			for(var i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++){
 				var lineLabel = newTextElementNs(i + "sec",  diagramHeight, "font-weight:bold;");
 				if(i > secs - 0.2){
 					lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
@@ -355,7 +407,7 @@ if(!outputHolder){
 		barsToShow.forEach(function(block, i){
 			var blockWidth = block.total||1;
 			var y = 25 * i;
-			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)"));
+			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
 
 			var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 18));
 
@@ -379,7 +431,7 @@ if(!outputHolder){
 		outputContent.insertBefore(chartHolder, outputContent.firstChild);
 	};
 
-	setupTimeLine();
+	setupTimeLine(calc.loadDuration, calc.blocks);
 }());
 
 
