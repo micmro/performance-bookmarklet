@@ -76,19 +76,19 @@ tablesToLog.push({
 	data : allRessourcesCalc,
 	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isLocalDomain", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
 });
-console.table(allRessourcesCalc.map(function(i){
-	var r = {};
-	for(var a in i){
-		if(i.hasOwnProperty(a)) {
-			if(typeof i[a] == "number"){
-				r[a] = Math.round(i[a]);
-			}else{
-				r[a] = i[a];
-			}
-		}
-	}
-	return r;
-}));
+// console.table(allRessourcesCalc.map(function(i){
+// 	var r = {};
+// 	for(var a in i){
+// 		if(i.hasOwnProperty(a)) {
+// 			if(typeof i[a] == "number"){
+// 				r[a] = Math.round(i[a]);
+// 			}else{
+// 				r[a] = i[a];
+// 			}
+// 		}
+// 	}
+// 	return r;
+// }));
 
 //helper functions
 
@@ -233,7 +233,6 @@ if(!outputHolder){
 	];
 
 	allRessourcesCalc.forEach(function(resource, i){
-		console.log(resource);
 		var segments = [
 			resourceSectionSegment("redirect", resource.redirectStart, resource.redirectEnd, "#030"),
 			resourceSectionSegment("domainLookup", resource.domainLookupStart, resource.domainLookupEnd, "#060"),
@@ -243,28 +242,11 @@ if(!outputHolder){
 			resourceSectionSegment("response", resource.responseStart, resource.responseEnd, "#0fc")
 		];
 
-		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime),Math.round(resource.responseEnd), "#f00", segments, resource));
+		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime),Math.round(resource.responseEnd), "#699", segments, resource));
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
 	});
 
-	calc.loadDuration = Math.round(calc.lastResponseEnd);// - perfTiming.navigationStart
-	console.log(calc.loadDuration, perfTiming.loadEventEnd);
-	
-	/*
-
-	startTime
-	redirectStart;
-	redirectEnd;
-	fetchStart;
-	domainLookupStart;
-	domainLookupEnd;
-	connectStart;
-	connectEnd;
-	secureConnectionStart;
-	requestStart;
-	responseStart;
-	responseEnd;
-	*/
+	calc.loadDuration = Math.round(calc.lastResponseEnd);
 
 	var setupTimeLine = function(durationMs, blocks){
 		var unit = durationMs / 100;
@@ -293,10 +275,11 @@ if(!outputHolder){
 			var rectHolder;
 			var rect = newElementNs("rect", {
 				width : (width / unit) + "%",
-				height : height,
+				height : height-1,
 				x :  (x / unit) + "%",
 				y : y,
-				fill : fill
+				fill : fill,
+				class : (segments && segments.length > 0) ? "main" : "segment"
 			});
 			if(label){
 				rect.appendChild(newElementNs("title", {
@@ -305,14 +288,12 @@ if(!outputHolder){
 			}
 			if(segments && segments.length > 0){
 				rectHolder = newElementNs("g");
-				segments.forEach(function(segment){
-					//if(segment.total > 0 && block.start){
-						rectHolder.appendChild(createRect(segment.total||1, height-5, segment.start||0.001, y+5,  segment.colour, segment.name));
-					//}
-//			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
-
-				});
 				rectHolder.appendChild(rect);
+				segments.forEach(function(segment){
+					if(segment.total > 0 && segment.start){
+						rectHolder.appendChild(createRect(segment.total, 8, segment.start||0.001, y,  segment.colour, segment.name + " (" + Math.round(segment.start) + "ms - " +  Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
+					}
+				});
 				return rectHolder;
 			}else{
 				return rect;
@@ -409,9 +390,9 @@ if(!outputHolder){
 			var y = 25 * i;
 			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
 
-			var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 18));
+			var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 20));
 
-			if(((block.total||1) / unit) > 10){
+			if(((block.total||1) / unit) > 10 && getNodeTextWidth(blockLabel) < 200){
 				blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
 				blockLabel.setAttribute("width", (blockWidth / unit) + "%");
 			}else if(((block.start||0.001) / unit) + (blockWidth / unit) < 80){
@@ -837,11 +818,11 @@ document.body.appendChild(outputHolder);
 
 
 // also output the data as table in console
-// tablesToLog.forEach(function(table, i){
-// 	if(table.data.length > 0 && console.table){
-// 		console.log("\n\n\n" + table.name + ":");
-// 		console.table(table.data, table.columns);
-// 	}
-// });
+tablesToLog.forEach(function(table, i){
+	if(table.data.length > 0 && console.table){
+		console.log("\n\n\n" + table.name + ":");
+		console.table(table.data, table.columns);
+	}
+});
 
 })();

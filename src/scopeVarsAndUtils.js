@@ -72,19 +72,19 @@ tablesToLog.push({
 	data : allRessourcesCalc,
 	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isLocalDomain", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
 });
-console.table(allRessourcesCalc.map(function(i){
-	var r = {};
-	for(var a in i){
-		if(i.hasOwnProperty(a)) {
-			if(typeof i[a] == "number"){
-				r[a] = Math.round(i[a]);
-			}else{
-				r[a] = i[a];
-			}
-		}
-	}
-	return r;
-}));
+// console.table(allRessourcesCalc.map(function(i){
+// 	var r = {};
+// 	for(var a in i){
+// 		if(i.hasOwnProperty(a)) {
+// 			if(typeof i[a] == "number"){
+// 				r[a] = Math.round(i[a]);
+// 			}else{
+// 				r[a] = i[a];
+// 			}
+// 		}
+// 	}
+// 	return r;
+// }));
 
 //helper functions
 
