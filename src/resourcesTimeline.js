@@ -6,6 +6,14 @@
 		"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.responseStart,
 		"lastResponseEnd" : perfTiming.loadEventEnd - perfTiming.responseStart,
 	};
+	for (var perfProp in perfTiming) {
+		if(perfTiming.hasOwnProperty(perfProp)){
+			if(perfTiming[perfProp]){
+				calc[perfProp] = perfTiming[perfProp] - perfTiming.navigationStart;
+			}
+		} 
+	}
+
 
 	var resourceSectionSegment = function(name, start, end, colour){
 		return {
@@ -30,11 +38,21 @@
 	};
 
 	calc.blocks = [
-		resourceSection("Navigation API total", 0, calc.pageLoadTime, "#ccc"),
-		resourceSection("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "#c33"),
-		resourceSection("Response", perfTiming.responseStart, perfTiming.responseEnd, "#6c0"),
-		resourceSection("Onload Event", perfTiming.loadEventStart, perfTiming.loadEventEnd, "#cf3")
+		resourceSection("Navigation API total", 0, calc.loadEventEnd, "#ccc", [
+			resourceSectionSegment("ttfb", calc.navigationStart, calc.responseStart, "#bbb"),
+			resourceSectionSegment("unload", calc.unloadEventStart, calc.unloadEventEnd, "#909"),
+			resourceSectionSegment("redirect", calc.redirectStart, calc.redirectEnd, "#009"),
+			resourceSectionSegment("App cache", calc.fetchStart, calc.domainLookupStart, "#099"),
+			resourceSectionSegment("DNS", calc.domainLookupStart, calc.domainLookupEnd, "#090"),
+			resourceSectionSegment("TCP", calc.connectStart, calc.connectEnd, "#990"),
+			resourceSectionSegment("Request", calc.requestStart, calc.responseStart, "#c90"),
+			resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "#6c0"),
+			resourceSectionSegment("DOM Processing", calc.domLoading, calc.domComplete, "#9cc"),
+			resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "#c33"),
+			resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "#cf3")
+		]),
 	];
+	console.log(calc.blocks[0]);
 
 	allRessourcesCalc.forEach(function(resource, i){
 		var segments = [
@@ -46,7 +64,18 @@
 			resourceSectionSegment("response", resource.responseStart, resource.responseEnd, "#0fc")
 		];
 
-		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime),Math.round(resource.responseEnd), "#699", segments, resource));
+		var colour = "#d6d6d7";
+		//colour the resources by initiator type
+		switch(resource.initiatorType) {
+			case "css" : colour = "#c5efaf"; break;
+			case "iframe" : colour = "#85b3f2"; break;
+			case "img" : colour = "#c98dfd"; break;
+			case "script" : colour = "#feb06a"; break; 
+			case "link" : colour = "#6c7385"; break;
+			case "xmlhttprequest" : colour = "#efef70"; break; 
+		}
+
+		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime),Math.round(resource.responseEnd), colour, segments, resource));
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
 	});
 
@@ -213,7 +242,7 @@
 			text : "Resource Timing"
 		}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
 		chartHolder.appendChild(timeLineHolder);
-		outputContent.insertBefore(chartHolder, outputContent.firstChild);
+		outputContent.appendChild(chartHolder);
 	};
 
 	setupTimeLine(calc.loadDuration, calc.blocks);

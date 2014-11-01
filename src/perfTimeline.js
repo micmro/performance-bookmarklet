@@ -201,12 +201,12 @@
 			text : "Navigation Timing"
 		}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
 		chartHolder.appendChild(timeLineHolder);
-		outputContent.insertBefore(chartHolder, outputContent.firstChild);
+		outputContent.appendChild(chartHolder);
 	};
 
 	setupTimeLine();
 
-	tablesToLog = tablesToLog.concat(tablesToLog, [
+	tablesToLog = tablesToLog.concat([
 		{name: "Navigation Timeline", data : perfTimingCalc.blocks, columns : ["name", "start", "end", "total"]},
 		{name: "Navigation Events", data : perfTimingCalc.output},
 		{name: "Marks", data : marks, columns : ["name", "startTime", "duration"]}

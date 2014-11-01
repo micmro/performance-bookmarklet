@@ -171,7 +171,7 @@
 		return fileType;
 	}));
 
-	tablesToLog = tablesToLog.concat(tablesToLog, [
+	tablesToLog = tablesToLog.concat([
 		{name : "Requests by domain", data : requestsByDomain},
 		{name : "File type count (local / external)", data : fileExtensionCounts},
 		{name : "File type count", data : fileExtensionCountLocalExt}
