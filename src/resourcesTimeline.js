@@ -1,31 +1,21 @@
-//Logic for Naviagtion API / markers timeline
+//Logic for Ressource timeline
 
 (function(){
 
-	var perfTimingCalc = {
-		"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.navigationStart,
-		"output" : []
+	var calc = {
+		"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.responseStart,
+		"lastResponseEnd" : perfTiming.loadEventEnd - perfTiming.responseStart,
 	};
-	var startTime = perfTiming.navigationStart;
-	var propBaseName;
-
 	for (var perfProp in perfTiming) {
 		if(perfTiming.hasOwnProperty(perfProp)){
 			if(perfTiming[perfProp]){
-				perfTimingCalc[perfProp] = perfTiming[perfProp] - startTime;
-				perfTimingCalc.output.push({
-					"name" : perfProp,
-					"time (ms)" : perfTiming[perfProp] - startTime
-				});
+				calc[perfProp] = perfTiming[perfProp] - perfTiming.navigationStart;
 			}
 		} 
 	}
 
-	perfTimingCalc.output.sort(function(a, b){
-		return (a["time (ms)"]||0) - (b["time (ms)"]||0);
-	});
 
-	var timeBlock = function(name, start, end, colour){
+	var resourceSectionSegment = function(name, start, end, colour){
 		return {
 			name : name,
 			start : start,
@@ -33,30 +23,67 @@
 			total : ((typeof start !== "number" || typeof end !== "number") ? undefined : (end - start)),
 			colour : colour
 		}
-	};
-
-	perfTimingCalc.blocks = [
-		timeBlock("total", 0, perfTimingCalc.pageLoadTime, "#ccc"),
-		timeBlock("ttfb", perfTimingCalc.navigationStart, perfTimingCalc.responseStart, "#bbb"),
-		timeBlock("unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd, "#909"),
-		timeBlock("redirect", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd, "#009"),
-		timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart, "#099"),
-		timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd, "#090"),
-		timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd, "#990"),
-		timeBlock("Request", perfTimingCalc.requestStart, perfTimingCalc.responseStart, "#c90"),
-		timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd, "#6c0"),
-		timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete, "#9cc"),
-		timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd, "#c33"),
-		timeBlock("Onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd, "#cf3")
-	];
-
-	if(perfTimingCalc.secureConnectionStart){
-		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "#990"));
 	}
 
-	var setupTimeLine = function(){
-		var unit = perfTimingCalc.pageLoadTime / 100;
-		var barsToShow = perfTimingCalc.blocks.filter(function(block){
+	var resourceSection = function(name, start, end, colour, segments, rawResource){
+		return {
+			name : name,
+			start : start,
+			end : end,
+			total : ((typeof start !== "number" || typeof end !== "number") ? undefined : (end - start)),
+			colour : colour,
+			segments : segments,
+			rawResource : rawResource
+		}
+	};
+
+	calc.blocks = [
+		resourceSection("Navigation API total", 0, calc.loadEventEnd, "#ccc", [
+			resourceSectionSegment("ttfb", calc.navigationStart, calc.responseStart, "#bbb"),
+			resourceSectionSegment("unload", calc.unloadEventStart, calc.unloadEventEnd, "#909"),
+			resourceSectionSegment("redirect", calc.redirectStart, calc.redirectEnd, "#009"),
+			resourceSectionSegment("App cache", calc.fetchStart, calc.domainLookupStart, "#099"),
+			resourceSectionSegment("DNS", calc.domainLookupStart, calc.domainLookupEnd, "#090"),
+			resourceSectionSegment("TCP", calc.connectStart, calc.connectEnd, "#990"),
+			resourceSectionSegment("Request", calc.requestStart, calc.responseStart, "#c90"),
+			resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "#6c0"),
+			resourceSectionSegment("DOM Processing", calc.domLoading, calc.domComplete, "#9cc"),
+			resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "#c33"),
+			resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "#cf3")
+		]),
+	];
+	console.log(calc.blocks[0]);
+
+	allRessourcesCalc.forEach(function(resource, i){
+		var segments = [
+			resourceSectionSegment("redirect", resource.redirectStart, resource.redirectEnd, "#030"),
+			resourceSectionSegment("domainLookup", resource.domainLookupStart, resource.domainLookupEnd, "#060"),
+			resourceSectionSegment("connect", resource.connectStart, resource.connectEnd, "#090"),
+			resourceSectionSegment("secureConnect", resource.secureConnectionStart, resource.connectEnd, "#0c0"),
+			resourceSectionSegment("requestToResponseStart", resource.requestStart, resource.responseStart, "#0f0"),
+			resourceSectionSegment("response", resource.responseStart, resource.responseEnd, "#0fc")
+		];
+
+		var colour = "#d6d6d7";
+		//colour the resources by initiator type
+		switch(resource.initiatorType) {
+			case "css" : colour = "#c5efaf"; break;
+			case "iframe" : colour = "#85b3f2"; break;
+			case "img" : colour = "#c98dfd"; break;
+			case "script" : colour = "#feb06a"; break; 
+			case "link" : colour = "#6c7385"; break;
+			case "xmlhttprequest" : colour = "#efef70"; break; 
+		}
+
+		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime),Math.round(resource.responseEnd), colour, segments, resource));
+		calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
+	});
+
+	calc.loadDuration = Math.round(calc.lastResponseEnd);
+
+	var setupTimeLine = function(durationMs, blocks){
+		var unit = durationMs / 100;
+		var barsToShow = blocks.filter(function(block){
 			return (typeof block.start == "number" && typeof block.total == "number");
 		}).sort(function(a, b){
 			return (a.start||0) - (b.start||0);
@@ -77,25 +104,39 @@
 		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
 		
 
-		var createRect = function(width, height, x, y, fill, label){
+		var createRect = function(width, height, x, y, fill, label, segments){
+			var rectHolder;
 			var rect = newElementNs("rect", {
 				width : (width / unit) + "%",
-				height : height,
+				height : height-1,
 				x :  (x / unit) + "%",
 				y : y,
-				fill : fill
+				fill : fill,
+				class : (segments && segments.length > 0) ? "main" : "segment"
 			});
 			if(label){
 				rect.appendChild(newElementNs("title", {
 					text : label
 				})); // Add tile to wedge path
 			}
-			return rect;
+			if(segments && segments.length > 0){
+				rectHolder = newElementNs("g");
+				rectHolder.appendChild(rect);
+				segments.forEach(function(segment){
+					if(segment.total > 0 && segment.start){
+						rectHolder.appendChild(createRect(segment.total, 8, segment.start||0.001, y,  segment.colour, segment.name + " (" + Math.round(segment.start) + "ms - " +  Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
+					}
+				});
+				return rectHolder;
+			}else{
+				return rect;
+			}
+			
 		};
 
 		var createTimeWrapper = function(){
 			var timeHolder = newElementNs("g", { width : "100%", class : "time-scale" });
-			for(var i = 0, secs = perfTimingCalc.pageLoadTime / 1000, secPerc = 100 / secs; i <= secs; i++){
+			for(var i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++){
 				var lineLabel = newTextElementNs(i + "sec",  diagramHeight, "font-weight:bold;");
 				if(i > secs - 0.2){
 					lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
@@ -180,11 +221,11 @@
 		barsToShow.forEach(function(block, i){
 			var blockWidth = block.total||1;
 			var y = 25 * i;
-			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)"));
+			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
 
-			var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 18));
+			var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 20));
 
-			if(((block.total||1) / unit) > 10){
+			if(((block.total||1) / unit) > 10 && getNodeTextWidth(blockLabel) < 200){
 				blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
 				blockLabel.setAttribute("width", (blockWidth / unit) + "%");
 			}else if(((block.start||0.001) / unit) + (blockWidth / unit) < 80){
@@ -198,17 +239,11 @@
 
 		timeLineHolder.appendChild(timeLineLabelHolder);
 		chartHolder.appendChild(newTag("h1", {
-			text : "Navigation Timing"
+			text : "Resource Timing"
 		}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
 		chartHolder.appendChild(timeLineHolder);
 		outputContent.appendChild(chartHolder);
 	};
 
-	setupTimeLine();
-
-	tablesToLog = tablesToLog.concat([
-		{name: "Navigation Timeline", data : perfTimingCalc.blocks, columns : ["name", "start", "end", "total"]},
-		{name: "Navigation Events", data : perfTimingCalc.output},
-		{name: "Marks", data : marks, columns : ["name", "startTime", "duration"]}
-	]);
+	setupTimeLine(calc.loadDuration, calc.blocks);
 }());
