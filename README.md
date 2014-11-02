@@ -13,16 +13,18 @@ DOM Output
 ----------
 
 
-![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/resourceTable-bookmarklet-navigation-timing.png "screenshot of navigation timing output of bookmarklet")
+![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-navigation-timing-waterfall.png "screenshot of navigation timing API waterfall output of bookmarklet on http://stylify.me")
 
-![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/resourceTable-bookmarklet-pies.png "screenshot of pie graph output of bookmarklet")
-*Screenshot of bookmarklet run on [http://velocityconf.com/velocityny2014](http://velocityconf.com/velocityny2014)*
+![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-requests-pie-charts.png "screenshot of pie graph output of bookmarklet on http://velocityconf.com/velocityny2014")
 
+![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-resources-timing-waterfall.png "screenshot of resource timing API waterfall output of bookmarklet")
 
 Console Output
 --------------
 
-The *All loaded ressources* console table contains the following data:
+The bookmarklet also outputs various console tables (in chrome) to analyze the data in detail:
+
+The *All loaded ressources* console table for instance contains the following data:
 - Name
 - Domain
 - File Extension
@@ -37,14 +39,14 @@ The *All loaded ressources* console table contains the following data:
 
 (*some data* is not always available)
 
-![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/resourceTable-tables-resources.png "tabular output in console of all resources in the page")
+![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-tables-resources.png "tabular output in console of all resources in the page")
 
 
 Requests by domain and distribution of requests' content types (local vs external):
 
-![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/resourceTable-tables-file-type.png "two tables with resources type count globally and but local / external")
+![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-tables-file-type.png "two tables with resources type count globally and but local / external")
 
-![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/resourceTable-tables-request-by-domain.png "tables with requests by domain")
+![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-tables-request-by-domain.png "tables with requests by domain")
 
 
 How to use this snippet
