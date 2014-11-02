@@ -9,15 +9,40 @@ Just add this into the URL section of a new bookmark:
 javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js';document.getElementsByTagName('body')[0].appendChild(el);})();
 ```
 
+
+
 DOM Output
 ----------
 
+### Navigation Timing API Waterfall
 
-![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-navigation-timing-waterfall.png "screenshot of navigation timing API waterfall output of bookmarklet on http://stylify.me")
+![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-navigation-timing-waterfall.png "screenshot of navigation timing API waterfall output of bookmarklet on http://walmart.ca/en")
+
+- It also displays marker if you're setting marks with the [User Timing API](http://www.w3.org/TR/user-timing)
+- hover over the bars to get the excact Milliseconds
+
+
+### Navigation Timing API Waterfall
 
 ![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-requests-pie-charts.png "screenshot of pie graph output of bookmarklet on http://velocityconf.com/velocityny2014")
 
-![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-resources-timing-waterfall.png "screenshot of resource timing API waterfall output of bookmarklet")
+- Requests by domain - handy to find out how many requests are added by 3rd parties
+- Requests by Type - what content type is accountable for the majority of requests
+
+### Resource Timing API with Markers
+
+![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbooyk-resources-timing-waterfall.png "screenshot of resource timing API waterfall output of bookmarklet on http://stylify.me")
+
+- The small bars inside the resource bar represent the different stages of the request (redirect, domainLookup, connect, secureConnect, requestToResponseStart, response), but are mostly not available for cross domain requests.
+- The resource bar colours visualize the initiatorType 
+-- css (green - #c5efaf)
+-- iframe (blue - #85b3f2)
+-- img (purple - #c98dfd)
+-- script (orange - #feb06a)
+-- link ( - #6c7385)
+-- xmlhttprequest (yellow - #efef70)
+-- other (gray - #d6d6d7)
+
 
 Console Output
 --------------
@@ -49,6 +74,7 @@ Requests by domain and distribution of requests' content types (local vs externa
 ![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-tables-request-by-domain.png "tables with requests by domain")
 
 
+
 How to use this snippet
 -----------------------
 
@@ -61,6 +87,7 @@ javascript:(function(){var el=document.createElement('script');el.type='text/jav
 Or alternatifly just copy and paste the content of [resourceTable.js](https://raw.githubusercontent.com/nurun/resourceTable/master/resourceTable.js) to your browser console and off you go.
 
 **You need to fall back to the copy and paste version for sites that block external scripts in their Content Security Policy directives.**
+
 
 
 Read more
