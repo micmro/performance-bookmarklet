@@ -645,7 +645,6 @@ if(!outputHolder){
 			resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "#cf3")
 		]),
 	];
-	console.log(calc.blocks[0]);
 
 	allRessourcesCalc.forEach(function(resource, i){
 		var segments = [
