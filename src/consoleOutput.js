@@ -2,9 +2,12 @@
 Footer that finally outputs the data to the DOM and the console
 */
 
+window.outputHolder = outputHolder;
+
 
 //add charts to body
-document.body.appendChild(outputHolder);
+outputIFrame.body.appendChild(outputHolder);
+document.getElementById("perfbook-iframe").style.height = outputHolder.clientHeight + "px";
 
 
 // also output the data as table in console

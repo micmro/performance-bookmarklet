@@ -45,14 +45,12 @@ Logic for Request analysis pie charts
 				text : labelTxt
 			})); // Add tile to wedge path
 			path.addEventListener("mouseover", function(evt){
-				//evt.target.setAttribute("fill", "#ccc");
 				evt.target.style.opacity = "0.5";
-				document.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
+				outputIFrame.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
 			});
 			path.addEventListener("mouseout", function(evt){
-				//evt.target.setAttribute("fill", colour);
 				evt.target.style.opacity = "1";
-				document.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "transparent";
+				outputIFrame.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "transparent";
 			});
 
 			startAngle = endAngle;

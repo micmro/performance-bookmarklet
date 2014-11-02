@@ -7,11 +7,12 @@ Initiallize Bookmarklet wide variables, holders and helpers - all other files on
 */
 
 //bookmarklet wide vars
-var tablesToLog = [],
+var tablesToLog = [],	
 	resources,
 	allRessourcesCalc,
 	marks,
 	perfTiming,
+	outputIFrame,
 	outputHolder,
 	outputContent;
 
@@ -133,7 +134,7 @@ var newTextElementNs = function(text, y, css){
 var getNodeTextWidth = function(textNode){
 	var tmp = newElementNs("svg:svg", {}, "visibility:hidden;");
 	tmp.appendChild(textNode);
-	document.body.appendChild(tmp);
+	outputIFrame.body.appendChild(tmp);
 	var nodeWidth = textNode.getBBox().width;
 	tmp.parentNode.removeChild(tmp);
 	return nodeWidth;
@@ -170,14 +171,24 @@ var getItemCount = function(arr, keyName){
 };
 
 
+
+//setup iFrame overlay
+if(document.getElementById("perfbook-iframe")){
+	outputIFrame = document.getElementById("perfbook-iframe").contentWindow.document;
+	outputHolder = outputIFrame.getElementById("perfbook-holder");
+}else{
+	var outputIFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:absolute; top:0; left:0; right:0; z-index: 9999; width:100%;");
+	document.body.appendChild(outputIFrameEl);
+	outputIFrame = outputIFrameEl.contentWindow.document;
+}
+
 // find or create holder element
-outputHolder = document.getElementById("resourceTable-holder");
 if(!outputHolder){
-	outputHolder = newTag("div", {id : "resourceTable-holder"}, "position:absolute; top:0; left:0; z-index: 9999; font:normal 12px/18px sans-serif; width:100%; padding:1em 1em 3em; box-sizing:border-box; background:rgba(255, 255, 255, 1);");
-	outputContent = newTag("div", {id : "resourceTable-content"}, "position:relative;");
+	outputHolder = newTag("div", {id : "perfbook-holder"}, "position:absolute; top:0; left:0; z-index: 9999; font:normal 12px/18px sans-serif; width:100%; padding:1em 1em 3em; box-sizing:border-box; background:rgba(255, 255, 255, 1);");
+	outputContent = newTag("div", {id : "perfbook-content"}, "position:relative;");
 		
 	var closeBtn = newTag("button", {
-		id : "resourceTable-close",
+		class : "perfbook-close",
 		text: "close"
 	}, "position:absolute; top:0; right:0; padding:1em 0.5em; z-index:1; background:transparent; border:0;");
 	closeBtn.addEventListener("click", function(){
@@ -187,7 +198,7 @@ if(!outputHolder){
 	outputHolder.appendChild(closeBtn);
 	outputHolder.appendChild(outputContent);
 }else{
-	outputContent = document.getElementById("resourceTable-content");
+	outputContent = outputIFrame.getElementById("perfbook-content");
 	//clear existing data
 	while (outputContent.firstChild) {
 		outputContent.removeChild(outputContent.firstChild);
@@ -462,14 +473,12 @@ Logic for Request analysis pie charts
 				text : labelTxt
 			})); // Add tile to wedge path
 			path.addEventListener("mouseover", function(evt){
-				//evt.target.setAttribute("fill", "#ccc");
 				evt.target.style.opacity = "0.5";
-				document.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
+				outputIFrame.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
 			});
 			path.addEventListener("mouseout", function(evt){
-				//evt.target.setAttribute("fill", colour);
 				evt.target.style.opacity = "1";
-				document.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "transparent";
+				outputIFrame.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "transparent";
 			});
 
 			startAngle = endAngle;
@@ -855,9 +864,12 @@ Logic for Resource Timing API Waterfall
 Footer that finally outputs the data to the DOM and the console
 */
 
+window.outputHolder = outputHolder;
+
 
 //add charts to body
-document.body.appendChild(outputHolder);
+outputIFrame.body.appendChild(outputHolder);
+document.getElementById("perfbook-iframe").style.height = outputHolder.clientHeight + "px";
 
 
 // also output the data as table in console
