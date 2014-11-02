@@ -1,4 +1,7 @@
-//Logic for Naviagtion API / markers timeline
+/*
+Logic for Naviagtion Timing API and Markers Waterfall
+*/
+
 
 (function(){
 

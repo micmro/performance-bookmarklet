@@ -1,3 +1,8 @@
+/*
+Footer that finally outputs the data to the DOM and the console
+*/
+
+
 //add charts to body
 document.body.appendChild(outputHolder);
 

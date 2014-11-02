@@ -1,4 +1,6 @@
-//Logic for Ressource timeline
+/*
+Logic for Resource Timing API Waterfall 
+*/
 
 (function(){
 

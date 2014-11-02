@@ -1,4 +1,6 @@
-//Bookmarklet Init
+/*
+Initiallize Bookmarklet wide variables, holders and helpers - all other files only don't share scope
+*/
 
 //bookmarklet wide vars
 var tablesToLog = [],
@@ -17,7 +19,7 @@ if(window.performance && window.performance.getEntriesByType !== undefined) {
 	resources = window.performance.webkitGetEntriesByType("resource");
 	marks = window.performance.webkitGetEntriesByType("mark");
 }else{
-	alert("Oups, looks like this browser does not support the Ressource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
+	alert("Oups, looks like this browser does not support the Resource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
 	return;
 }
 

@@ -2,7 +2,9 @@
  by Michael Mrowetz @MicMro*/
 
 (function(){
-//Bookmarklet Init
+/*
+Initiallize Bookmarklet wide variables, holders and helpers - all other files only don't share scope
+*/
 
 //bookmarklet wide vars
 var tablesToLog = [],
@@ -21,7 +23,7 @@ if(window.performance && window.performance.getEntriesByType !== undefined) {
 	resources = window.performance.webkitGetEntriesByType("resource");
 	marks = window.performance.webkitGetEntriesByType("mark");
 }else{
-	alert("Oups, looks like this browser does not support the Ressource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
+	alert("Oups, looks like this browser does not support the Resource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
 	return;
 }
 
@@ -194,7 +196,10 @@ if(!outputHolder){
 
 
 
-//Logic for Naviagtion API / markers timeline
+/*
+Logic for Naviagtion Timing API and Markers Waterfall
+*/
+
 
 (function(){
 
@@ -410,7 +415,10 @@ if(!outputHolder){
 }());
 
 
-//Logic for Request pie charts
+/*
+Logic for Request analysis pie charts
+*/
+
 
 (function(){
 	function createPieChart(data, size){
@@ -591,7 +599,9 @@ if(!outputHolder){
 }());
 
 
-//Logic for Ressource timeline
+/*
+Logic for Resource Timing API Waterfall 
+*/
 
 (function(){
 
@@ -839,6 +849,11 @@ if(!outputHolder){
 
 	setupTimeLine(calc.loadDuration, calc.blocks);
 }());
+
+
+/*
+Footer that finally outputs the data to the DOM and the console
+*/
 
 
 //add charts to body

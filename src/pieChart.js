@@ -1,4 +1,7 @@
-//Logic for Request pie charts
+/*
+Logic for Request analysis pie charts
+*/
+
 
 (function(){
 	function createPieChart(data, size){
