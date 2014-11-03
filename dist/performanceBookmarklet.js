@@ -12,6 +12,7 @@ var tablesToLog = [],
 	allRessourcesCalc,
 	marks,
 	perfTiming,
+	iFrameEl,
 	outputIFrame,
 	outputHolder,
 	outputContent;
@@ -173,13 +174,15 @@ var getItemCount = function(arr, keyName){
 
 
 //setup iFrame overlay
-if(document.getElementById("perfbook-iframe")){
-	outputIFrame = document.getElementById("perfbook-iframe").contentWindow.document;
+iFrameEl = document.getElementById("perfbook-iframe");
+if(iFrameEl){
+	outputIFrame = iFrameEl.contentWindow.document;
 	outputHolder = outputIFrame.getElementById("perfbook-holder");
 }else{
-	var outputIFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:absolute; top:0; left:0; right:0; z-index: 9999; width:100%;");
-	document.body.appendChild(outputIFrameEl);
-	outputIFrame = outputIFrameEl.contentWindow.document;
+	//var outputIFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:fixed; top:0; left:0; right:0; z-index: 9999; width:100%; height:100%;");
+	iFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:fixed; top:2.5%; left:1%; right:1%; z-index: 9999; width:98%; height:95%; box-shadow:0 0 25px 0 rgba(0,0,0,0.5);");
+	document.body.appendChild(iFrameEl);
+	outputIFrame = iFrameEl.contentWindow.document;
 }
 
 // find or create holder element
@@ -190,9 +193,9 @@ if(!outputHolder){
 	var closeBtn = newTag("button", {
 		class : "perfbook-close",
 		text: "close"
-	}, "position:absolute; top:0; right:0; padding:1em 0.5em; z-index:1; background:transparent; border:0;");
+	}, "position:absolute; top:0; right:0; padding:1em 0.5em; z-index:1; background:transparent; border:0; cursor:pointer;");
 	closeBtn.addEventListener("click", function(){
-		outputHolder.parentNode.removeChild(outputHolder);
+		iFrameEl.parentNode.removeChild(iFrameEl);
 	});
 
 	outputHolder.appendChild(closeBtn);
@@ -411,7 +414,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		timeLineHolder.appendChild(timeLineLabelHolder);
 		chartHolder.appendChild(newTag("h1", {
 			text : "Navigation Timing"
-		}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
+		}, "font:bold 18px/18px sans-serif; margin:1em 0; color:#666;"));
 		chartHolder.appendChild(timeLineHolder);
 		outputContent.appendChild(chartHolder);
 	};
@@ -437,9 +440,8 @@ Logic for Request analysis pie charts
 
 		var chart = newElementNs("svg:svg", {
 			width : "100%",
-			height : "100%",
 			viewBox : "0 0 " + size + " " + size
-		});
+		}, "float: left;");
 
 		var unit = (Math.PI * 2) / 100,
 			startAngle = 0; // init startAngle
@@ -526,7 +528,7 @@ Logic for Request analysis pie charts
 	var createTable = function(title, data){
 		//create table
 		var tableHolder = newTag("div", {}, "float:left; width:100%; overflow-x:auto");
-		var table = newTag("table", {}, "float:left; width:100%;");
+		var table = newTag("table", {}, "float:left; width:100%; font-size:12px; line-height:18px;");
 		var thead = newTag("thead");
 		var tbody = newTag("tbody");
 		thead.appendChild(newTag("th", {text : title}, "text-align: left; padding:0 0.5em 0 0;"));
@@ -568,7 +570,7 @@ Logic for Request analysis pie charts
 	// create a chart and table section
 	var setupChart = function(title, data){
 		var chartHolder = newTag("div", {}, "float:left; width:28%; margin: 0 5.3333% 0 0;");
-		chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
+		chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666; min-height:2em;"));
 		chartHolder.appendChild(createPieChart(data, 400));
 		chartHolder.appendChild(newTag("p", {text : "total requests: (" + resources.length + ")"}));
 		chartHolder.appendChild(createTable(title, data));
@@ -869,8 +871,6 @@ window.outputHolder = outputHolder;
 
 //add charts to body
 outputIFrame.body.appendChild(outputHolder);
-document.getElementById("perfbook-iframe").style.height = outputHolder.clientHeight + "px";
-
 
 // also output the data as table in console
 tablesToLog.forEach(function(table, i){

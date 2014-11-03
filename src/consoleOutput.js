@@ -7,8 +7,6 @@ window.outputHolder = outputHolder;
 
 //add charts to body
 outputIFrame.body.appendChild(outputHolder);
-document.getElementById("perfbook-iframe").style.height = outputHolder.clientHeight + "px";
-
 
 // also output the data as table in console
 tablesToLog.forEach(function(table, i){

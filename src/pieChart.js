@@ -9,9 +9,8 @@ Logic for Request analysis pie charts
 
 		var chart = newElementNs("svg:svg", {
 			width : "100%",
-			height : "100%",
 			viewBox : "0 0 " + size + " " + size
-		});
+		}, "float: left;");
 
 		var unit = (Math.PI * 2) / 100,
 			startAngle = 0; // init startAngle
@@ -98,7 +97,7 @@ Logic for Request analysis pie charts
 	var createTable = function(title, data){
 		//create table
 		var tableHolder = newTag("div", {}, "float:left; width:100%; overflow-x:auto");
-		var table = newTag("table", {}, "float:left; width:100%;");
+		var table = newTag("table", {}, "float:left; width:100%; font-size:12px; line-height:18px;");
 		var thead = newTag("thead");
 		var tbody = newTag("tbody");
 		thead.appendChild(newTag("th", {text : title}, "text-align: left; padding:0 0.5em 0 0;"));
@@ -140,7 +139,7 @@ Logic for Request analysis pie charts
 	// create a chart and table section
 	var setupChart = function(title, data){
 		var chartHolder = newTag("div", {}, "float:left; width:28%; margin: 0 5.3333% 0 0;");
-		chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
+		chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666; min-height:2em;"));
 		chartHolder.appendChild(createPieChart(data, 400));
 		chartHolder.appendChild(newTag("p", {text : "total requests: (" + resources.length + ")"}));
 		chartHolder.appendChild(createTable(title, data));

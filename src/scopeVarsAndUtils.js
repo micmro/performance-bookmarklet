@@ -8,6 +8,7 @@ var tablesToLog = [],
 	allRessourcesCalc,
 	marks,
 	perfTiming,
+	iFrameEl,
 	outputIFrame,
 	outputHolder,
 	outputContent;
@@ -169,13 +170,15 @@ var getItemCount = function(arr, keyName){
 
 
 //setup iFrame overlay
-if(document.getElementById("perfbook-iframe")){
-	outputIFrame = document.getElementById("perfbook-iframe").contentWindow.document;
+iFrameEl = document.getElementById("perfbook-iframe");
+if(iFrameEl){
+	outputIFrame = iFrameEl.contentWindow.document;
 	outputHolder = outputIFrame.getElementById("perfbook-holder");
 }else{
-	var outputIFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:absolute; top:0; left:0; right:0; z-index: 9999; width:100%;");
-	document.body.appendChild(outputIFrameEl);
-	outputIFrame = outputIFrameEl.contentWindow.document;
+	//var outputIFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:fixed; top:0; left:0; right:0; z-index: 9999; width:100%; height:100%;");
+	iFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:fixed; top:2.5%; left:1%; right:1%; z-index: 9999; width:98%; height:95%; box-shadow:0 0 25px 0 rgba(0,0,0,0.5);");
+	document.body.appendChild(iFrameEl);
+	outputIFrame = iFrameEl.contentWindow.document;
 }
 
 // find or create holder element
@@ -186,9 +189,9 @@ if(!outputHolder){
 	var closeBtn = newTag("button", {
 		class : "perfbook-close",
 		text: "close"
-	}, "position:absolute; top:0; right:0; padding:1em 0.5em; z-index:1; background:transparent; border:0;");
+	}, "position:absolute; top:0; right:0; padding:1em 0.5em; z-index:1; background:transparent; border:0; cursor:pointer;");
 	closeBtn.addEventListener("click", function(){
-		outputHolder.parentNode.removeChild(outputHolder);
+		iFrameEl.parentNode.removeChild(iFrameEl);
 	});
 
 	outputHolder.appendChild(closeBtn);
