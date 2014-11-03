@@ -28,6 +28,7 @@ DOM Output
 
 - Requests by domain - handy to find out how many requests are added by 3rd parties
 - Requests by Type - what content type is accountable for the majority of requests
+
 *external is currently everything except the current domain - exluding sub domains*
 
 
