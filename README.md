@@ -22,12 +22,13 @@ DOM Output
 - hover over the bars to get the excact Milliseconds
 
 
-### Navigation Timing API Waterfall
+### Resource analysis
 
 ![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-requests-pie-charts.png "screenshot of pie graph output of bookmarklet on http://velocityconf.com/velocityny2014")
 
 - Requests by domain - handy to find out how many requests are added by 3rd parties
 - Requests by Type - what content type is accountable for the majority of requests
+
 
 ### Resource Timing API with Markers
 
