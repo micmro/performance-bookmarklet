@@ -2,11 +2,10 @@
 Footer that finally outputs the data to the DOM and the console
 */
 
-window.outputHolder = outputHolder;
-
-
-//add charts to body
+//add charts to iFrame holder in body
 outputIFrame.body.appendChild(outputHolder);
+iFrameEl.style.height = outputHolder.clientHeight + "px";
+
 
 // also output the data as table in console
 tablesToLog.forEach(function(table, i){

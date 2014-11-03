@@ -69,14 +69,14 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		}) : 0;
 
 		var diagramHeight = (barsToShow.length + 2) * 25;
-		var chartHolderHeight = diagramHeight + maxMarkTextLength + 25;
+		var chartHolderHeight = diagramHeight + maxMarkTextLength + 5;
 
 		var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
 		var timeLineHolder = newElementNs("svg:svg", {
 			width : "100%",
 			height : chartHolderHeight,
 			fill : "#ccc"
-		});
+		}, "background:#f0f5f0;");
 		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
 		
 

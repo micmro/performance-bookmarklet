@@ -80,19 +80,7 @@ tablesToLog.push({
 	data : allRessourcesCalc,
 	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isLocalDomain", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
 });
-// console.table(allRessourcesCalc.map(function(i){
-// 	var r = {};
-// 	for(var a in i){
-// 		if(i.hasOwnProperty(a)) {
-// 			if(typeof i[a] == "number"){
-// 				r[a] = Math.round(i[a]);
-// 			}else{
-// 				r[a] = i[a];
-// 			}
-// 		}
-// 	}
-// 	return r;
-// }));
+
 
 //helper functions
 
@@ -180,14 +168,15 @@ if(iFrameEl){
 	outputHolder = outputIFrame.getElementById("perfbook-holder");
 }else{
 	//var outputIFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:fixed; top:0; left:0; right:0; z-index: 9999; width:100%; height:100%;");
-	iFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:fixed; top:2.5%; left:1%; right:1%; z-index: 9999; width:98%; height:95%; box-shadow:0 0 25px 0 rgba(0,0,0,0.5);");
+	iFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:absolute; top:1%; left:1%; z-index: 9999; width:98%; z-index: 9999; box-shadow:0 0 25px 0 rgba(0,0,0,0.5); background:#fff;");
 	document.body.appendChild(iFrameEl);
 	outputIFrame = iFrameEl.contentWindow.document;
+	outputIFrame.body.style.overflow = "hidden";
 }
 
 // find or create holder element
 if(!outputHolder){
-	outputHolder = newTag("div", {id : "perfbook-holder"}, "position:absolute; top:0; left:0; z-index: 9999; font:normal 12px/18px sans-serif; width:100%; padding:1em 1em 3em; box-sizing:border-box; background:rgba(255, 255, 255, 1);");
+	outputHolder = newTag("div", {id : "perfbook-holder"}, "overflow: hidden; font:normal 12px/18px sans-serif; width:100%; padding:1em 2em 3em; box-sizing:border-box;");
 	outputContent = newTag("div", {id : "perfbook-content"}, "position:relative;");
 		
 	var closeBtn = newTag("button", {
@@ -281,14 +270,14 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		}) : 0;
 
 		var diagramHeight = (barsToShow.length + 2) * 25;
-		var chartHolderHeight = diagramHeight + maxMarkTextLength + 25;
+		var chartHolderHeight = diagramHeight + maxMarkTextLength + 5;
 
 		var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
 		var timeLineHolder = newElementNs("svg:svg", {
 			width : "100%",
 			height : chartHolderHeight,
 			fill : "#ccc"
-		});
+		}, "background:#f0f5f0;");
 		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
 		
 
@@ -706,14 +695,14 @@ Logic for Resource Timing API Waterfall
 		}) : 0;
 
 		var diagramHeight = (barsToShow.length + 2) * 25;
-		var chartHolderHeight = diagramHeight + maxMarkTextLength + 25;
+		var chartHolderHeight = diagramHeight + maxMarkTextLength + 5;
 
 		var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
 		var timeLineHolder = newElementNs("svg:svg", {
 			width : "100%",
 			height : chartHolderHeight,
 			fill : "#ccc"
-		});
+		}, "background:#f0f5f0;");
 		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
 		
 
@@ -866,11 +855,10 @@ Logic for Resource Timing API Waterfall
 Footer that finally outputs the data to the DOM and the console
 */
 
-window.outputHolder = outputHolder;
-
-
-//add charts to body
+//add charts to iFrame holder in body
 outputIFrame.body.appendChild(outputHolder);
+iFrameEl.style.height = outputHolder.clientHeight + "px";
+
 
 // also output the data as table in console
 tablesToLog.forEach(function(table, i){
