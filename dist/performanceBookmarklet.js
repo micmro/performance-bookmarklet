@@ -168,7 +168,7 @@ if(iFrameEl){
 	outputHolder = outputIFrame.getElementById("perfbook-holder");
 }else{
 	//var outputIFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:fixed; top:0; left:0; right:0; z-index: 9999; width:100%; height:100%;");
-	iFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:absolute; top:1%; left:1%; z-index: 9999; width:98%; z-index: 9999; box-shadow:0 0 25px 0 rgba(0,0,0,0.5); background:#fff;");
+	iFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:absolute; top:1%; right:1%; margin-bottom:1em; left:1%; z-index: 9999; width:98%; z-index: 9999; border:0; box-shadow:0 0 25px 0 rgba(0,0,0,0.5); background:#fff;");
 	document.body.appendChild(iFrameEl);
 	outputIFrame = iFrameEl.contentWindow.document;
 	outputIFrame.body.style.overflow = "hidden";
