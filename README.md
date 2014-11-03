@@ -28,6 +28,7 @@ DOM Output
 
 - Requests by domain - handy to find out how many requests are added by 3rd parties
 - Requests by Type - what content type is accountable for the majority of requests
+*external is currently everything except the current domain - exluding sub domains*
 
 
 ### Resource Timing API with Markers
@@ -58,7 +59,7 @@ The *All loaded ressources* console table for instance contains the following da
 - Name
 - Domain
 - File Extension
-- Initiator Type (Content Type)
+- Initiator Type
 - Load Time
 - *Request Start Delay*
 - *DNS Lookup*
