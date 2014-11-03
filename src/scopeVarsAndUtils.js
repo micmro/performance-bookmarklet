@@ -3,11 +3,13 @@ Initiallize Bookmarklet wide variables, holders and helpers - all other files on
 */
 
 //bookmarklet wide vars
-var tablesToLog = [],
+var tablesToLog = [],	
 	resources,
 	allRessourcesCalc,
 	marks,
 	perfTiming,
+	iFrameEl,
+	outputIFrame,
 	outputHolder,
 	outputContent;
 
@@ -74,19 +76,7 @@ tablesToLog.push({
 	data : allRessourcesCalc,
 	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isLocalDomain", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
 });
-// console.table(allRessourcesCalc.map(function(i){
-// 	var r = {};
-// 	for(var a in i){
-// 		if(i.hasOwnProperty(a)) {
-// 			if(typeof i[a] == "number"){
-// 				r[a] = Math.round(i[a]);
-// 			}else{
-// 				r[a] = i[a];
-// 			}
-// 		}
-// 	}
-// 	return r;
-// }));
+
 
 //helper functions
 
@@ -129,7 +119,7 @@ var newTextElementNs = function(text, y, css){
 var getNodeTextWidth = function(textNode){
 	var tmp = newElementNs("svg:svg", {}, "visibility:hidden;");
 	tmp.appendChild(textNode);
-	document.body.appendChild(tmp);
+	outputIFrame.body.appendChild(tmp);
 	var nodeWidth = textNode.getBBox().width;
 	tmp.parentNode.removeChild(tmp);
 	return nodeWidth;
@@ -166,24 +156,37 @@ var getItemCount = function(arr, keyName){
 };
 
 
+
+//setup iFrame overlay
+iFrameEl = document.getElementById("perfbook-iframe");
+if(iFrameEl){
+	outputIFrame = iFrameEl.contentWindow.document;
+	outputHolder = outputIFrame.getElementById("perfbook-holder");
+}else{
+	//var outputIFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:fixed; top:0; left:0; right:0; z-index: 9999; width:100%; height:100%;");
+	iFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:absolute; top:1%; left:1%; z-index: 9999; width:98%; z-index: 9999; box-shadow:0 0 25px 0 rgba(0,0,0,0.5); background:#fff;");
+	document.body.appendChild(iFrameEl);
+	outputIFrame = iFrameEl.contentWindow.document;
+	outputIFrame.body.style.overflow = "hidden";
+}
+
 // find or create holder element
-outputHolder = document.getElementById("resourceTable-holder");
 if(!outputHolder){
-	outputHolder = newTag("div", {id : "resourceTable-holder"}, "position:absolute; top:0; left:0; z-index: 9999; font:normal 12px/18px sans-serif; width:100%; padding:1em 1em 3em; box-sizing:border-box; background:rgba(255, 255, 255, 1);");
-	outputContent = newTag("div", {id : "resourceTable-content"}, "position:relative;");
+	outputHolder = newTag("div", {id : "perfbook-holder"}, "overflow: hidden; font:normal 12px/18px sans-serif; width:100%; padding:1em 2em 3em; box-sizing:border-box;");
+	outputContent = newTag("div", {id : "perfbook-content"}, "position:relative;");
 		
 	var closeBtn = newTag("button", {
-		id : "resourceTable-close",
+		class : "perfbook-close",
 		text: "close"
-	}, "position:absolute; top:0; right:0; padding:1em 0.5em; z-index:1; background:transparent; border:0;");
+	}, "position:absolute; top:0; right:0; padding:1em 0.5em; z-index:1; background:transparent; border:0; cursor:pointer;");
 	closeBtn.addEventListener("click", function(){
-		outputHolder.parentNode.removeChild(outputHolder);
+		iFrameEl.parentNode.removeChild(iFrameEl);
 	});
 
 	outputHolder.appendChild(closeBtn);
 	outputHolder.appendChild(outputContent);
 }else{
-	outputContent = document.getElementById("resourceTable-content");
+	outputContent = outputIFrame.getElementById("perfbook-content");
 	//clear existing data
 	while (outputContent.firstChild) {
 		outputContent.removeChild(outputContent.firstChild);

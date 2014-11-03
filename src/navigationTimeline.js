@@ -69,14 +69,14 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		}) : 0;
 
 		var diagramHeight = (barsToShow.length + 2) * 25;
-		var chartHolderHeight = diagramHeight + maxMarkTextLength + 25;
+		var chartHolderHeight = diagramHeight + maxMarkTextLength + 5;
 
 		var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
 		var timeLineHolder = newElementNs("svg:svg", {
 			width : "100%",
 			height : chartHolderHeight,
 			fill : "#ccc"
-		});
+		}, "background:#f0f5f0;");
 		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
 		
 
@@ -202,7 +202,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		timeLineHolder.appendChild(timeLineLabelHolder);
 		chartHolder.appendChild(newTag("h1", {
 			text : "Navigation Timing"
-		}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
+		}, "font:bold 18px/18px sans-serif; margin:1em 0; color:#666;"));
 		chartHolder.appendChild(timeLineHolder);
 		outputContent.appendChild(chartHolder);
 	};
