@@ -2,14 +2,18 @@
  by Michael Mrowetz @MicMro*/
 
 (function(){
-//Bookmarklet Init
+/*
+Initiallize Bookmarklet wide variables, holders and helpers - all other files only don't share scope
+*/
 
 //bookmarklet wide vars
-var tablesToLog = [],
+var tablesToLog = [],	
 	resources,
 	allRessourcesCalc,
 	marks,
 	perfTiming,
+	iFrameEl,
+	outputIFrame,
 	outputHolder,
 	outputContent;
 
@@ -21,7 +25,7 @@ if(window.performance && window.performance.getEntriesByType !== undefined) {
 	resources = window.performance.webkitGetEntriesByType("resource");
 	marks = window.performance.webkitGetEntriesByType("mark");
 }else{
-	alert("Oups, looks like this browser does not support the Ressource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
+	alert("Oups, looks like this browser does not support the Resource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
 	return;
 }
 
@@ -76,19 +80,7 @@ tablesToLog.push({
 	data : allRessourcesCalc,
 	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isLocalDomain", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
 });
-// console.table(allRessourcesCalc.map(function(i){
-// 	var r = {};
-// 	for(var a in i){
-// 		if(i.hasOwnProperty(a)) {
-// 			if(typeof i[a] == "number"){
-// 				r[a] = Math.round(i[a]);
-// 			}else{
-// 				r[a] = i[a];
-// 			}
-// 		}
-// 	}
-// 	return r;
-// }));
+
 
 //helper functions
 
@@ -131,7 +123,7 @@ var newTextElementNs = function(text, y, css){
 var getNodeTextWidth = function(textNode){
 	var tmp = newElementNs("svg:svg", {}, "visibility:hidden;");
 	tmp.appendChild(textNode);
-	document.body.appendChild(tmp);
+	outputIFrame.body.appendChild(tmp);
 	var nodeWidth = textNode.getBBox().width;
 	tmp.parentNode.removeChild(tmp);
 	return nodeWidth;
@@ -168,24 +160,37 @@ var getItemCount = function(arr, keyName){
 };
 
 
+
+//setup iFrame overlay
+iFrameEl = document.getElementById("perfbook-iframe");
+if(iFrameEl){
+	outputIFrame = iFrameEl.contentWindow.document;
+	outputHolder = outputIFrame.getElementById("perfbook-holder");
+}else{
+	//var outputIFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:fixed; top:0; left:0; right:0; z-index: 9999; width:100%; height:100%;");
+	iFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:absolute; top:1%; left:1%; z-index: 9999; width:98%; z-index: 9999; box-shadow:0 0 25px 0 rgba(0,0,0,0.5); background:#fff;");
+	document.body.appendChild(iFrameEl);
+	outputIFrame = iFrameEl.contentWindow.document;
+	outputIFrame.body.style.overflow = "hidden";
+}
+
 // find or create holder element
-outputHolder = document.getElementById("resourceTable-holder");
 if(!outputHolder){
-	outputHolder = newTag("div", {id : "resourceTable-holder"}, "position:absolute; top:0; left:0; z-index: 9999; font:normal 12px/18px sans-serif; width:100%; padding:1em 1em 3em; box-sizing:border-box; background:rgba(255, 255, 255, 1);");
-	outputContent = newTag("div", {id : "resourceTable-content"}, "position:relative;");
+	outputHolder = newTag("div", {id : "perfbook-holder"}, "overflow: hidden; font:normal 12px/18px sans-serif; width:100%; padding:1em 2em 3em; box-sizing:border-box;");
+	outputContent = newTag("div", {id : "perfbook-content"}, "position:relative;");
 		
 	var closeBtn = newTag("button", {
-		id : "resourceTable-close",
+		class : "perfbook-close",
 		text: "close"
-	}, "position:absolute; top:0; right:0; padding:1em 0.5em; z-index:1; background:transparent; border:0;");
+	}, "position:absolute; top:0; right:0; padding:1em 0.5em; z-index:1; background:transparent; border:0; cursor:pointer;");
 	closeBtn.addEventListener("click", function(){
-		outputHolder.parentNode.removeChild(outputHolder);
+		iFrameEl.parentNode.removeChild(iFrameEl);
 	});
 
 	outputHolder.appendChild(closeBtn);
 	outputHolder.appendChild(outputContent);
 }else{
-	outputContent = document.getElementById("resourceTable-content");
+	outputContent = outputIFrame.getElementById("perfbook-content");
 	//clear existing data
 	while (outputContent.firstChild) {
 		outputContent.removeChild(outputContent.firstChild);
@@ -194,7 +199,10 @@ if(!outputHolder){
 
 
 
-//Logic for Naviagtion API / markers timeline
+/*
+Logic for Naviagtion Timing API and Markers Waterfall
+*/
+
 
 (function(){
 
@@ -262,14 +270,14 @@ if(!outputHolder){
 		}) : 0;
 
 		var diagramHeight = (barsToShow.length + 2) * 25;
-		var chartHolderHeight = diagramHeight + maxMarkTextLength + 25;
+		var chartHolderHeight = diagramHeight + maxMarkTextLength + 5;
 
 		var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
 		var timeLineHolder = newElementNs("svg:svg", {
 			width : "100%",
 			height : chartHolderHeight,
 			fill : "#ccc"
-		});
+		}, "background:#f0f5f0;");
 		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
 		
 
@@ -395,7 +403,7 @@ if(!outputHolder){
 		timeLineHolder.appendChild(timeLineLabelHolder);
 		chartHolder.appendChild(newTag("h1", {
 			text : "Navigation Timing"
-		}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
+		}, "font:bold 18px/18px sans-serif; margin:1em 0; color:#666;"));
 		chartHolder.appendChild(timeLineHolder);
 		outputContent.appendChild(chartHolder);
 	};
@@ -410,7 +418,10 @@ if(!outputHolder){
 }());
 
 
-//Logic for Request pie charts
+/*
+Logic for Request analysis pie charts
+*/
+
 
 (function(){
 	function createPieChart(data, size){
@@ -418,9 +429,8 @@ if(!outputHolder){
 
 		var chart = newElementNs("svg:svg", {
 			width : "100%",
-			height : "100%",
 			viewBox : "0 0 " + size + " " + size
-		});
+		}, "float: left;");
 
 		var unit = (Math.PI * 2) / 100,
 			startAngle = 0; // init startAngle
@@ -454,14 +464,12 @@ if(!outputHolder){
 				text : labelTxt
 			})); // Add tile to wedge path
 			path.addEventListener("mouseover", function(evt){
-				//evt.target.setAttribute("fill", "#ccc");
 				evt.target.style.opacity = "0.5";
-				document.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
+				outputIFrame.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
 			});
 			path.addEventListener("mouseout", function(evt){
-				//evt.target.setAttribute("fill", colour);
 				evt.target.style.opacity = "1";
-				document.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "transparent";
+				outputIFrame.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "transparent";
 			});
 
 			startAngle = endAngle;
@@ -509,7 +517,7 @@ if(!outputHolder){
 	var createTable = function(title, data){
 		//create table
 		var tableHolder = newTag("div", {}, "float:left; width:100%; overflow-x:auto");
-		var table = newTag("table", {}, "float:left; width:100%;");
+		var table = newTag("table", {}, "float:left; width:100%; font-size:12px; line-height:18px;");
 		var thead = newTag("thead");
 		var tbody = newTag("tbody");
 		thead.appendChild(newTag("th", {text : title}, "text-align: left; padding:0 0.5em 0 0;"));
@@ -551,7 +559,7 @@ if(!outputHolder){
 	// create a chart and table section
 	var setupChart = function(title, data){
 		var chartHolder = newTag("div", {}, "float:left; width:28%; margin: 0 5.3333% 0 0;");
-		chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
+		chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666; min-height:2em;"));
 		chartHolder.appendChild(createPieChart(data, 400));
 		chartHolder.appendChild(newTag("p", {text : "total requests: (" + resources.length + ")"}));
 		chartHolder.appendChild(createTable(title, data));
@@ -591,7 +599,9 @@ if(!outputHolder){
 }());
 
 
-//Logic for Ressource timeline
+/*
+Logic for Resource Timing API Waterfall 
+*/
 
 (function(){
 
@@ -685,14 +695,14 @@ if(!outputHolder){
 		}) : 0;
 
 		var diagramHeight = (barsToShow.length + 2) * 25;
-		var chartHolderHeight = diagramHeight + maxMarkTextLength + 25;
+		var chartHolderHeight = diagramHeight + maxMarkTextLength + 5;
 
 		var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
 		var timeLineHolder = newElementNs("svg:svg", {
 			width : "100%",
 			height : chartHolderHeight,
 			fill : "#ccc"
-		});
+		}, "background:#f0f5f0;");
 		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
 		
 
@@ -841,8 +851,13 @@ if(!outputHolder){
 }());
 
 
-//add charts to body
-document.body.appendChild(outputHolder);
+/*
+Footer that finally outputs the data to the DOM and the console
+*/
+
+//add charts to iFrame holder in body
+outputIFrame.body.appendChild(outputHolder);
+iFrameEl.style.height = outputHolder.clientHeight + "px";
 
 
 // also output the data as table in console
