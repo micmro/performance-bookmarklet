@@ -6,7 +6,7 @@ Bookmarklet to analyze the current page through on the [Resource Timing API](htt
 Just add this into the URL section of a new bookmark:
 
 ```
-javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js';document.getElementsByTagName('body')[0].appendChild(el);})();
+javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js';el.onerror=function(){alert("Looks like the Content Security Policy directive is blocking the use of bookmarklets\n\nYou can copy and paste the content of:\n\n\"https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js\"\n\ninto your console instead\n\n(link is in console already)");console.log("https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js");};document.getElementsByTagName('body')[0].appendChild(el);})();
 ```
 
 
@@ -88,7 +88,7 @@ How to use this snippet
 You can use it as bookmarklet. Mozilla has a [step by step description](https://support.mozilla.org/en-US/kb/bookmarklets-perform-common-web-page-tasks#w_how-do-i-install-a-bookmarklet) on how to add a bookmarklet.
 
 ```
-javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js';document.getElementsByTagName('body')[0].appendChild(el);})();
+javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js';el.onerror=function(){alert("Looks like the Content Security Policy directive is blocking the use of bookmarklets\n\nYou can copy and paste the content of:\n\n\"https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js\"\n\ninto your console instead\n\n(link is in console already)");console.log("https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js");};document.getElementsByTagName('body')[0].appendChild(el);})();
 ```
 
 Or alternatifly just copy and paste the content of [resourceTable.js](https://raw.githubusercontent.com/nurun/resourceTable/master/resourceTable.js) to your browser console and off you go.
