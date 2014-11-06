@@ -32,7 +32,13 @@ if(window.performance && window.performance.getEntriesByType !== undefined) {
 if(window.performance.timing){
 	perfTiming = window.performance.timing;
 }else{
-	alert("Oups, looks like this browser does not support performance timing");		
+	alert("Oups, looks like this browser does not support performance timing");
+	return;
+}
+
+if(perfTiming.loadEventEnd - perfTiming.navigationStart < 0){
+	alert("Page is still loading - please try again when page is loaded.");
+	return;
 }
 
 //remove this bookmarklet from the result
