@@ -12,15 +12,13 @@ Logic for Naviagtion Timing API and Markers Waterfall
 	var startTime = perfTiming.navigationStart;
 	var propBaseName;
 
-	for (var perfProp in perfTiming) {
-		if(perfTiming.hasOwnProperty(perfProp)){
-			if(perfTiming[perfProp]){
-				perfTimingCalc[perfProp] = perfTiming[perfProp] - startTime;
-				perfTimingCalc.output.push({
-					"name" : perfProp,
-					"time (ms)" : perfTiming[perfProp] - startTime
-				});
-			}
+	for(var perfProp in perfTiming) {
+		if(perfTiming[perfProp] && typeof perfTiming[perfProp] === "number"){
+			perfTimingCalc[perfProp] = perfTiming[perfProp] - startTime;
+			perfTimingCalc.output.push({
+				"name" : perfProp,
+				"time (ms)" : perfTiming[perfProp] - startTime
+			});
 		} 
 	}
 
@@ -56,6 +54,14 @@ Logic for Naviagtion Timing API and Markers Waterfall
 	if(perfTimingCalc.secureConnectionStart){
 		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "#990"));
 	}
+	if(perfTimingCalc.msFirstPaint){
+		perfTimingCalc.blocks.push(timeBlock("msFirstPaint Event", perfTimingCalc.msFirstPaint, perfTimingCalc.msFirstPaint + 1, "#c33"));
+	}
+	if(perfTimingCalc.domInteractive){
+		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive + 1 , "#c33"));
+	}
+
+	
 
 	var setupTimeLine = function(){
 		var unit = perfTimingCalc.pageLoadTime / 100;
@@ -76,7 +82,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 			width : "100%",
 			height : chartHolderHeight,
 			fill : "#ccc"
-		}, "background:#f0f5f0;");
+		}, "background:#f0f5f0; min-width:1px;");
 		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
 		
 

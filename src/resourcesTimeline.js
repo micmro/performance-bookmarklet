@@ -9,11 +9,9 @@ Logic for Resource Timing API Waterfall
 		"lastResponseEnd" : perfTiming.loadEventEnd - perfTiming.responseStart,
 	};
 	for (var perfProp in perfTiming) {
-		if(perfTiming.hasOwnProperty(perfProp)){
-			if(perfTiming[perfProp]){
-				calc[perfProp] = perfTiming[perfProp] - perfTiming.navigationStart;
-			}
-		} 
+		if(perfTiming[perfProp] && typeof perfTiming[perfProp] === "number"){
+			calc[perfProp] = perfTiming[perfProp] - perfTiming.navigationStart;
+		}
 	}
 
 

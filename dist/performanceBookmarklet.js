@@ -41,45 +41,52 @@ if(perfTiming.loadEventEnd - perfTiming.navigationStart < 0){
 	return;
 }
 
-//remove this bookmarklet from the result
-resources = resources.filter(function(currR){
-	return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
-});
 
-//crunch the resources data into something easier to work with
-allRessourcesCalc = resources.map(function(currR, i, arr){
-	var urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/),
-		maybeFileName = urlFragments[2].split("/").pop(),
-		fileExtension = maybeFileName.substr((Math.max(0, maybeFileName.lastIndexOf(".")) || Infinity) + 1);
-	
-	var currRes = {
-		name : currR.name,
-		domain : urlFragments[1],
-		initiatorType : currR.initiatorType || fileExtension || "SourceMap or Not Defined",
-		fileExtension : fileExtension || "XHR or Not Defined",
-		loadtime : currR.duration,
-		isLocalDomain : urlFragments[1] === location.host
-	};
+allRessourcesCalc = resources.filter(function(currR){
+		//remove this bookmarklet and non-requests (e.g. javascript: or about: in IE) from the result
+		return currR.name.indexOf("http") === 0 && !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
+	}).map(function(currR, i, arr){
+		//crunch the resources data into something easier to work with
+		var isRequest = currR.name.indexOf("http") === 0,
+			urlFragments, maybeFileName, fileExtension;
 
-	for(var attr in currR){
-		if(currR.hasOwnProperty(attr)) {
-			currRes[attr] = currR[attr];
+		if(isRequest){
+			urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/);
+			maybeFileName = urlFragments[2].split("/").pop();
+			fileExtension = maybeFileName.substr((Math.max(0, maybeFileName.lastIndexOf(".")) || Infinity) + 1);
+		}else{
+			urlFragments = ["", location.host];
+			fileExtension = currR.name.split(":")[0];
 		}
-	}
 
-	if(currR.requestStart){
-		currRes.requestStartDelay = currR.requestStart - currR.startTime;
-		currRes.dns = currR.domainLookupEnd - currR.domainLookupStart;
-		currRes.tcp = currR.connectEnd - currR.connectStart;
-		currRes.ttfb = currR.responseStart - currR.startTime;
-		currRes.requestDuration = currR.responseStart - currR.requestStart;
-	}
-	if(currR.secureConnectionStart){
-		currRes.ssl = currR.connectEnd - currR.secureConnectionStart;
-	}
-	
-	return currRes;
-});
+		var currRes = {
+			name : currR.name,
+			domain : urlFragments[1],
+			initiatorType : currR.initiatorType || fileExtension || "SourceMap or Not Defined",
+			fileExtension : fileExtension || "XHR or Not Defined",
+			loadtime : currR.duration,
+			isLocalDomain : urlFragments[1] === location.host
+		};
+
+		for(var attr in currR){
+			if(currR.hasOwnProperty(attr)) {
+				currRes[attr] = currR[attr];
+			}
+		}
+
+		if(currR.requestStart){
+			currRes.requestStartDelay = currR.requestStart - currR.startTime;
+			currRes.dns = currR.domainLookupEnd - currR.domainLookupStart;
+			currRes.tcp = currR.connectEnd - currR.connectStart;
+			currRes.ttfb = currR.responseStart - currR.startTime;
+			currRes.requestDuration = currR.responseStart - currR.requestStart;
+		}
+		if(currR.secureConnectionStart){
+			currRes.ssl = currR.connectEnd - currR.secureConnectionStart;
+		}
+		
+		return currRes;
+	});
 
 tablesToLog.push({
 	name : "All loaded ressources",
@@ -99,8 +106,8 @@ var newTag = function(tagName, settings, css){
 			tag[attr] = settings[attr];
 		}
 	}
-	tag.textContent = settings.text;
-	tag.style.cssText = css || "";
+	tag.textContent = settings.text||"";
+	tag.style.cssText = css||"";
 	return tag;
 };
 
@@ -113,8 +120,8 @@ var newElementNs = function(tagName, settings, css){
 			el.setAttributeNS(null, attr, settings[attr]);
 		}
 	}
-	el.textContent = settings.text;
-	el.style.cssText = css || "";
+	el.textContent = settings.text||"";
+	el.style.cssText = css||"";
 	return el;
 };
 
@@ -219,15 +226,13 @@ Logic for Naviagtion Timing API and Markers Waterfall
 	var startTime = perfTiming.navigationStart;
 	var propBaseName;
 
-	for (var perfProp in perfTiming) {
-		if(perfTiming.hasOwnProperty(perfProp)){
-			if(perfTiming[perfProp]){
-				perfTimingCalc[perfProp] = perfTiming[perfProp] - startTime;
-				perfTimingCalc.output.push({
-					"name" : perfProp,
-					"time (ms)" : perfTiming[perfProp] - startTime
-				});
-			}
+	for(var perfProp in perfTiming) {
+		if(perfTiming[perfProp] && typeof perfTiming[perfProp] === "number"){
+			perfTimingCalc[perfProp] = perfTiming[perfProp] - startTime;
+			perfTimingCalc.output.push({
+				"name" : perfProp,
+				"time (ms)" : perfTiming[perfProp] - startTime
+			});
 		} 
 	}
 
@@ -263,6 +268,14 @@ Logic for Naviagtion Timing API and Markers Waterfall
 	if(perfTimingCalc.secureConnectionStart){
 		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "#990"));
 	}
+	if(perfTimingCalc.msFirstPaint){
+		perfTimingCalc.blocks.push(timeBlock("msFirstPaint Event", perfTimingCalc.msFirstPaint, perfTimingCalc.msFirstPaint + 1, "#c33"));
+	}
+	if(perfTimingCalc.domInteractive){
+		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive + 1 , "#c33"));
+	}
+
+	
 
 	var setupTimeLine = function(){
 		var unit = perfTimingCalc.pageLoadTime / 100;
@@ -283,7 +296,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 			width : "100%",
 			height : chartHolderHeight,
 			fill : "#ccc"
-		}, "background:#f0f5f0;");
+		}, "background:#f0f5f0; min-width:1px;");
 		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
 		
 
@@ -616,11 +629,9 @@ Logic for Resource Timing API Waterfall
 		"lastResponseEnd" : perfTiming.loadEventEnd - perfTiming.responseStart,
 	};
 	for (var perfProp in perfTiming) {
-		if(perfTiming.hasOwnProperty(perfProp)){
-			if(perfTiming[perfProp]){
-				calc[perfProp] = perfTiming[perfProp] - perfTiming.navigationStart;
-			}
-		} 
+		if(perfTiming[perfProp] && typeof perfTiming[perfProp] === "number"){
+			calc[perfProp] = perfTiming[perfProp] - perfTiming.navigationStart;
+		}
 	}
 
 
