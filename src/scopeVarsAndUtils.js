@@ -37,45 +37,52 @@ if(perfTiming.loadEventEnd - perfTiming.navigationStart < 0){
 	return;
 }
 
-//remove this bookmarklet from the result
-resources = resources.filter(function(currR){
-	return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
-});
 
-//crunch the resources data into something easier to work with
-allRessourcesCalc = resources.map(function(currR, i, arr){
-	var urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/),
-		maybeFileName = urlFragments[2].split("/").pop(),
-		fileExtension = maybeFileName.substr((Math.max(0, maybeFileName.lastIndexOf(".")) || Infinity) + 1);
-	
-	var currRes = {
-		name : currR.name,
-		domain : urlFragments[1],
-		initiatorType : currR.initiatorType || fileExtension || "SourceMap or Not Defined",
-		fileExtension : fileExtension || "XHR or Not Defined",
-		loadtime : currR.duration,
-		isLocalDomain : urlFragments[1] === location.host
-	};
+allRessourcesCalc = resources.filter(function(currR){
+		//remove this bookmarklet from the result
+		return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
+	}).map(function(currR, i, arr){
+		//crunch the resources data into something easier to work with
+		var isRequest = currR.name.indexOf("http") === 0,
+			urlFragments, maybeFileName, fileExtension;
 
-	for(var attr in currR){
-		if(currR.hasOwnProperty(attr)) {
-			currRes[attr] = currR[attr];
+		if(isRequest){
+			urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/);
+			maybeFileName = urlFragments[2].split("/").pop();
+			fileExtension = maybeFileName.substr((Math.max(0, maybeFileName.lastIndexOf(".")) || Infinity) + 1);
+		}else{
+			urlFragments = ["", location.host];
+			fileExtension = currR.name.split(":")[0];
 		}
-	}
 
-	if(currR.requestStart){
-		currRes.requestStartDelay = currR.requestStart - currR.startTime;
-		currRes.dns = currR.domainLookupEnd - currR.domainLookupStart;
-		currRes.tcp = currR.connectEnd - currR.connectStart;
-		currRes.ttfb = currR.responseStart - currR.startTime;
-		currRes.requestDuration = currR.responseStart - currR.requestStart;
-	}
-	if(currR.secureConnectionStart){
-		currRes.ssl = currR.connectEnd - currR.secureConnectionStart;
-	}
-	
-	return currRes;
-});
+		var currRes = {
+			name : currR.name,
+			domain : urlFragments[1],
+			initiatorType : currR.initiatorType || fileExtension || "SourceMap or Not Defined",
+			fileExtension : fileExtension || "XHR or Not Defined",
+			loadtime : currR.duration,
+			isLocalDomain : urlFragments[1] === location.host
+		};
+
+		for(var attr in currR){
+			if(typeof currR[attr] !== "function") {
+				currRes[attr] = currR[attr];
+			}
+		}
+
+		if(currR.requestStart){
+			currRes.requestStartDelay = currR.requestStart - currR.startTime;
+			currRes.dns = currR.domainLookupEnd - currR.domainLookupStart;
+			currRes.tcp = currR.connectEnd - currR.connectStart;
+			currRes.ttfb = currR.responseStart - currR.startTime;
+			currRes.requestDuration = currR.responseStart - currR.requestStart;
+		}
+		if(currR.secureConnectionStart){
+			currRes.ssl = currR.connectEnd - currR.secureConnectionStart;
+		}
+		
+		return currRes;
+	});
 
 tablesToLog.push({
 	name : "All loaded ressources",
@@ -95,8 +102,8 @@ var newTag = function(tagName, settings, css){
 			tag[attr] = settings[attr];
 		}
 	}
-	tag.textContent = settings.text;
-	tag.style.cssText = css || "";
+	tag.textContent = settings.text||"";
+	tag.style.cssText = css||"";
 	return tag;
 };
 
@@ -109,8 +116,8 @@ var newElementNs = function(tagName, settings, css){
 			el.setAttributeNS(null, attr, settings[attr]);
 		}
 	}
-	el.textContent = settings.text;
-	el.style.cssText = css || "";
+	el.textContent = settings.text||"";
+	el.style.cssText = css||"";
 	return el;
 };
 

@@ -8,14 +8,12 @@ Logic for Resource Timing API Waterfall
 		"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.responseStart,
 		"lastResponseEnd" : perfTiming.loadEventEnd - perfTiming.responseStart,
 	};
-	for (var perfProp in perfTiming) {
-		if(perfTiming.hasOwnProperty(perfProp)){
-			if(perfTiming[perfProp]){
-				calc[perfProp] = perfTiming[perfProp] - perfTiming.navigationStart;
-			}
-		} 
-	}
 
+	for (var perfProp in perfTiming) {
+		if(perfTiming[perfProp] && typeof perfTiming[perfProp] === "number"){
+			calc[perfProp] = perfTiming[perfProp] - perfTiming.navigationStart;
+		}
+	}
 
 	var resourceSectionSegment = function(name, start, end, colour){
 		return {
@@ -25,7 +23,7 @@ Logic for Resource Timing API Waterfall
 			total : ((typeof start !== "number" || typeof end !== "number") ? undefined : (end - start)),
 			colour : colour
 		}
-	}
+	};
 
 	var resourceSection = function(name, start, end, colour, segments, rawResource){
 		return {
@@ -75,8 +73,7 @@ Logic for Resource Timing API Waterfall
 			case "link" : colour = "#6c7385"; break;
 			case "xmlhttprequest" : colour = "#efef70"; break; 
 		}
-
-		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime),Math.round(resource.responseEnd), colour, segments, resource));
+		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), colour, segments, resource));
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
 	});
 
@@ -221,6 +218,7 @@ Logic for Resource Timing API Waterfall
 
 		barsToShow.forEach(function(block, i){
 			var blockWidth = block.total||1;
+
 			var y = 25 * i;
 			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
 

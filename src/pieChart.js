@@ -10,10 +10,11 @@ Logic for Request analysis pie charts
 		var chart = newElementNs("svg:svg", {
 			width : "100%",
 			viewBox : "0 0 " + size + " " + size
-		}, "float: left;");
+		}, "float: left; max-height:"+((window.innerWidth * 0.98 - 64) / 3)+"px;");
 
 		var unit = (Math.PI * 2) / 100,
 			startAngle = 0; // init startAngle
+
 
 		var createWedge = function(id, size, percentage, labelTxt, colour){
 			var radius = size/2,
@@ -120,17 +121,20 @@ Logic for Request analysis pie charts
 	};
 
 
+	var requestsOnly = allRessourcesCalc.filter(function(currR) {
+		return currR.name.indexOf("http") === 0;
+	});
 
 	//get counts
-	fileExtensionCounts = getItemCount(allRessourcesCalc.map(function(currR, i, arr){
+	fileExtensionCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.initiatorType;
 	}), "fileType");
 
-	fileExtensionCountLocalExt = getItemCount(allRessourcesCalc.map(function(currR, i, arr){
+	fileExtensionCountLocalExt = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.initiatorType + " " + (currR.isLocalDomain ? "(local)" : "(extenal)");
 	}), "fileType");
 
-	requestsByDomain = getItemCount(allRessourcesCalc.map(function(currR, i, arr){
+	requestsByDomain = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.domain;
 	}), "domain");
 
@@ -141,7 +145,7 @@ Logic for Request analysis pie charts
 		var chartHolder = newTag("div", {}, "float:left; width:28%; margin: 0 5.3333% 0 0;");
 		chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666; min-height:2em;"));
 		chartHolder.appendChild(createPieChart(data, 400));
-		chartHolder.appendChild(newTag("p", {text : "total requests: (" + resources.length + ")"}));
+		chartHolder.appendChild(newTag("p", {text : "total requests: (" + requestsOnly.length + ")"}));
 		chartHolder.appendChild(createTable(title, data));
 		outputContent.appendChild(chartHolder);
 	};
@@ -149,7 +153,7 @@ Logic for Request analysis pie charts
 
 	// init data for charts
 
-	var requestsUnit = resources.length / 100;
+	var requestsUnit = requestsOnly.length / 100;
 	setupChart("Requests by Domain", requestsByDomain.map(function(domain){
 		domain.perc = domain.count / requestsUnit;
 		domain.label = domain.domain;
