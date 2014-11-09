@@ -43,8 +43,8 @@ if(perfTiming.loadEventEnd - perfTiming.navigationStart < 0){
 
 
 allRessourcesCalc = resources.filter(function(currR){
-		//remove this bookmarklet and non-requests (e.g. javascript: or about: in IE) from the result
-		return currR.name.indexOf("http") === 0 && !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
+		//remove this bookmarklet from the result
+		return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
 	}).map(function(currR, i, arr){
 		//crunch the resources data into something easier to work with
 		var isRequest = currR.name.indexOf("http") === 0,
@@ -69,7 +69,7 @@ allRessourcesCalc = resources.filter(function(currR){
 		};
 
 		for(var attr in currR){
-			if(currR.hasOwnProperty(attr)) {
+			if(typeof currR[attr] !== "function") {
 				currRes[attr] = currR[attr];
 			}
 		}
@@ -233,7 +233,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 				"name" : perfProp,
 				"time (ms)" : perfTiming[perfProp] - startTime
 			});
-		} 
+		}
 	}
 
 	perfTimingCalc.output.sort(function(a, b){
@@ -449,10 +449,11 @@ Logic for Request analysis pie charts
 		var chart = newElementNs("svg:svg", {
 			width : "100%",
 			viewBox : "0 0 " + size + " " + size
-		}, "float: left;");
+		}, "float: left; max-height:"+((window.innerWidth * 0.98 - 64) / 3)+"px;");
 
 		var unit = (Math.PI * 2) / 100,
 			startAngle = 0; // init startAngle
+
 
 		var createWedge = function(id, size, percentage, labelTxt, colour){
 			var radius = size/2,
@@ -559,17 +560,20 @@ Logic for Request analysis pie charts
 	};
 
 
+	var requestsOnly = allRessourcesCalc.filter(function(currR) {
+		return currR.name.indexOf("http") === 0;
+	});
 
 	//get counts
-	fileExtensionCounts = getItemCount(allRessourcesCalc.map(function(currR, i, arr){
+	fileExtensionCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.initiatorType;
 	}), "fileType");
 
-	fileExtensionCountLocalExt = getItemCount(allRessourcesCalc.map(function(currR, i, arr){
+	fileExtensionCountLocalExt = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.initiatorType + " " + (currR.isLocalDomain ? "(local)" : "(extenal)");
 	}), "fileType");
 
-	requestsByDomain = getItemCount(allRessourcesCalc.map(function(currR, i, arr){
+	requestsByDomain = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.domain;
 	}), "domain");
 
@@ -580,7 +584,7 @@ Logic for Request analysis pie charts
 		var chartHolder = newTag("div", {}, "float:left; width:28%; margin: 0 5.3333% 0 0;");
 		chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666; min-height:2em;"));
 		chartHolder.appendChild(createPieChart(data, 400));
-		chartHolder.appendChild(newTag("p", {text : "total requests: (" + resources.length + ")"}));
+		chartHolder.appendChild(newTag("p", {text : "total requests: (" + requestsOnly.length + ")"}));
 		chartHolder.appendChild(createTable(title, data));
 		outputContent.appendChild(chartHolder);
 	};
@@ -588,7 +592,7 @@ Logic for Request analysis pie charts
 
 	// init data for charts
 
-	var requestsUnit = resources.length / 100;
+	var requestsUnit = requestsOnly.length / 100;
 	setupChart("Requests by Domain", requestsByDomain.map(function(domain){
 		domain.perc = domain.count / requestsUnit;
 		domain.label = domain.domain;
@@ -628,12 +632,12 @@ Logic for Resource Timing API Waterfall
 		"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.responseStart,
 		"lastResponseEnd" : perfTiming.loadEventEnd - perfTiming.responseStart,
 	};
+
 	for (var perfProp in perfTiming) {
 		if(perfTiming[perfProp] && typeof perfTiming[perfProp] === "number"){
 			calc[perfProp] = perfTiming[perfProp] - perfTiming.navigationStart;
 		}
 	}
-
 
 	var resourceSectionSegment = function(name, start, end, colour){
 		return {
@@ -693,8 +697,7 @@ Logic for Resource Timing API Waterfall
 			case "link" : colour = "#6c7385"; break;
 			case "xmlhttprequest" : colour = "#efef70"; break; 
 		}
-
-		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime),Math.round(resource.responseEnd), colour, segments, resource));
+		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), colour, segments, resource));
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
 	});
 
@@ -839,6 +842,7 @@ Logic for Resource Timing API Waterfall
 
 		barsToShow.forEach(function(block, i){
 			var blockWidth = block.total||1;
+
 			var y = 25 * i;
 			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
 

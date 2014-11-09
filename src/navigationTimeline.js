@@ -19,7 +19,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 				"name" : perfProp,
 				"time (ms)" : perfTiming[perfProp] - startTime
 			});
-		} 
+		}
 	}
 
 	perfTimingCalc.output.sort(function(a, b){

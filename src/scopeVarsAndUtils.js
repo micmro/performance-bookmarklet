@@ -39,8 +39,8 @@ if(perfTiming.loadEventEnd - perfTiming.navigationStart < 0){
 
 
 allRessourcesCalc = resources.filter(function(currR){
-		//remove this bookmarklet and non-requests (e.g. javascript: or about: in IE) from the result
-		return currR.name.indexOf("http") === 0 && !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
+		//remove this bookmarklet from the result
+		return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
 	}).map(function(currR, i, arr){
 		//crunch the resources data into something easier to work with
 		var isRequest = currR.name.indexOf("http") === 0,
@@ -65,7 +65,7 @@ allRessourcesCalc = resources.filter(function(currR){
 		};
 
 		for(var attr in currR){
-			if(currR.hasOwnProperty(attr)) {
+			if(typeof currR[attr] !== "function") {
 				currRes[attr] = currR[attr];
 			}
 		}
