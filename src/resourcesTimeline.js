@@ -23,7 +23,7 @@ Logic for Resource Timing API Waterfall
 			total : ((typeof start !== "number" || typeof end !== "number") ? undefined : (end - start)),
 			colour : colour
 		}
-	}
+	};
 
 	var resourceSection = function(name, start, end, colour, segments, rawResource){
 		return {

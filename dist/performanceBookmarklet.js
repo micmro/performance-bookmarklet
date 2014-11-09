@@ -269,10 +269,10 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "#990"));
 	}
 	if(perfTimingCalc.msFirstPaint){
-		perfTimingCalc.blocks.push(timeBlock("msFirstPaint Event", perfTimingCalc.msFirstPaint, perfTimingCalc.msFirstPaint + 1, "#c33"));
+		perfTimingCalc.blocks.push(timeBlock("msFirstPaint Event", perfTimingCalc.msFirstPaint, perfTimingCalc.msFirstPaint, "#c33"));
 	}
 	if(perfTimingCalc.domInteractive){
-		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive + 1 , "#c33"));
+		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive, "#c33"));
 	}
 
 	
@@ -375,13 +375,12 @@ Logic for Naviagtion Timing API and Markers Waterfall
 					y2 : diagramHeight + 23
 				}));
 
-				lineLabel.addEventListener("mouseover", function(evt){
-					//evt.target.parent.
+				markHolder.addEventListener("mouseover", function(evt){
 					lineHolder.style.stroke = "#009";
 					lineHolder.style.strokeWidth = "2";
 					markHolder.parentNode.appendChild(markHolder);
 				});
-				lineLabel.addEventListener("mouseout", function(evt){
+				markHolder.addEventListener("mouseleave", function(evt){
 					lineHolder.style.strokeWidth = "1";
 					lineHolder.style.stroke = markerColour;
 				});
@@ -647,7 +646,7 @@ Logic for Resource Timing API Waterfall
 			total : ((typeof start !== "number" || typeof end !== "number") ? undefined : (end - start)),
 			colour : colour
 		}
-	}
+	};
 
 	var resourceSection = function(name, start, end, colour, segments, rawResource){
 		return {
