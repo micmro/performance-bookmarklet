@@ -147,6 +147,22 @@ var getRandomColor = function(){
 	return color;
 };
 
+var getInitiatorTypeColour = function(initiatorType, fallbackColour){
+	var colour = fallbackColour||"#d6d6d7"; //default
+
+	//colour the resources by initiator type
+	switch(initiatorType) {
+		case "css" : colour = "#c5efaf"; break;
+		case "iframe" : colour = "#85b3f2"; break;
+		case "img" : colour = "#c98dfd"; break;
+		case "script" : colour = "#feb06a"; break; 
+		case "link" : colour = "#6c7385"; break;
+		case "xmlhttprequest" : colour = "#efef70"; break;
+	}
+	return colour;
+};
+
+
 var getItemCount = function(arr, keyName){
 	var counts = {},
 		resultArr = [];

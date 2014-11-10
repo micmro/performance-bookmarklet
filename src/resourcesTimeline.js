@@ -63,17 +63,7 @@ Logic for Resource Timing API Waterfall
 			resourceSectionSegment("response", resource.responseStart, resource.responseEnd, "#0fc")
 		];
 
-		var colour = "#d6d6d7";
-		//colour the resources by initiator type
-		switch(resource.initiatorType) {
-			case "css" : colour = "#c5efaf"; break;
-			case "iframe" : colour = "#85b3f2"; break;
-			case "img" : colour = "#c98dfd"; break;
-			case "script" : colour = "#feb06a"; break; 
-			case "link" : colour = "#6c7385"; break;
-			case "xmlhttprequest" : colour = "#efef70"; break; 
-		}
-		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), colour, segments, resource));
+		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), getInitiatorTypeColour(resource.initiatorType), segments, resource));
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
 	});
 
@@ -233,6 +223,7 @@ Logic for Resource Timing API Waterfall
 				blockLabel.setAttribute("x", (block.start||0.001) / unit - 0.5 + "%");
 				blockLabel.setAttribute("text-anchor", "end"); 
 			}
+			blockLabel.style.opacity = block.name.match(/js.map$/) ? "0.5" : "1";
 			timeLineLabelHolder.appendChild(blockLabel);
 		});
 

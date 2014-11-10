@@ -45,7 +45,7 @@ Logic for Request analysis pie charts
 				text : labelTxt
 			})); // Add tile to wedge path
 			path.addEventListener("mouseover", function(evt){
-				evt.target.style.opacity = "0.5";
+				evt.target.style.opacity = "0.3";
 				outputIFrame.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
 			});
 			path.addEventListener("mouseout", function(evt){
@@ -75,7 +75,7 @@ Logic for Request analysis pie charts
 
 		//loop through data and create wedges
 		data.forEach(function(dataObj){
-			var wedgeAndLabel = createWedge(dataObj.id, size, dataObj.perc, dataObj.label + " (" + dataObj.count + ")", getRandomColor());
+			var wedgeAndLabel = createWedge(dataObj.id, size, dataObj.perc, dataObj.label + " (" + dataObj.count + ")", dataObj.colour || getRandomColor());
 			wedgeWrap.appendChild(wedgeAndLabel.path);
 
 			if(wedgeAndLabel.wedgeLabel){
@@ -120,18 +120,18 @@ Logic for Request analysis pie charts
 		return tableHolder;
 	};
 
-
+	//filter out non-http[s] and sourcemaps
 	var requestsOnly = allRessourcesCalc.filter(function(currR) {
-		return currR.name.indexOf("http") === 0;
+		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
 	});
 
 	//get counts
 	fileExtensionCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
-		return currR.initiatorType;
+		return currR.initiatorType || currR.fileExtension;
 	}), "fileType");
 
 	fileExtensionCountLocalExt = getItemCount(requestsOnly.map(function(currR, i, arr){
-		return currR.initiatorType + " " + (currR.isLocalDomain ? "(local)" : "(extenal)");
+		return (currR.initiatorType  || currR.fileExtension) + " " + (currR.isLocalDomain ? "(local)" : "(extenal)");
 	}), "fileType");
 
 	requestsByDomain = getItemCount(requestsOnly.map(function(currR, i, arr){
@@ -161,23 +161,25 @@ Logic for Request analysis pie charts
 		return domain;
 	}));
 
-	setupChart("Requests by Type (local/external domain)", fileExtensionCountLocalExt.map(function(fileType){
+	setupChart("Requests by Initiator Type (local/external domain)", fileExtensionCountLocalExt.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
+		fileType.colour = getInitiatorTypeColour((fileType.fileType.split(" ")[0]), getRandomColor());
 		fileType.id = "reqByTypeLocEx-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}));
 
-	setupChart("Requests by Type", fileExtensionCounts.map(function(fileType){
+	setupChart("Requests by Initiator Type", fileExtensionCounts.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
+		fileType.colour = getInitiatorTypeColour((fileType.fileType), getRandomColor());
 		fileType.id = "reqByType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}));
 
 	tablesToLog = tablesToLog.concat([
 		{name : "Requests by domain", data : requestsByDomain},
-		{name : "File type count (local / external)", data : fileExtensionCounts},
-		{name : "File type count", data : fileExtensionCountLocalExt}
+		{name : "File type count (local / external)", data : fileExtensionCounts, columns : ["fileType", "count", "perc"]},
+		{name : "File type count", data : fileExtensionCountLocalExt, columns : ["fileType", "count", "perc"]}
 	]);
 }());

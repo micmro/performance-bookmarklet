@@ -166,7 +166,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 					lineHolder.style.strokeWidth = "2";
 					markHolder.parentNode.appendChild(markHolder);
 				});
-				markHolder.addEventListener("mouseleave", function(evt){
+				markHolder.addEventListener("mouseout", function(evt){
 					lineHolder.style.strokeWidth = "1";
 					lineHolder.style.stroke = markerColour;
 				});
