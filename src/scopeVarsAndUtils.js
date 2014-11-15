@@ -126,7 +126,7 @@ var newTextElementNs = function(text, y, css){
 			fill : "#111",
 			y : y,
 			text : text
-		}, (css||"") + " text-shadow:0 0 2px #fff;");
+		}, (css||"") + " text-shadow:0 0 4px #fff;");
 };
 
 var getNodeTextWidth = function(textNode){
@@ -138,13 +138,19 @@ var getNodeTextWidth = function(textNode){
 	return nodeWidth;
 };
 
-var getRandomColor = function(){
-	var letters = '0123456789ABCDEF'.split(''),
-		color = '#';
-	for (var i = 0; i < 6; i++ ) {
-		color += letters[Math.floor(Math.random() * 16)];
+var getRandomColor = function(baseRangeRed, baseRangeGreen, baseRangeBlue){
+	var range = [baseRangeRed||"0123456789ABCDEF", baseRangeGreen||"0123456789ABCDEF", baseRangeBlue||"0123456789ABCDEF"];
+	var color = "#";
+	var r = 0;
+	for (var i = 0; i < 6; i++){
+		r = Math.floor(i/2);
+		color += range[r].split("")[Math.floor(Math.random() * range[r].length)];
 	}
 	return color;
+};
+
+var endsWith = function(str, suffix){
+	return str.indexOf(suffix, str.length - suffix.length) !== -1;
 };
 
 var getInitiatorTypeColour = function(initiatorType, fallbackColour){

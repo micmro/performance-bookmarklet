@@ -130,7 +130,7 @@ var newTextElementNs = function(text, y, css){
 			fill : "#111",
 			y : y,
 			text : text
-		}, (css||"") + " text-shadow:0 0 2px #fff;");
+		}, (css||"") + " text-shadow:0 0 4px #fff;");
 };
 
 var getNodeTextWidth = function(textNode){
@@ -142,13 +142,19 @@ var getNodeTextWidth = function(textNode){
 	return nodeWidth;
 };
 
-var getRandomColor = function(){
-	var letters = '0123456789ABCDEF'.split(''),
-		color = '#';
-	for (var i = 0; i < 6; i++ ) {
-		color += letters[Math.floor(Math.random() * 16)];
+var getRandomColor = function(baseRangeRed, baseRangeGreen, baseRangeBlue){
+	var range = [baseRangeRed||"0123456789ABCDEF", baseRangeGreen||"0123456789ABCDEF", baseRangeBlue||"0123456789ABCDEF"];
+	var color = "#";
+	var r = 0;
+	for (var i = 0; i < 6; i++){
+		r = Math.floor(i/2);
+		color += range[r].split("")[Math.floor(Math.random() * range[r].length)];
 	}
 	return color;
+};
+
+var endsWith = function(str, suffix){
+	return str.indexOf(suffix, str.length - suffix.length) !== -1;
 };
 
 var getInitiatorTypeColour = function(initiatorType, fallbackColour){
@@ -499,7 +505,7 @@ Logic for Request analysis pie charts
 				text : labelTxt
 			})); // Add tile to wedge path
 			path.addEventListener("mouseover", function(evt){
-				evt.target.style.opacity = "0.3";
+				evt.target.style.opacity = "0.5";
 				outputIFrame.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
 			});
 			path.addEventListener("mouseout", function(evt){
@@ -595,11 +601,16 @@ Logic for Request analysis pie charts
 
 
 	// create a chart and table section
-	var setupChart = function(title, data){
+	var setupChart = function(title, data, countTexts){
 		var chartHolder = newTag("div", {}, "float:left; width:28%; margin: 0 5.3333% 0 0;");
 		chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666; min-height:2em;"));
 		chartHolder.appendChild(createPieChart(data, 400));
-		chartHolder.appendChild(newTag("p", {text : "total requests: (" + requestsOnly.length + ")"}));
+		chartHolder.appendChild(newTag("p", {text : "Total Requests: " + requestsOnly.length}));
+		if(countTexts && countTexts.length){
+			countTexts.forEach(function(countText){
+				chartHolder.appendChild(newTag("p", {text : countText}, "margin-top:-1em"));
+			})
+		}
 		chartHolder.appendChild(createTable(title, data));
 		outputContent.appendChild(chartHolder);
 	};
@@ -608,17 +619,54 @@ Logic for Request analysis pie charts
 	// init data for charts
 
 	var requestsUnit = requestsOnly.length / 100;
-	setupChart("Requests by Domain", requestsByDomain.map(function(domain){
+	var colourRangeR = "789abcdef";
+	var colourRangeG = "789abcdef";
+	var colourRangeB = "789abcdef";
+	var currAndSubdomainRequests = requestsOnly.filter(function(domain){
+		return domain.domain.split(".").slice(-2).join(".") === location.host.split(".").slice(-2).join(".");
+	}).length;
+
+	var crossDocDomainRequests = requestsOnly.filter(function(domain){
+		return !endsWith(domain.domain, document.domain);
+	}).length;
+
+	var hostRequests = requestsOnly.filter(function(domain){
+		return domain.domain === location.host;
+	}).length;
+
+	var hostSubdomains = requestsByDomain.filter(function(domain){
+		return endsWith(domain.domain, location.host.split(".").slice(-2).join(".")) && domain.domain !== location.host;
+	}).length;
+
+	var requestsByDomainData = requestsByDomain.map(function(domain){
 		domain.perc = domain.count / requestsUnit;
 		domain.label = domain.domain;
+		if(domain.domain === location.host){
+			domain.colour = "#0c0";
+		}else if(domain.domain.split(".").slice(-2).join(".") === location.host.split(".").slice(-2).join(".")){
+			domain.colour = "#0a0";
+		}else{
+			domain.colour = getRandomColor("56789abcdef", "01234567", "abcdef");
+		}
 		domain.id = "reqByDomain-" + domain.label.replace(/[^a-zA-Z]/g, "-");
 		return domain;
-	}));
+	});
+
+
+	setupChart("Requests by Domain", requestsByDomainData, [
+		"Domains Total: " + requestsByDomain.length,
+		"Subdomains of TLD: " + hostSubdomains,
+		"Current TLD & Subdomain Requests: " + currAndSubdomainRequests,
+		"Requests to Host: " + hostRequests,
+		"CrossDomain Requests (document.domain): " + crossDocDomainRequests,
+		"-----------------------",
+		"TDL = Top Level Domain"
+	]);
 
 	setupChart("Requests by Initiator Type (local/external domain)", fileExtensionCountLocalExt.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
-		fileType.colour = getInitiatorTypeColour((fileType.fileType.split(" ")[0]), getRandomColor());
+		fileType.colour = getInitiatorTypeColour((fileType.fileType.split(" ")[0]), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
 		fileType.id = "reqByTypeLocEx-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}));
@@ -626,7 +674,7 @@ Logic for Request analysis pie charts
 	setupChart("Requests by Initiator Type", fileExtensionCounts.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
-		fileType.colour = getInitiatorTypeColour((fileType.fileType), getRandomColor());
+		fileType.colour = getInitiatorTypeColour((fileType.fileType), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
 		fileType.id = "reqByType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}));
