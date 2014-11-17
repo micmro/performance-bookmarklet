@@ -200,7 +200,7 @@ Logic for Request analysis pie charts
 		"Requests to Host: " + hostRequests,
 		"CrossDomain Requests (document.domain): " + crossDocDomainRequests,
 		"-----------------------",
-		"TDL = Top Level Domain"
+		"TLD = Top Level Domain"
 	]);
 
 	setupChart("Requests by Initiator Type (local/external domain)", fileExtensionCountLocalExt.map(function(fileType){
