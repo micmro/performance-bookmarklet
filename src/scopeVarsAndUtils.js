@@ -102,7 +102,11 @@ var newTag = function(tagName, settings, css){
 			tag[attr] = settings[attr];
 		}
 	}
-	tag.textContent = settings.text||"";
+	if(settings.text){
+		tag.textContent = settings.text;
+	}else if(settings.html){
+		tag.innerHTML = settings.html;
+	}
 	tag.style.cssText = css||"";
 	return tag;
 };

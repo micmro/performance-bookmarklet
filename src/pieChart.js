@@ -126,15 +126,15 @@ Logic for Request analysis pie charts
 	});
 
 	//get counts
-	fileExtensionCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
+	var fileExtensionCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.initiatorType || currR.fileExtension;
 	}), "fileType");
 
-	fileExtensionCountLocalExt = getItemCount(requestsOnly.map(function(currR, i, arr){
+	var fileExtensionCountLocalExt = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return (currR.initiatorType  || currR.fileExtension) + " " + (currR.isLocalDomain ? "(local)" : "(extenal)");
 	}), "fileType");
 
-	requestsByDomain = getItemCount(requestsOnly.map(function(currR, i, arr){
+	var requestsByDomain = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.domain;
 	}), "domain");
 
