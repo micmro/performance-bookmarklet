@@ -61,7 +61,7 @@ allRessourcesCalc = resources.filter(function(currR){
 			initiatorType : currR.initiatorType || fileExtension || "SourceMap or Not Defined",
 			fileExtension : fileExtension || "XHR or Not Defined",
 			loadtime : currR.duration,
-			isLocalDomain : urlFragments[1] === location.host
+			isRequestToHost : urlFragments[1] === location.host
 		};
 
 		for(var attr in currR){
@@ -87,7 +87,7 @@ allRessourcesCalc = resources.filter(function(currR){
 tablesToLog.push({
 	name : "All loaded ressources",
 	data : allRessourcesCalc,
-	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isLocalDomain", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
+	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isRequestToHost", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
 });
 
 
@@ -102,7 +102,11 @@ var newTag = function(tagName, settings, css){
 			tag[attr] = settings[attr];
 		}
 	}
-	tag.textContent = settings.text||"";
+	if(settings.text){
+		tag.textContent = settings.text;
+	}else if(settings.html){
+		tag.innerHTML = settings.html;
+	}
 	tag.style.cssText = css||"";
 	return tag;
 };
@@ -213,7 +217,7 @@ if(!outputHolder){
 	var closeBtn = newTag("button", {
 		class : "perfbook-close",
 		text: "close"
-	}, "position:absolute; top:0; right:0; padding:1em 0.5em; z-index:1; background:transparent; border:0; cursor:pointer;");
+	}, "position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;");
 	closeBtn.addEventListener("click", function(){
 		iFrameEl.parentNode.removeChild(iFrameEl);
 	});
