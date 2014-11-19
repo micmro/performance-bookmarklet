@@ -130,8 +130,8 @@ Logic for Request analysis pie charts
 		return currR.initiatorType || currR.fileExtension;
 	}), "fileType");
 
-	var fileExtensionCountLocalExt = getItemCount(requestsOnly.map(function(currR, i, arr){
-		return (currR.initiatorType  || currR.fileExtension) + " " + (currR.isLocalDomain ? "(local)" : "(extenal)");
+	var fileExtensionCountHostExt = getItemCount(requestsOnly.map(function(currR, i, arr){
+		return (currR.initiatorType  || currR.fileExtension) + " " + (currR.isRequestToHost ? "(host)" : "(extenal)");
 	}), "fileType");
 
 	var requestsByDomain = getItemCount(requestsOnly.map(function(currR, i, arr){
@@ -162,20 +162,9 @@ Logic for Request analysis pie charts
 	var colourRangeR = "789abcdef";
 	var colourRangeG = "789abcdef";
 	var colourRangeB = "789abcdef";
-	var currAndSubdomainRequests = requestsOnly.filter(function(domain){
-		return domain.domain.split(".").slice(-2).join(".") === location.host.split(".").slice(-2).join(".");
-	}).length;
-
-	var crossDocDomainRequests = requestsOnly.filter(function(domain){
-		return !endsWith(domain.domain, document.domain);
-	}).length;
 
 	var hostRequests = requestsOnly.filter(function(domain){
 		return domain.domain === location.host;
-	}).length;
-
-	var hostSubdomains = requestsByDomain.filter(function(domain){
-		return endsWith(domain.domain, location.host.split(".").slice(-2).join(".")) && domain.domain !== location.host;
 	}).length;
 
 	var requestsByDomainData = requestsByDomain.map(function(domain){
@@ -194,22 +183,19 @@ Logic for Request analysis pie charts
 
 
 	setupChart("Requests by Domain", requestsByDomainData, [
-		"Domains Total: " + requestsByDomain.length,
-		"Subdomains of TLD: " + hostSubdomains,
-		"Current TLD & Subdomain Requests: " + currAndSubdomainRequests,
-		"Requests to Host: " + hostRequests,
-		"CrossDomain Requests (document.domain): " + crossDocDomainRequests,
-		"-----------------------",
-		"TLD = Top Level Domain"
+		"Domains Total: " + requestsByDomain.length
 	]);
 
-	setupChart("Requests by Initiator Type (local/external domain)", fileExtensionCountLocalExt.map(function(fileType){
+	setupChart("Requests by Initiator Type (host/external domain)", fileExtensionCountHostExt.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
 		fileType.colour = getInitiatorTypeColour((fileType.fileType.split(" ")[0]), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
 		fileType.id = "reqByTypeLocEx-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
-	}));
+	}),[
+		"Requests to Host: " + hostRequests,
+		"Host: " + location.host,
+	]);
 
 	setupChart("Requests by Initiator Type", fileExtensionCounts.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
@@ -221,7 +207,7 @@ Logic for Request analysis pie charts
 
 	tablesToLog = tablesToLog.concat([
 		{name : "Requests by domain", data : requestsByDomain},
-		{name : "File type count (local / external)", data : fileExtensionCounts, columns : ["fileType", "count", "perc"]},
-		{name : "File type count", data : fileExtensionCountLocalExt, columns : ["fileType", "count", "perc"]}
+		{name : "File type count (host / external)", data : fileExtensionCounts, columns : ["fileType", "count", "perc"]},
+		{name : "File type count", data : fileExtensionCountHostExt, columns : ["fileType", "count", "perc"]}
 	]);
 }());

@@ -65,7 +65,7 @@ allRessourcesCalc = resources.filter(function(currR){
 			initiatorType : currR.initiatorType || fileExtension || "SourceMap or Not Defined",
 			fileExtension : fileExtension || "XHR or Not Defined",
 			loadtime : currR.duration,
-			isLocalDomain : urlFragments[1] === location.host
+			isRequestToHost : urlFragments[1] === location.host
 		};
 
 		for(var attr in currR){
@@ -91,7 +91,7 @@ allRessourcesCalc = resources.filter(function(currR){
 tablesToLog.push({
 	name : "All loaded ressources",
 	data : allRessourcesCalc,
-	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isLocalDomain", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
+	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isRequestToHost", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
 });
 
 
@@ -221,7 +221,7 @@ if(!outputHolder){
 	var closeBtn = newTag("button", {
 		class : "perfbook-close",
 		text: "close"
-	}, "position:absolute; top:0; right:0; padding:1em 0.5em; z-index:1; background:transparent; border:0; cursor:pointer;");
+	}, "position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;");
 	closeBtn.addEventListener("click", function(){
 		iFrameEl.parentNode.removeChild(iFrameEl);
 	});
@@ -270,11 +270,25 @@ Tiles to summarize page performance
 		return endsWith(domain.domain, location.host.split(".").slice(-2).join(".")) && domain.domain !== location.host;
 	}).length;
 
+	var slowestCalls = allRessourcesCalc.filter(function(a){
+		return a.name !== location.href;
+	}).sort(function(a, b) {
+		return b.duration - a.duration;
+	});
 
-	var createTile = function(title, value){
-		var dl = newTag("dl", {}, "float:left; width:10%; min-width:200px; background:#ddd; padding: 1em; margin:0 1em 1em 0; color:#666; text-align:center;");
-		dl.appendChild(newTag("dt", {text : title}, "font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.4em; padding:0 0 0.5em;"));
-		dl.appendChild(newTag("dt", {text : value}, "font-weight:bold; font-size:60px; line-height:1em;"));
+	var average = Math.floor(slowestCalls.reduceRight(function(a,b){
+		if(typeof a !== "number"){
+			return a.duration + b.duration
+		}
+		return a + b.duration;
+	}) / slowestCalls.length);
+
+
+	var createTile = function(title, value, titleFontSize){
+		titleFontSize = titleFontSize || 60;
+		var dl = newTag("dl", {}, "float:left; width:13%; min-width:150px; background:#ddd; padding: 1em; margin:0 2% 1em 0; color:#666; text-align:center;");
+		dl.appendChild(newTag("dt", {html : title}, "font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.4em; padding:0 0 0.5em;"));
+		dl.appendChild(newTag("dt", {html : value}, "font-weight:bold; font-size:"+titleFontSize+"px; line-height:60px;"));
 		return dl;
 	};
 
@@ -283,18 +297,25 @@ Tiles to summarize page performance
 		a.appendChild(newTag("dd", {html : value}, "float:left; margin:0 0 0 1em;"));
 	};
 
-	var tilesHolder = newTag("div", {}, "float:left; width:100%; overflow-x:auto");
+	var tilesHolder = newTag("div", {}, "float:left; margin: 2em 0 1em; width:102%; overflow-x:auto");
 	
-	tilesHolder.appendChild(createTile("Total Domains", requestsByDomain.length));
-	tilesHolder.appendChild(createTile("Subdomains of TLD", hostSubdomains));
-	tilesHolder.appendChild(createTile("Current TLD & Subdomain Requests", currAndSubdomainRequests));
-	tilesHolder.appendChild(createTile("Requests to Host", hostRequests));
-	tilesHolder.appendChild(createTile("CrossDomain Requests (document.domain)", crossDocDomainRequests));
+	tilesHolder.appendChild(createTile("Requests", requestsOnly.length||"0"));
+	tilesHolder.appendChild(createTile("Domains", requestsByDomain.length||"0"));
+	tilesHolder.appendChild(createTile("Subdomains of <abbr title=\"Top Level Domain\">TLD</abbr>", hostSubdomains||"0"));
+	tilesHolder.appendChild(createTile("Requests to <span title=\""+location.host+"\">Host</span>", hostRequests||"0"));
+	tilesHolder.appendChild(createTile("<abbr title=\"Top Level Domain\">TLD</abbr> & Subdomain Requests", currAndSubdomainRequests||"0"));
+	tilesHolder.appendChild(createTile("Total", perfTiming.loadEventEnd - perfTiming.navigationStart + "ms", 40));
+	tilesHolder.appendChild(createTile("Time to First Byte", perfTiming.responseStart - perfTiming.navigationStart + "ms", 40));
+	tilesHolder.appendChild(createTile("<span title=\"domLoading to domContentLoadedEventStart\">DOM Content Loading</span>", perfTiming.domContentLoadedEventStart - perfTiming.domLoading + "ms", 40));
+	tilesHolder.appendChild(createTile("<span title=\"domLoading to loadEventStart\">DOM Processing</span>", perfTiming.domComplete - perfTiming.domLoading + "ms", 40));
+	tilesHolder.appendChild(createTile("<span title=\"" + slowestCalls[0].name +"\">Slowest Call</span>", "<span title=\"" + slowestCalls[0].name +"\">"+ Math.floor(slowestCalls[0].duration) + "ms</span>", 40));
+	tilesHolder.appendChild(createTile("Average Call", average + "ms", 40));
+
 
 
 	var appendix = newTag("dl", {}, "float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;");
 
-	createAppendixDefValue(appendix, "<abbr title=\"Top Level Domain\">TLD</abbr>:", location.host.split(".").slice(-2).join(".") + " (Top Level Domain)");
+	createAppendixDefValue(appendix, "<abbr title=\"Top Level Domain\">TLD</abbr>:", location.host.split(".").slice(-2).join("."));
 	createAppendixDefValue(appendix, "Host:", location.host);
 	createAppendixDefValue(appendix, "document.domain:", document.domain);
 
@@ -659,8 +680,8 @@ Logic for Request analysis pie charts
 		return currR.initiatorType || currR.fileExtension;
 	}), "fileType");
 
-	var fileExtensionCountLocalExt = getItemCount(requestsOnly.map(function(currR, i, arr){
-		return (currR.initiatorType  || currR.fileExtension) + " " + (currR.isLocalDomain ? "(local)" : "(extenal)");
+	var fileExtensionCountHostExt = getItemCount(requestsOnly.map(function(currR, i, arr){
+		return (currR.initiatorType  || currR.fileExtension) + " " + (currR.isRequestToHost ? "(host)" : "(extenal)");
 	}), "fileType");
 
 	var requestsByDomain = getItemCount(requestsOnly.map(function(currR, i, arr){
@@ -691,20 +712,9 @@ Logic for Request analysis pie charts
 	var colourRangeR = "789abcdef";
 	var colourRangeG = "789abcdef";
 	var colourRangeB = "789abcdef";
-	var currAndSubdomainRequests = requestsOnly.filter(function(domain){
-		return domain.domain.split(".").slice(-2).join(".") === location.host.split(".").slice(-2).join(".");
-	}).length;
-
-	var crossDocDomainRequests = requestsOnly.filter(function(domain){
-		return !endsWith(domain.domain, document.domain);
-	}).length;
 
 	var hostRequests = requestsOnly.filter(function(domain){
 		return domain.domain === location.host;
-	}).length;
-
-	var hostSubdomains = requestsByDomain.filter(function(domain){
-		return endsWith(domain.domain, location.host.split(".").slice(-2).join(".")) && domain.domain !== location.host;
 	}).length;
 
 	var requestsByDomainData = requestsByDomain.map(function(domain){
@@ -723,22 +733,19 @@ Logic for Request analysis pie charts
 
 
 	setupChart("Requests by Domain", requestsByDomainData, [
-		"Domains Total: " + requestsByDomain.length,
-		"Subdomains of TLD: " + hostSubdomains,
-		"Current TLD & Subdomain Requests: " + currAndSubdomainRequests,
-		"Requests to Host: " + hostRequests,
-		"CrossDomain Requests (document.domain): " + crossDocDomainRequests,
-		"-----------------------",
-		"TLD = Top Level Domain"
+		"Domains Total: " + requestsByDomain.length
 	]);
 
-	setupChart("Requests by Initiator Type (local/external domain)", fileExtensionCountLocalExt.map(function(fileType){
+	setupChart("Requests by Initiator Type (host/external domain)", fileExtensionCountHostExt.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
 		fileType.colour = getInitiatorTypeColour((fileType.fileType.split(" ")[0]), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
 		fileType.id = "reqByTypeLocEx-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
-	}));
+	}),[
+		"Requests to Host: " + hostRequests,
+		"Host: " + location.host,
+	]);
 
 	setupChart("Requests by Initiator Type", fileExtensionCounts.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
@@ -750,8 +757,8 @@ Logic for Request analysis pie charts
 
 	tablesToLog = tablesToLog.concat([
 		{name : "Requests by domain", data : requestsByDomain},
-		{name : "File type count (local / external)", data : fileExtensionCounts, columns : ["fileType", "count", "perc"]},
-		{name : "File type count", data : fileExtensionCountLocalExt, columns : ["fileType", "count", "perc"]}
+		{name : "File type count (host / external)", data : fileExtensionCounts, columns : ["fileType", "count", "perc"]},
+		{name : "File type count", data : fileExtensionCountHostExt, columns : ["fileType", "count", "perc"]}
 	]);
 }());
 
