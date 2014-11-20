@@ -10,6 +10,7 @@ Just add this into the URL section of a new bookmark:
 javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js';el.onerror=function(){alert("Looks like the Content Security Policy directive is blocking the use of bookmarklets\n\nYou can copy and paste the content of:\n\n\"https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js\"\n\ninto your console instead\n\n(link is in console already)");console.log("https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js");};document.getElementsByTagName('body')[0].appendChild(el);})();
 ```
 
+<a href="https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-full.png"><img src="https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-full.png" alt="screenshot showing the whole bookmarklet on http://google.com" height="500" /></a>
 
 
 DOM Output
@@ -27,10 +28,10 @@ DOM Output
 
 ![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-requests-pie-charts.png "screenshot of pie graph output of bookmarklet on http://velocityconf.com/velocityny2014")
 
-- Requests by domain - handy to find out how many requests are added by 3rd parties
+- Requests by domain - handy to find out how many requests are added by 3rd parties (green wedges represent the current TLD and subdomains - hover over them for more information)
 - Requests by Type - what content type is accountable for the majority of requests
 
-*external is currently everything except the current domain - exluding sub domains*
+*external is currently everything except the current host - exluding sub domains*
 
 
 ### Resource Timing API with Markers
@@ -73,14 +74,6 @@ The *All loaded ressources* console table for instance contains the following da
 (*some data* is not always available)
 
 ![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-tables-resources.png "tabular output in console of all resources in the page")
-
-
-Requests by domain and distribution of requests' content types (local vs external):
-
-![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-tables-file-type.png "two tables with resources type count globally and but local / external")
-
-![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-tables-request-by-domain.png "tables with requests by domain")
-
 
 
 How to use this snippet
