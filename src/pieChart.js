@@ -97,13 +97,15 @@ Logic for Request analysis pie charts
 
 	var createTable = function(title, data){
 		//create table
-		var tableHolder = newTag("div", {}, "float:left; width:100%; overflow-x:auto");
-		var table = newTag("table", {}, "float:left; width:100%; font-size:12px; line-height:18px;");
+		var tableHolder = newTag("div", {
+			className : "table-holder"
+		});
+		var table = newTag("table", {}, "");
 		var thead = newTag("thead");
 		var tbody = newTag("tbody");
-		thead.appendChild(newTag("th", {text : title}, "text-align: left; padding:0 0.5em 0 0;"));
-		thead.appendChild(newTag("th", {text : "Requests"}, "text-align: left; padding:0 0.5em 0 0;"));
-		thead.appendChild(newTag("th", {text : "Percentage"}, "text-align: left; padding:0 0.5em 0 0;"));
+		thead.appendChild(newTag("th", {text : title}));
+		thead.appendChild(newTag("th", {text : "Requests"}));
+		thead.appendChild(newTag("th", {text : "Percentage"}));
 		table.appendChild(thead);
 
 		data.forEach(function(y){
@@ -142,8 +144,10 @@ Logic for Request analysis pie charts
 
 	// create a chart and table section
 	var setupChart = function(title, data, countTexts){
-		var chartHolder = newTag("div", {}, "float:left; width:28%; margin: 0 5.3333% 0 0;");
-		chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666; min-height:2em;"));
+		var chartHolder = newTag("div", {
+			className : "chart-holder"
+		});
+		chartHolder.appendChild(newTag("h1", {text : title}));
 		chartHolder.appendChild(createPieChart(data, 400));
 		chartHolder.appendChild(newTag("p", {text : "Total Requests: " + requestsOnly.length}));
 		if(countTexts && countTexts.length){

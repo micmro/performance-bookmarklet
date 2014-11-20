@@ -13,6 +13,7 @@ var tablesToLog = [],
 	outputHolder,
 	outputContent;
 
+
 //feature check gate
 if(window.performance && window.performance.getEntriesByType !== undefined) {
 	resources = window.performance.getEntriesByType("resource");
@@ -206,18 +207,25 @@ if(iFrameEl){
 	iFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:absolute; top:1%; right:1%; margin-bottom:1em; left:1%; z-index: 9999; width:98%; z-index: 9999; border:0; box-shadow:0 0 25px 0 rgba(0,0,0,0.5); background:#fff;");
 	document.body.appendChild(iFrameEl);
 	outputIFrame = iFrameEl.contentWindow.document;
+
+	//add style to iFrame
+	outputIFrame.head.appendChild(newTag("style", {
+		type : "text/css",
+		html : cssFileText
+	}));
+
 	outputIFrame.body.style.overflow = "hidden";
 }
 
 // find or create holder element
 if(!outputHolder){
-	outputHolder = newTag("div", {id : "perfbook-holder"}, "overflow: hidden; font:normal 12px/18px sans-serif; width:100%; padding:1em 2em 3em; box-sizing:border-box;");
-	outputContent = newTag("div", {id : "perfbook-content"}, "position:relative;");
+	outputHolder = newTag("div", {id : "perfbook-holder"});
+	outputContent = newTag("div", {id : "perfbook-content"});
 		
 	var closeBtn = newTag("button", {
-		class : "perfbook-close",
+		className : "perfbook-close",
 		text: "close"
-	}, "position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;");
+	});
 	closeBtn.addEventListener("click", function(){
 		iFrameEl.parentNode.removeChild(iFrameEl);
 	});

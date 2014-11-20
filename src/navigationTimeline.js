@@ -207,7 +207,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		timeLineHolder.appendChild(timeLineLabelHolder);
 		chartHolder.appendChild(newTag("h1", {
 			text : "Navigation Timing"
-		}, "font:bold 18px/18px sans-serif; margin:1em 0; color:#666;"));
+		}));
 		chartHolder.appendChild(timeLineHolder);
 		outputContent.appendChild(chartHolder);
 	};

@@ -230,7 +230,7 @@ Logic for Resource Timing API Waterfall
 		timeLineHolder.appendChild(timeLineLabelHolder);
 		chartHolder.appendChild(newTag("h1", {
 			text : "Resource Timing"
-		}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
+		}));
 		chartHolder.appendChild(timeLineHolder);
 		outputContent.appendChild(chartHolder);
 	};
