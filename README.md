@@ -13,8 +13,8 @@ javascript:(function(){var el=document.createElement('script');el.type='text/jav
 <a href="https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-full.png"><img src="https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-full.png" alt="screenshot showing the whole bookmarklet on http://google.com" height="500" /></a>
 
 
-DOM Output
-----------
+Bookmarklet Output in Detail
+----------------------------
 
 ### Navigation Timing API Waterfall
 
