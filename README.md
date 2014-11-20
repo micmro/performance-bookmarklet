@@ -1,4 +1,4 @@
-Performance Bookmarklet
+Performance-Bookmarklet
 =======================
 
 Bookmarklet to analyze the current page through on the [Resource Timing API](http://www.w3.org/TR/resource-timing) , [Navigation Timing API](http://www.w3.org/TR/navigation-timing) and [User-Timing](http://www.w3.org/TR/user-timing/) - requests by type, domain, load times, marks and more. Sort of a light live WebPageTest.
