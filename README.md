@@ -20,8 +20,8 @@ Bookmarklet Output in Detail
 
 ![alt text](https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-navigation-timing-waterfall.png "screenshot of navigation timing API waterfall output of bookmarklet on http://walmart.ca/en")
 
-- It also displays marker if you're setting marks with the [User Timing API](http://www.w3.org/TR/user-timing)
-- hover over the bars to get the excact Milliseconds
+- It also displays markers and measures if you're setting marks with the [User Timing API](http://www.w3.org/TR/user-timing) (`performance.mark` and `performance.measure`)
+- Hover over the bars to see a tooltip with the excact Milliseconds/duration
 
 
 ### Resource analysis
