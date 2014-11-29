@@ -75,8 +75,6 @@ Tiles to summarize page performance
 	tilesHolder.appendChild(createTile("<span title=\"" + slowestCalls[0].name +"\">Slowest Call</span>", "<span title=\"" + slowestCalls[0].name +"\">"+ Math.floor(slowestCalls[0].duration) + "ms</span>", 40));
 	tilesHolder.appendChild(createTile("Average Call", average + "ms", 40));
 
-
-
 	var appendix = newTag("dl", {
 		class : "summary-tile-appendix"
 	});

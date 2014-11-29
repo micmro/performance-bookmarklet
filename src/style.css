@@ -12,12 +12,9 @@ svg {font:normal 12px/18px sans-serif;}
 h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 
 /*Summary Tiles*/
-.tiles-holder {margin: 2em -18px 1em; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;
- }
+.tiles-holder {margin: 2em -18px 1em; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; }
 
-
-.summary-tile, .summary-tile-spacer { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;}
-.summary-tile-spacer { background:transparent;}
+.summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;}
 .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;}
 .summary-tile dd {font-weight:bold; line-height:60px; margin:0;}
 
