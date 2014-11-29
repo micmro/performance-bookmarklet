@@ -2,6 +2,11 @@
  by Michael Mrowetz @MicMro*/
 
 (function(){
+"use strict";
+
+var cssFileText = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .tiles-holder {margin: 2em -18px 1em; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-chart-holder {float:left; width:28%; margin: 0 5.3333% 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {float: left; width:100%;} .table-holder {float:left; width:100%; overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th {text-align: left; padding:0 0.5em 0 0;} .water-fall-holder {float:left; width:100%; margin: 25px 0; fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #aac;} .water-fall-chart .labels {width:100%;} .navigation-timing {} .resource-timing .chart-holder {}";
+
+
 /*
 Initiallize Bookmarklet wide variables, holders and helpers - all other files only don't share scope
 */
@@ -11,19 +16,23 @@ var tablesToLog = [],
 	resources,
 	allRessourcesCalc,
 	marks,
+	measures,
 	perfTiming,
 	iFrameEl,
 	outputIFrame,
 	outputHolder,
 	outputContent;
 
+
 //feature check gate
 if(window.performance && window.performance.getEntriesByType !== undefined) {
 	resources = window.performance.getEntriesByType("resource");
 	marks = window.performance.getEntriesByType("mark");
+	measures = window.performance.getEntriesByType("measure");
 }else if(window.performance && window.performance.webkitGetEntriesByType !== undefined) {
 	resources = window.performance.webkitGetEntriesByType("resource");
 	marks = window.performance.webkitGetEntriesByType("mark");
+	measures = window.performance.webkitGetEntriesByType("measure");
 }else{
 	alert("Oups, looks like this browser does not support the Resource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
 	return;
@@ -111,6 +120,9 @@ var newTag = function(tagName, settings, css){
 	}else if(settings.html){
 		tag.innerHTML = settings.html;
 	}
+	if(settings.class){
+		tag.className = settings.class;
+	}
 	tag.style.cssText = css||"";
 	return tag;
 };
@@ -179,7 +191,8 @@ var getInitiatorTypeColour = function(initiatorType, fallbackColour){
 
 var getItemCount = function(arr, keyName){
 	var counts = {},
-		resultArr = [];
+		resultArr = [],
+		obj;
 
 	arr.forEach(function(key){
 		counts[key] = counts[key] ? counts[key]+1 : 1;
@@ -206,22 +219,28 @@ if(iFrameEl){
 	outputIFrame = iFrameEl.contentWindow.document;
 	outputHolder = outputIFrame.getElementById("perfbook-holder");
 }else{
-	//var outputIFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:fixed; top:0; left:0; right:0; z-index: 9999; width:100%; height:100%;");
-	iFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:absolute; top:1%; right:1%; margin-bottom:1em; left:1%; z-index: 9999; width:98%; z-index: 9999; border:0; box-shadow:0 0 25px 0 rgba(0,0,0,0.5); background:#fff;");
+	iFrameEl = newTag("iframe", {
+		id : "perfbook-iframe"
+	}, "position:absolute; top:1%; right:1%; margin-bottom:1em; left:1%; z-index: 9999; width:98%; z-index: 9999; border:0; box-shadow:0 0 25px 0 rgba(0,0,0,0.5); background:#fff;");
 	document.body.appendChild(iFrameEl);
 	outputIFrame = iFrameEl.contentWindow.document;
-	outputIFrame.body.style.overflow = "hidden";
+
+	//add style to iFrame
+	outputIFrame.head.appendChild(newTag("style", {
+		type : "text/css",
+		html : cssFileText
+	}));
 }
 
 // find or create holder element
 if(!outputHolder){
-	outputHolder = newTag("div", {id : "perfbook-holder"}, "overflow: hidden; font:normal 12px/18px sans-serif; width:100%; padding:1em 2em 3em; box-sizing:border-box;");
-	outputContent = newTag("div", {id : "perfbook-content"}, "position:relative;");
+	outputHolder = newTag("div", {id : "perfbook-holder"});
+	outputContent = newTag("div", {id : "perfbook-content"});
 		
 	var closeBtn = newTag("button", {
 		class : "perfbook-close",
 		text: "close"
-	}, "position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;");
+	});
 	closeBtn.addEventListener("click", function(){
 		iFrameEl.parentNode.removeChild(iFrameEl);
 	});
@@ -286,18 +305,22 @@ Tiles to summarize page performance
 
 	var createTile = function(title, value, titleFontSize){
 		titleFontSize = titleFontSize || 60;
-		var dl = newTag("dl", {}, "float:left; width:13%; min-width:150px; background:#ddd; padding: 1em; margin:0 2% 1em 0; color:#666; text-align:center;");
-		dl.appendChild(newTag("dt", {html : title}, "font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.4em; padding:0 0 0.5em;"));
-		dl.appendChild(newTag("dt", {html : value}, "font-weight:bold; font-size:"+titleFontSize+"px; line-height:60px;"));
+		var dl = newTag("dl", {
+			class : "summary-tile"
+		});
+		dl.appendChild(newTag("dt", {html : title}));
+		dl.appendChild(newTag("dd", {html : value}, "font-size:"+titleFontSize+"px;"));
 		return dl;
 	};
 
 	var createAppendixDefValue = function(a, definition, value){
-		a.appendChild(newTag("dt", {html : definition}, "float:left; clear:both;"));
-		a.appendChild(newTag("dd", {html : value}, "float:left; margin:0 0 0 1em;"));
+		a.appendChild(newTag("dt", {html : definition}));
+		a.appendChild(newTag("dd", {html : value}));
 	};
 
-	var tilesHolder = newTag("div", {}, "float:left; margin: 2em 0 1em; width:102%; overflow-x:auto");
+	var tilesHolder = newTag("div", {
+		class : "tiles-holder"
+	});
 	
 	tilesHolder.appendChild(createTile("Requests", requestsOnly.length||"0"));
 	tilesHolder.appendChild(createTile("Domains", requestsByDomain.length||"0"));
@@ -311,9 +334,9 @@ Tiles to summarize page performance
 	tilesHolder.appendChild(createTile("<span title=\"" + slowestCalls[0].name +"\">Slowest Call</span>", "<span title=\"" + slowestCalls[0].name +"\">"+ Math.floor(slowestCalls[0].duration) + "ms</span>", 40));
 	tilesHolder.appendChild(createTile("Average Call", average + "ms", 40));
 
-
-
-	var appendix = newTag("dl", {}, "float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;");
+	var appendix = newTag("dl", {
+		class : "summary-tile-appendix"
+	});
 
 	createAppendixDefValue(appendix, "<abbr title=\"Top Level Domain\">TLD</abbr>:", location.host.split(".").slice(-2).join("."));
 	createAppendixDefValue(appendix, "Host:", location.host);
@@ -387,7 +410,10 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive, "#c33"));
 	}
 
-	
+	//add measures to be added as bars
+	measures.forEach(function(measure){
+		perfTimingCalc.blocks.push(timeBlock("measure:" + measure.name, Math.round(measure.startTime), Math.round(measure.startTime + measure.duration), "#f00"));
+	});	
 
 	var setupTimeLine = function(){
 		var unit = perfTimingCalc.pageLoadTime / 100;
@@ -397,19 +423,21 @@ Logic for Naviagtion Timing API and Markers Waterfall
 			return (a.start||0) - (b.start||0);
 		});
 		var maxMarkTextLength = marks.length > 0 ? marks.reduce(function(currMax, currValue) {
-			return Math.max((typeof currMax == "number" ? currMax : 0), getNodeTextWidth( newTextElementNs(currValue.name, "0")));
+			return Math.max((typeof currMax == "number" ? currMax : 0), getNodeTextWidth(newTextElementNs(currValue.name, "0")));
 		}) : 0;
 
-		var diagramHeight = (barsToShow.length + 2) * 25;
-		var chartHolderHeight = diagramHeight + maxMarkTextLength + 5;
 
-		var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
+		var diagramHeight = (barsToShow.length + 1) * 25;
+		var chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
+
+		var chartHolder = newTag("div", {
+			class : "navigation-timing water-fall-holder chart-holder"
+		});
 		var timeLineHolder = newElementNs("svg:svg", {
-			width : "100%",
-			height : chartHolderHeight,
-			fill : "#ccc"
-		}, "background:#f0f5f0; min-width:1px;");
-		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
+			height : Math.floor(chartHolderHeight),
+			class : "water-fall-chart"
+		});
+		var timeLineLabelHolder = newElementNs("g", {class : "labels"});
 		
 
 		var createRect = function(width, height, x, y, fill, label){
@@ -429,7 +457,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		};
 
 		var createTimeWrapper = function(){
-			var timeHolder = newElementNs("g", { width : "100%", class : "time-scale" });
+			var timeHolder = newElementNs("g", { class : "time-scale full-width" });
 			for(var i = 0, secs = perfTimingCalc.pageLoadTime / 1000, secPerc = 100 / secs; i <= secs; i++){
 				var lineLabel = newTextElementNs(i + "sec",  diagramHeight, "font-weight:bold;");
 				if(i > secs - 0.2){
@@ -453,13 +481,20 @@ Logic for Naviagtion Timing API and Markers Waterfall
 
 		
 		var renderMarks = function(){
-			var marksHolder = newElementNs("g", { width : "100%", transform : "scale(1, 1)", class : "marker-holder" });
+			var marksHolder = newElementNs("g", {
+				transform : "scale(1, 1)",
+				class : "marker-holder"
+			});
 			var markerColour = "#aac";
 
 			marks.forEach(function(mark, i){
 				//mark.duration
-				var markHolder = newElementNs("g", {});
-				var lineHolder = newElementNs("g", {}, "stroke:"+markerColour+"; stroke-width:1");
+				var markHolder = newElementNs("g", {
+					class : "mark-holder"
+				});
+				var lineHolder = newElementNs("g", {
+					class : "line-holder"
+				});
 				var x = mark.startTime / unit;
 				mark.x = x;
 				var lineLabel = newTextElementNs(mark.name,  diagramHeight + 25 );
@@ -533,7 +568,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		timeLineHolder.appendChild(timeLineLabelHolder);
 		chartHolder.appendChild(newTag("h1", {
 			text : "Navigation Timing"
-		}, "font:bold 18px/18px sans-serif; margin:1em 0; color:#666;"));
+		}));
 		chartHolder.appendChild(timeLineHolder);
 		outputContent.appendChild(chartHolder);
 	};
@@ -558,9 +593,9 @@ Logic for Request analysis pie charts
 		//inpired by http://jsfiddle.net/da5LN/62/
 
 		var chart = newElementNs("svg:svg", {
-			width : "100%",
-			viewBox : "0 0 " + size + " " + size
-		}, "float: left; max-height:"+((window.innerWidth * 0.98 - 64) / 3)+"px;");
+			viewBox : "0 0 " + size + " " + size,
+			class : "pie-chart"
+		}, "max-height:"+((window.innerWidth * 0.98 - 64) / 3)+"px;");
 
 		var unit = (Math.PI * 2) / 100,
 			startAngle = 0; // init startAngle
@@ -647,13 +682,15 @@ Logic for Request analysis pie charts
 
 	var createTable = function(title, data){
 		//create table
-		var tableHolder = newTag("div", {}, "float:left; width:100%; overflow-x:auto");
-		var table = newTag("table", {}, "float:left; width:100%; font-size:12px; line-height:18px;");
+		var tableHolder = newTag("div", {
+			class : "table-holder"
+		});
+		var table = newTag("table", {}, "");
 		var thead = newTag("thead");
 		var tbody = newTag("tbody");
-		thead.appendChild(newTag("th", {text : title}, "text-align: left; padding:0 0.5em 0 0;"));
-		thead.appendChild(newTag("th", {text : "Requests"}, "text-align: left; padding:0 0.5em 0 0;"));
-		thead.appendChild(newTag("th", {text : "Percentage"}, "text-align: left; padding:0 0.5em 0 0;"));
+		thead.appendChild(newTag("th", {text : title}));
+		thead.appendChild(newTag("th", {text : "Requests"}));
+		thead.appendChild(newTag("th", {text : "Percentage"}));
 		table.appendChild(thead);
 
 		data.forEach(function(y){
@@ -692,8 +729,10 @@ Logic for Request analysis pie charts
 
 	// create a chart and table section
 	var setupChart = function(title, data, countTexts){
-		var chartHolder = newTag("div", {}, "float:left; width:28%; margin: 0 5.3333% 0 0;");
-		chartHolder.appendChild(newTag("h1", {text : title}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666; min-height:2em;"));
+		var chartHolder = newTag("div", {
+			class : "pie-chart-holder chart-holder"
+		});
+		chartHolder.appendChild(newTag("h1", {text : title}));
 		chartHolder.appendChild(createPieChart(data, 400));
 		chartHolder.appendChild(newTag("p", {text : "Total Requests: " + requestsOnly.length}));
 		if(countTexts && countTexts.length){
@@ -845,16 +884,17 @@ Logic for Resource Timing API Waterfall
 			return Math.max((typeof currMax == "number" ? currMax : 0), getNodeTextWidth( newTextElementNs(currValue.name, "0")));
 		}) : 0;
 
-		var diagramHeight = (barsToShow.length + 2) * 25;
-		var chartHolderHeight = diagramHeight + maxMarkTextLength + 5;
+		var diagramHeight = (barsToShow.length + 1) * 25;
+		var chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
 
-		var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
+		var chartHolder = newTag("div", {
+			class : "resource-timing water-fall-holder chart-holder"
+		});
 		var timeLineHolder = newElementNs("svg:svg", {
-			width : "100%",
-			height : chartHolderHeight,
-			fill : "#ccc"
-		}, "background:#f0f5f0;");
-		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
+			height : Math.floor(chartHolderHeight),
+			class : "water-fall-chart"
+		});
+		var timeLineLabelHolder = newElementNs("g", {class : "labels"});
 		
 
 		var createRect = function(width, height, x, y, fill, label, segments){
@@ -888,7 +928,7 @@ Logic for Resource Timing API Waterfall
 		};
 
 		var createTimeWrapper = function(){
-			var timeHolder = newElementNs("g", { width : "100%", class : "time-scale" });
+			var timeHolder = newElementNs("g", { class : "time-scale full-width" });
 			for(var i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++){
 				var lineLabel = newTextElementNs(i + "sec",  diagramHeight, "font-weight:bold;");
 				if(i > secs - 0.2){
@@ -912,13 +952,19 @@ Logic for Resource Timing API Waterfall
 
 		
 		var renderMarks = function(){
-			var marksHolder = newElementNs("g", { width : "100%", transform : "scale(1, 1)", class : "marker-holder" });
-			var markerColour = "#aac";
+			var marksHolder = newElementNs("g", {
+				transform : "scale(1, 1)",
+				class : "marker-holder"
+			});
 
 			marks.forEach(function(mark, i){
 				//mark.duration
-				var markHolder = newElementNs("g", {});
-				var lineHolder = newElementNs("g", {}, "stroke:"+markerColour+"; stroke-width:1");
+				var markHolder = newElementNs("g", {
+					class : "mark-holder"
+				});
+				var lineHolder = newElementNs("g", {
+					class : "line-holder"
+				});
 				var x = mark.startTime / unit;
 				mark.x = x;
 				var lineLabel = newTextElementNs(mark.name,  diagramHeight + 25 );
@@ -928,7 +974,7 @@ Logic for Resource Timing API Waterfall
 
 				lineHolder.appendChild(newElementNs("line", {
 					x1 : x + "%",
-					y1 : "0px",
+					y1 : 0,
 					x2 : x + "%",
 					y2 : diagramHeight
 				}));
@@ -954,7 +1000,7 @@ Logic for Resource Timing API Waterfall
 				});
 				lineLabel.addEventListener("mouseout", function(evt){
 					lineHolder.style.strokeWidth = "1";
-					lineHolder.style.stroke = markerColour;
+					lineHolder.style.stroke = "#aac";
 				});
 
 				markHolder.appendChild(newElementNs("title", {
@@ -995,7 +1041,7 @@ Logic for Resource Timing API Waterfall
 		timeLineHolder.appendChild(timeLineLabelHolder);
 		chartHolder.appendChild(newTag("h1", {
 			text : "Resource Timing"
-		}, "font:bold 16px/18px sans-serif; margin:1em 0; color:#666;"));
+		}));
 		chartHolder.appendChild(timeLineHolder);
 		outputContent.appendChild(chartHolder);
 	};
