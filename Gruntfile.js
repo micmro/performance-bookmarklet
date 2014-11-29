@@ -6,7 +6,7 @@ module.exports = function( grunt ) {
 		concat: {
 			options: {
 				separator: "\n\n\n",
-				banner: "/*https://github.com/nurun/performance-bookmarklet\n by Michael Mrowetz @MicMro*/\n\n(function(){\n",
+				banner: "/*https://github.com/nurun/performance-bookmarklet\n by Michael Mrowetz @MicMro*/\n\n(function(){\n\"use strict\";\n\n",
 				footer: "\n\n})();",
 			},
 			dist: {

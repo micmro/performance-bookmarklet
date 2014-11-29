@@ -8,9 +8,9 @@ Logic for Request analysis pie charts
 		//inpired by http://jsfiddle.net/da5LN/62/
 
 		var chart = newElementNs("svg:svg", {
-			width : "100%",
-			viewBox : "0 0 " + size + " " + size
-		}, "float: left; max-height:"+((window.innerWidth * 0.98 - 64) / 3)+"px;");
+			viewBox : "0 0 " + size + " " + size,
+			class : "pie-chart"
+		}, "max-height:"+((window.innerWidth * 0.98 - 64) / 3)+"px;");
 
 		var unit = (Math.PI * 2) / 100,
 			startAngle = 0; // init startAngle
@@ -98,7 +98,7 @@ Logic for Request analysis pie charts
 	var createTable = function(title, data){
 		//create table
 		var tableHolder = newTag("div", {
-			className : "table-holder"
+			class : "table-holder"
 		});
 		var table = newTag("table", {}, "");
 		var thead = newTag("thead");
@@ -145,7 +145,7 @@ Logic for Request analysis pie charts
 	// create a chart and table section
 	var setupChart = function(title, data, countTexts){
 		var chartHolder = newTag("div", {
-			className : "chart-holder"
+			class : "pie-chart-holder chart-holder"
 		});
 		chartHolder.appendChild(newTag("h1", {text : title}));
 		chartHolder.appendChild(createPieChart(data, 400));

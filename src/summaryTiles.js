@@ -47,7 +47,7 @@ Tiles to summarize page performance
 	var createTile = function(title, value, titleFontSize){
 		titleFontSize = titleFontSize || 60;
 		var dl = newTag("dl", {
-			className : "summary-tile"
+			class : "summary-tile"
 		});
 		dl.appendChild(newTag("dt", {html : title}));
 		dl.appendChild(newTag("dd", {html : value}, "font-size:"+titleFontSize+"px;"));
@@ -60,7 +60,7 @@ Tiles to summarize page performance
 	};
 
 	var tilesHolder = newTag("div", {
-		className : "tiles-holder"
+		class : "tiles-holder"
 	});
 	
 	tilesHolder.appendChild(createTile("Requests", requestsOnly.length||"0"));
@@ -78,7 +78,7 @@ Tiles to summarize page performance
 
 
 	var appendix = newTag("dl", {
-		className : "summary-tile-appendix"
+		class : "summary-tile-appendix"
 	});
 
 	createAppendixDefValue(appendix, "<abbr title=\"Top Level Domain\">TLD</abbr>:", location.host.split(".").slice(-2).join("."));

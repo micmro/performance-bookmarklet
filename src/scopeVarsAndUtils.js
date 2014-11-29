@@ -108,6 +108,9 @@ var newTag = function(tagName, settings, css){
 	}else if(settings.html){
 		tag.innerHTML = settings.html;
 	}
+	if(settings.class){
+		tag.className = settings.class;
+	}
 	tag.style.cssText = css||"";
 	return tag;
 };
@@ -176,7 +179,8 @@ var getInitiatorTypeColour = function(initiatorType, fallbackColour){
 
 var getItemCount = function(arr, keyName){
 	var counts = {},
-		resultArr = [];
+		resultArr = [],
+		obj;
 
 	arr.forEach(function(key){
 		counts[key] = counts[key] ? counts[key]+1 : 1;
@@ -203,8 +207,9 @@ if(iFrameEl){
 	outputIFrame = iFrameEl.contentWindow.document;
 	outputHolder = outputIFrame.getElementById("perfbook-holder");
 }else{
-	//var outputIFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:fixed; top:0; left:0; right:0; z-index: 9999; width:100%; height:100%;");
-	iFrameEl = newTag("iframe", {id : "perfbook-iframe"}, "position:absolute; top:1%; right:1%; margin-bottom:1em; left:1%; z-index: 9999; width:98%; z-index: 9999; border:0; box-shadow:0 0 25px 0 rgba(0,0,0,0.5); background:#fff;");
+	iFrameEl = newTag("iframe", {
+		id : "perfbook-iframe"
+	}, "position:absolute; top:1%; right:1%; margin-bottom:1em; left:1%; z-index: 9999; width:98%; z-index: 9999; border:0; box-shadow:0 0 25px 0 rgba(0,0,0,0.5); background:#fff;");
 	document.body.appendChild(iFrameEl);
 	outputIFrame = iFrameEl.contentWindow.document;
 
@@ -213,8 +218,6 @@ if(iFrameEl){
 		type : "text/css",
 		html : cssFileText
 	}));
-
-	outputIFrame.body.style.overflow = "hidden";
 }
 
 // find or create holder element
@@ -223,7 +226,7 @@ if(!outputHolder){
 	outputContent = newTag("div", {id : "perfbook-content"});
 		
 	var closeBtn = newTag("button", {
-		className : "perfbook-close",
+		class : "perfbook-close",
 		text: "close"
 	});
 	closeBtn.addEventListener("click", function(){

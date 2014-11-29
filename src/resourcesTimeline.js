@@ -80,16 +80,17 @@ Logic for Resource Timing API Waterfall
 			return Math.max((typeof currMax == "number" ? currMax : 0), getNodeTextWidth( newTextElementNs(currValue.name, "0")));
 		}) : 0;
 
-		var diagramHeight = (barsToShow.length + 2) * 25;
-		var chartHolderHeight = diagramHeight + maxMarkTextLength + 5;
+		var diagramHeight = (barsToShow.length + 1) * 25;
+		var chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
 
-		var chartHolder = newTag("div", {}, "float:left; width:100%; margin: 25px 0;");
+		var chartHolder = newTag("div", {
+			class : "resource-timing water-fall-holder chart-holder"
+		});
 		var timeLineHolder = newElementNs("svg:svg", {
-			width : "100%",
-			height : chartHolderHeight,
-			fill : "#ccc"
-		}, "background:#f0f5f0;");
-		var timeLineLabelHolder = newElementNs("g", { width : "100%", class : "labels"});
+			height : Math.floor(chartHolderHeight),
+			class : "water-fall-chart"
+		});
+		var timeLineLabelHolder = newElementNs("g", {class : "labels"});
 		
 
 		var createRect = function(width, height, x, y, fill, label, segments){
@@ -123,7 +124,7 @@ Logic for Resource Timing API Waterfall
 		};
 
 		var createTimeWrapper = function(){
-			var timeHolder = newElementNs("g", { width : "100%", class : "time-scale" });
+			var timeHolder = newElementNs("g", { class : "time-scale full-width" });
 			for(var i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++){
 				var lineLabel = newTextElementNs(i + "sec",  diagramHeight, "font-weight:bold;");
 				if(i > secs - 0.2){
@@ -147,13 +148,19 @@ Logic for Resource Timing API Waterfall
 
 		
 		var renderMarks = function(){
-			var marksHolder = newElementNs("g", { width : "100%", transform : "scale(1, 1)", class : "marker-holder" });
-			var markerColour = "#aac";
+			var marksHolder = newElementNs("g", {
+				transform : "scale(1, 1)",
+				class : "marker-holder"
+			});
 
 			marks.forEach(function(mark, i){
 				//mark.duration
-				var markHolder = newElementNs("g", {});
-				var lineHolder = newElementNs("g", {}, "stroke:"+markerColour+"; stroke-width:1");
+				var markHolder = newElementNs("g", {
+					class : "mark-holder"
+				});
+				var lineHolder = newElementNs("g", {
+					class : "line-holder"
+				});
 				var x = mark.startTime / unit;
 				mark.x = x;
 				var lineLabel = newTextElementNs(mark.name,  diagramHeight + 25 );
@@ -163,7 +170,7 @@ Logic for Resource Timing API Waterfall
 
 				lineHolder.appendChild(newElementNs("line", {
 					x1 : x + "%",
-					y1 : "0px",
+					y1 : 0,
 					x2 : x + "%",
 					y2 : diagramHeight
 				}));
@@ -189,7 +196,7 @@ Logic for Resource Timing API Waterfall
 				});
 				lineLabel.addEventListener("mouseout", function(evt){
 					lineHolder.style.strokeWidth = "1";
-					lineHolder.style.stroke = markerColour;
+					lineHolder.style.stroke = "#aac";
 				});
 
 				markHolder.appendChild(newElementNs("title", {
