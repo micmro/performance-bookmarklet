@@ -61,7 +61,10 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive, "#c33"));
 	}
 
-	
+	//add measures to be added as bars
+	measures.forEach(function(measure){
+		perfTimingCalc.blocks.push(timeBlock("measure:" + measure.name, Math.round(measure.startTime), Math.round(measure.startTime + measure.duration), "#f00"));
+	});	
 
 	var setupTimeLine = function(){
 		var unit = perfTimingCalc.pageLoadTime / 100;

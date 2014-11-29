@@ -16,6 +16,7 @@ var tablesToLog = [],
 	resources,
 	allRessourcesCalc,
 	marks,
+	measures,
 	perfTiming,
 	iFrameEl,
 	outputIFrame,
@@ -27,9 +28,11 @@ var tablesToLog = [],
 if(window.performance && window.performance.getEntriesByType !== undefined) {
 	resources = window.performance.getEntriesByType("resource");
 	marks = window.performance.getEntriesByType("mark");
+	measures = window.performance.getEntriesByType("measure");
 }else if(window.performance && window.performance.webkitGetEntriesByType !== undefined) {
 	resources = window.performance.webkitGetEntriesByType("resource");
 	marks = window.performance.webkitGetEntriesByType("mark");
+	measures = window.performance.webkitGetEntriesByType("measure");
 }else{
 	alert("Oups, looks like this browser does not support the Resource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
 	return;
@@ -407,7 +410,10 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive, "#c33"));
 	}
 
-	
+	//add measures to be added as bars
+	measures.forEach(function(measure){
+		perfTimingCalc.blocks.push(timeBlock("measure:" + measure.name, Math.round(measure.startTime), Math.round(measure.startTime + measure.duration), "#f00"));
+	});	
 
 	var setupTimeLine = function(){
 		var unit = perfTimingCalc.pageLoadTime / 100;
