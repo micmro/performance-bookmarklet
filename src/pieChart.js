@@ -95,7 +95,9 @@ Logic for Request analysis pie charts
 		return chart;
 	};
 
-	var createTable = function(title, data){
+	var createTable = function(title, data, columns){
+		columns = columns||[{name: "Requests", field: "count"}];
+
 		//create table
 		var tableHolder = newTag("div", {
 			class : "table-holder"
@@ -103,16 +105,21 @@ Logic for Request analysis pie charts
 		var table = newTag("table", {}, "");
 		var thead = newTag("thead");
 		var tbody = newTag("tbody");
-		thead.appendChild(newTag("th", {text : title}));
-		thead.appendChild(newTag("th", {text : "Requests"}));
-		thead.appendChild(newTag("th", {text : "Percentage"}));
+		thead.appendChild(newTag("th", {text : title, class: "text-left"}));
+		// thead.appendChild(newTag("th", {text : "Requests"}));
+		columns.forEach(function(column){
+			thead.appendChild(newTag("th", {text : column.name, class: "text-right"}));
+		});
+		thead.appendChild(newTag("th", {text : "Percentage", class: "text-right"}));
 		table.appendChild(thead);
 
 		data.forEach(function(y){
 			var row = newTag("tr", {id : y.id + "-table"});
 			row.appendChild(newTag("td", {text : y.label}));
-			row.appendChild(newTag("td", {text : y.count}));
-			row.appendChild(newTag("td", {text : y.perc.toPrecision(2) + "%"}));
+			columns.forEach(function(column){				
+				row.appendChild(newTag("td", {text : y[column.field], class: "text-right"}));
+			});
+			row.appendChild(newTag("td", {text : y.perc.toPrecision(2) + "%", class: "text-right"}));
 			tbody.appendChild(row);
 		});
 
@@ -140,10 +147,23 @@ Logic for Request analysis pie charts
 		return currR.domain;
 	}), "domain");
 
+	requestsOnly.forEach(function(currR){
+		var entry = requestsByDomain.filter(function(a){
+			return a.domain == currR.domain
+		})[0]||{};
+
+		entry.durationTotal = (entry.durationTotal||0) + currR.duration;
+	});
+
+
+
+	var hostRequests = requestsOnly.filter(function(domain){
+		return domain.domain === location.host;
+	}).length;
 
 
 	// create a chart and table section
-	var setupChart = function(title, data, countTexts){
+	var setupChart = function(title, data, countTexts, columns){
 		var chartHolder = newTag("div", {
 			class : "pie-chart-holder chart-holder"
 		});
@@ -155,7 +175,7 @@ Logic for Request analysis pie charts
 				chartHolder.appendChild(newTag("p", {text : countText}, "margin-top:-1em"));
 			})
 		}
-		chartHolder.appendChild(createTable(title, data));
+		chartHolder.appendChild(createTable(title, data, columns));
 		outputContent.appendChild(chartHolder);
 	};
 
@@ -167,9 +187,6 @@ Logic for Request analysis pie charts
 	var colourRangeG = "789abcdef";
 	var colourRangeB = "789abcdef";
 
-	var hostRequests = requestsOnly.filter(function(domain){
-		return domain.domain === location.host;
-	}).length;
 
 	var requestsByDomainData = requestsByDomain.map(function(domain){
 		domain.perc = domain.count / requestsUnit;
@@ -182,12 +199,16 @@ Logic for Request analysis pie charts
 			domain.colour = getRandomColor("56789abcdef", "01234567", "abcdef");
 		}
 		domain.id = "reqByDomain-" + domain.label.replace(/[^a-zA-Z]/g, "-");
+		domain.durationAverage =  Math.round(domain.durationTotal / domain.count);
 		return domain;
 	});
 
-
+	
 	setupChart("Requests by Domain", requestsByDomainData, [
 		"Domains Total: " + requestsByDomain.length
+	], [
+		{name:"Requests", field: "count"},
+		{name: "Avg. Duration (ms)", field: "durationAverage"}
 	]);
 
 	setupChart("Requests by Initiator Type (host/external domain)", fileExtensionCountHostExt.map(function(fileType){

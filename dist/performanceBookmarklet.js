@@ -4,7 +4,7 @@
 (function(){
 "use strict";
 
-var cssFileText = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .tiles-holder {margin: 2em -18px 1em; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-chart-holder {float:left; width:28%; margin: 0 5.3333% 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {float: left; width:100%;} .table-holder {float:left; width:100%; overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th {text-align: left; padding:0 0.5em 0 0;} .water-fall-holder {float:left; width:100%; margin: 25px 0; fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #aac;} .water-fall-chart .labels {width:100%;} .navigation-timing {} .resource-timing .chart-holder {}";
+var cssFileText = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .tiles-holder {margin: 2em -18px 1em; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-chart-holder {float:left; width:28%; margin: 0 5.3333% 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {float: left; width:100%;} .table-holder {float:left; width:100%; overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th { padding:0 0.5em 0 0;} .table-holder td {padding:0 0.5em 0 0;} .water-fall-holder {float:left; width:100%; margin: 25px 0; fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #aac;} .water-fall-chart .labels {width:100%;} .navigation-timing {} .resource-timing .chart-holder {} ";
 
 
 /*
@@ -680,7 +680,9 @@ Logic for Request analysis pie charts
 		return chart;
 	};
 
-	var createTable = function(title, data){
+	var createTable = function(title, data, columns){
+		columns = columns||[{name: "Requests", field: "count"}];
+
 		//create table
 		var tableHolder = newTag("div", {
 			class : "table-holder"
@@ -688,16 +690,21 @@ Logic for Request analysis pie charts
 		var table = newTag("table", {}, "");
 		var thead = newTag("thead");
 		var tbody = newTag("tbody");
-		thead.appendChild(newTag("th", {text : title}));
-		thead.appendChild(newTag("th", {text : "Requests"}));
-		thead.appendChild(newTag("th", {text : "Percentage"}));
+		thead.appendChild(newTag("th", {text : title, class: "text-left"}));
+		// thead.appendChild(newTag("th", {text : "Requests"}));
+		columns.forEach(function(column){
+			thead.appendChild(newTag("th", {text : column.name, class: "text-right"}));
+		});
+		thead.appendChild(newTag("th", {text : "Percentage", class: "text-right"}));
 		table.appendChild(thead);
 
 		data.forEach(function(y){
 			var row = newTag("tr", {id : y.id + "-table"});
 			row.appendChild(newTag("td", {text : y.label}));
-			row.appendChild(newTag("td", {text : y.count}));
-			row.appendChild(newTag("td", {text : y.perc.toPrecision(2) + "%"}));
+			columns.forEach(function(column){				
+				row.appendChild(newTag("td", {text : y[column.field], class: "text-right"}));
+			});
+			row.appendChild(newTag("td", {text : y.perc.toPrecision(2) + "%", class: "text-right"}));
 			tbody.appendChild(row);
 		});
 
@@ -725,10 +732,23 @@ Logic for Request analysis pie charts
 		return currR.domain;
 	}), "domain");
 
+	requestsOnly.forEach(function(currR){
+		var entry = requestsByDomain.filter(function(a){
+			return a.domain == currR.domain
+		})[0]||{};
+
+		entry.durationTotal = (entry.durationTotal||0) + currR.duration;
+	});
+
+
+
+	var hostRequests = requestsOnly.filter(function(domain){
+		return domain.domain === location.host;
+	}).length;
 
 
 	// create a chart and table section
-	var setupChart = function(title, data, countTexts){
+	var setupChart = function(title, data, countTexts, columns){
 		var chartHolder = newTag("div", {
 			class : "pie-chart-holder chart-holder"
 		});
@@ -740,7 +760,7 @@ Logic for Request analysis pie charts
 				chartHolder.appendChild(newTag("p", {text : countText}, "margin-top:-1em"));
 			})
 		}
-		chartHolder.appendChild(createTable(title, data));
+		chartHolder.appendChild(createTable(title, data, columns));
 		outputContent.appendChild(chartHolder);
 	};
 
@@ -752,9 +772,6 @@ Logic for Request analysis pie charts
 	var colourRangeG = "789abcdef";
 	var colourRangeB = "789abcdef";
 
-	var hostRequests = requestsOnly.filter(function(domain){
-		return domain.domain === location.host;
-	}).length;
 
 	var requestsByDomainData = requestsByDomain.map(function(domain){
 		domain.perc = domain.count / requestsUnit;
@@ -767,12 +784,16 @@ Logic for Request analysis pie charts
 			domain.colour = getRandomColor("56789abcdef", "01234567", "abcdef");
 		}
 		domain.id = "reqByDomain-" + domain.label.replace(/[^a-zA-Z]/g, "-");
+		domain.durationAverage =  Math.round(domain.durationTotal / domain.count);
 		return domain;
 	});
 
-
+	
 	setupChart("Requests by Domain", requestsByDomainData, [
 		"Domains Total: " + requestsByDomain.length
+	], [
+		{name:"Requests", field: "count"},
+		{name: "Avg. Duration (ms)", field: "durationAverage"}
 	]);
 
 	setupChart("Requests by Initiator Type (host/external domain)", fileExtensionCountHostExt.map(function(fileType){
