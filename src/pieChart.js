@@ -161,11 +161,14 @@ Logic for Request analysis pie charts
 		return domain.domain === location.host;
 	}).length;
 
+	var chartsHolder = newTag("div", {
+		class : "pie-charts-holder chart-holder"
+	});
 
 	// create a chart and table section
 	var setupChart = function(title, data, countTexts, columns){
 		var chartHolder = newTag("div", {
-			class : "pie-chart-holder chart-holder"
+			class : "pie-chart-holder"
 		});
 		chartHolder.appendChild(newTag("h1", {text : title}));
 		chartHolder.appendChild(createPieChart(data, 400));
@@ -176,8 +179,10 @@ Logic for Request analysis pie charts
 			})
 		}
 		chartHolder.appendChild(createTable(title, data, columns));
-		outputContent.appendChild(chartHolder);
+		chartsHolder.appendChild(chartHolder);
 	};
+
+	outputContent.appendChild(chartsHolder);
 
 
 	// init data for charts
