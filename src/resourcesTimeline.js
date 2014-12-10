@@ -126,7 +126,7 @@ Logic for Resource Timing API Waterfall
 		var createTimeWrapper = function(){
 			var timeHolder = newElementNs("g", { class : "time-scale full-width" });
 			for(var i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++){
-				var lineLabel = newTextElementNs(i + "sec",  diagramHeight, "font-weight:bold;");
+				var lineLabel = newTextElementNs(i + "sec",  diagramHeight);
 				if(i > secs - 0.2){
 					lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
 					lineLabel.setAttribute("text-anchor", "end");
@@ -139,7 +139,7 @@ Logic for Resource Timing API Waterfall
 					y1 : "0",
 					x2 : secPerc * i + "%",
 					y2 : diagramHeight
-				}, "stroke:#0cc; stroke-width:1;");
+				});
 				timeHolder.appendChild(lineEl);
 				timeHolder.appendChild(lineLabel);
 			}
@@ -189,14 +189,11 @@ Logic for Resource Timing API Waterfall
 				}));
 
 				lineLabel.addEventListener("mouseover", function(evt){
-					//evt.target.parent.
-					lineHolder.style.stroke = "#009";
-					lineHolder.style.strokeWidth = "2";
+					lineHolder.classList.add("active");
 					markHolder.parentNode.appendChild(markHolder);
 				});
 				lineLabel.addEventListener("mouseout", function(evt){
-					lineHolder.style.strokeWidth = "1";
-					lineHolder.style.stroke = "#aac";
+					lineHolder.classList.remove("active");
 				});
 
 				markHolder.appendChild(newElementNs("title", {

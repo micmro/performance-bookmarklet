@@ -97,20 +97,31 @@ Logic for Naviagtion Timing API and Markers Waterfall
 				height : height,
 				x :  (x / unit) + "%",
 				y : y,
-				fill : fill
+				fill : fill,
+				class : "time-block"
 			});
 			if(label){
 				rect.appendChild(newElementNs("title", {
 					text : label
 				})); // Add tile to wedge path
 			}
+
+			rect.addEventListener("mouseover", function(evt){
+				evt.target.classList.add("active");
+				console.log("mouseover", evt);
+			});
+			rect.addEventListener("mouseout", function(evt){
+				evt.target.classList.remove("active");
+				console.log("mouseout", evt);
+			});
+
 			return rect;
 		};
 
 		var createTimeWrapper = function(){
 			var timeHolder = newElementNs("g", { class : "time-scale full-width" });
 			for(var i = 0, secs = perfTimingCalc.pageLoadTime / 1000, secPerc = 100 / secs; i <= secs; i++){
-				var lineLabel = newTextElementNs(i + "sec",  diagramHeight, "font-weight:bold;");
+				var lineLabel = newTextElementNs(i + "sec",  diagramHeight);
 				if(i > secs - 0.2){
 					lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
 					lineLabel.setAttribute("text-anchor", "end");
@@ -123,7 +134,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 					y1 : "0",
 					x2 : secPerc * i + "%",
 					y2 : diagramHeight
-				}, "stroke:#0cc; stroke-width:1;");
+				});
 				timeHolder.appendChild(lineEl);
 				timeHolder.appendChild(lineLabel);
 			}
@@ -136,7 +147,6 @@ Logic for Naviagtion Timing API and Markers Waterfall
 				transform : "scale(1, 1)",
 				class : "marker-holder"
 			});
-			var markerColour = "#aac";
 
 			marks.forEach(function(mark, i){
 				//mark.duration
@@ -174,13 +184,11 @@ Logic for Naviagtion Timing API and Markers Waterfall
 				}));
 
 				markHolder.addEventListener("mouseover", function(evt){
-					lineHolder.style.stroke = "#009";
-					lineHolder.style.strokeWidth = "2";
+					lineHolder.classList.add("active");
 					markHolder.parentNode.appendChild(markHolder);
 				});
 				markHolder.addEventListener("mouseout", function(evt){
-					lineHolder.style.strokeWidth = "1";
-					lineHolder.style.stroke = markerColour;
+					lineHolder.classList.remove("active");
 				});
 
 				markHolder.appendChild(newElementNs("title", {
