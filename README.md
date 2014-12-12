@@ -58,7 +58,7 @@ Console Output
 
 The bookmarklet also outputs various console tables (in chrome) to analyze the data in detail:
 
-The *All loaded ressources* console table for instance contains the following data:
+The *All loaded resources* console table for instance contains the following data:
 - Name
 - Domain
 - File Extension

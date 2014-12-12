@@ -130,7 +130,7 @@ Logic for Request analysis pie charts
 	};
 
 	//filter out non-http[s] and sourcemaps
-	var requestsOnly = allRessourcesCalc.filter(function(currR) {
+	var requestsOnly = allResourcesCalc.filter(function(currR) {
 		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
 	});
 

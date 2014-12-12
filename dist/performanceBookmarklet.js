@@ -14,7 +14,7 @@ Initiallize Bookmarklet wide variables, holders and helpers - all other files on
 //bookmarklet wide vars
 var tablesToLog = [],	
 	resources,
-	allRessourcesCalc,
+	allResourcesCalc,
 	marks,
 	measures,
 	perfTiming,
@@ -51,7 +51,7 @@ if(perfTiming.loadEventEnd - perfTiming.navigationStart < 0){
 }
 
 
-allRessourcesCalc = resources.filter(function(currR){
+allResourcesCalc = resources.filter(function(currR){
 		//remove this bookmarklet from the result
 		return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
 	}).map(function(currR, i, arr){
@@ -98,8 +98,8 @@ allRessourcesCalc = resources.filter(function(currR){
 	});
 
 tablesToLog.push({
-	name : "All loaded ressources",
-	data : allRessourcesCalc,
+	name : "All loaded resources",
+	data : allResourcesCalc,
 	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isRequestToHost", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
 });
 
@@ -265,7 +265,7 @@ Tiles to summarize page performance
 (function(){
 
 	//filter out non-http[s] and sourcemaps
-	var requestsOnly = allRessourcesCalc.filter(function(currR) {
+	var requestsOnly = allResourcesCalc.filter(function(currR) {
 		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
 	});
 
@@ -289,7 +289,7 @@ Tiles to summarize page performance
 		return endsWith(domain.domain, location.host.split(".").slice(-2).join(".")) && domain.domain !== location.host;
 	}).length;
 
-	var slowestCalls = allRessourcesCalc.filter(function(a){
+	var slowestCalls = allResourcesCalc.filter(function(a){
 		return a.name !== location.href;
 	}).sort(function(a, b) {
 		return b.duration - a.duration;
@@ -715,7 +715,7 @@ Logic for Request analysis pie charts
 	};
 
 	//filter out non-http[s] and sourcemaps
-	var requestsOnly = allRessourcesCalc.filter(function(currR) {
+	var requestsOnly = allResourcesCalc.filter(function(currR) {
 		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
 	});
 
@@ -883,7 +883,7 @@ Logic for Resource Timing API Waterfall
 		]),
 	];
 
-	allRessourcesCalc.forEach(function(resource, i){
+	allResourcesCalc.forEach(function(resource, i){
 		var segments = [
 			resourceSectionSegment("redirect", resource.redirectStart, resource.redirectEnd, "#030"),
 			resourceSectionSegment("domainLookup", resource.domainLookupStart, resource.domainLookupEnd, "#060"),

@@ -5,7 +5,7 @@ Initiallize Bookmarklet wide variables, holders and helpers - all other files on
 //bookmarklet wide vars
 var tablesToLog = [],	
 	resources,
-	allRessourcesCalc,
+	allResourcesCalc,
 	marks,
 	measures,
 	perfTiming,
@@ -42,7 +42,7 @@ if(perfTiming.loadEventEnd - perfTiming.navigationStart < 0){
 }
 
 
-allRessourcesCalc = resources.filter(function(currR){
+allResourcesCalc = resources.filter(function(currR){
 		//remove this bookmarklet from the result
 		return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
 	}).map(function(currR, i, arr){
@@ -89,8 +89,8 @@ allRessourcesCalc = resources.filter(function(currR){
 	});
 
 tablesToLog.push({
-	name : "All loaded ressources",
-	data : allRessourcesCalc,
+	name : "All loaded resources",
+	data : allResourcesCalc,
 	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isRequestToHost", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
 });
 
