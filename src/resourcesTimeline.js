@@ -2,7 +2,7 @@
 Logic for Resource Timing API Waterfall 
 */
 
-(function(){
+onIFrameLoaded(function(){
 
 	var calc = {
 		"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.responseStart,
@@ -243,4 +243,4 @@ Logic for Resource Timing API Waterfall
 	};
 
 	setupTimeLine(calc.loadDuration, calc.blocks);
-}());
+});
