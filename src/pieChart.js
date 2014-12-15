@@ -3,7 +3,7 @@ Logic for Request analysis pie charts
 */
 
 
-(function(){
+onIFrameLoaded(function(){
 	function createPieChart(data, size){
 		//inpired by http://jsfiddle.net/da5LN/62/
 
@@ -240,4 +240,4 @@ Logic for Request analysis pie charts
 		{name : "File type count (host / external)", data : fileExtensionCounts, columns : ["fileType", "count", "perc"]},
 		{name : "File type count", data : fileExtensionCountHostExt, columns : ["fileType", "count", "perc"]}
 	]);
-}());
+});

@@ -3,7 +3,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 */
 
 
-(function(){
+onIFrameLoaded(function(){
 
 	var perfTimingCalc = {
 		"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.navigationStart,
@@ -231,4 +231,4 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		{name: "Navigation Events", data : perfTimingCalc.output},
 		{name: "Marks", data : marks, columns : ["name", "startTime", "duration"]}
 	]);
-}());
+});

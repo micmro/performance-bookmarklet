@@ -3,7 +3,7 @@ Tiles to summarize page performance
 */
 
 
-(function(){
+onIFrameLoaded(function(){
 
 	//filter out non-http[s] and sourcemaps
 	var requestsOnly = allResourcesCalc.filter(function(currR) {
@@ -85,4 +85,4 @@ Tiles to summarize page performance
 
 	tilesHolder.appendChild(appendix);
 	outputContent.appendChild(tilesHolder);
-}());
+});
