@@ -236,8 +236,18 @@ onIFrameLoaded(function(){
 	}));
 
 	tablesToLog = tablesToLog.concat([
-		{name : "Requests by domain", data : requestsByDomain},
-		{name : "File type count (host / external)", data : fileExtensionCounts, columns : ["fileType", "count", "perc"]},
-		{name : "File type count", data : fileExtensionCountHostExt, columns : ["fileType", "count", "perc"]}
+		{
+			name : "Requests by domain",
+			data : requestsByDomain
+		},
+		{
+			name : "File type count (host / external)",
+			data : fileExtensionCounts,
+			columns : ["fileType", "count", "perc"]},
+		{
+			name : "File type count",
+			data : fileExtensionCountHostExt,
+			columns : ["fileType", "count", "perc"]
+		}
 	]);
 });

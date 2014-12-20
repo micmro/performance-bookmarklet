@@ -91,7 +91,20 @@ allResourcesCalc = resources.filter(function(currR){
 tablesToLog.push({
 	name : "All loaded resources",
 	data : allResourcesCalc,
-	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isRequestToHost", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
+	columns : [
+			"name",
+			"domain",
+			"initiatorType",
+			"fileExtension",
+			"loadtime",
+			"isRequestToHost",
+			"requestStartDelay",
+			"dns",
+			"tcp",
+			"ttfb",
+			"requestDuration",
+			"ssl"
+		]
 });
 
 

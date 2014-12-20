@@ -89,7 +89,32 @@ onIFrameLoaded(function(){
 			class : "water-fall-chart"
 		});
 		var timeLineLabelHolder = newElementNs("g", {class : "labels"});
+
+		var endline = newElementNs("line", {
+			x1 : "0",
+			y1 : "0",
+			x2 : "0",
+			y2 : diagramHeight,
+			class : "line-end"
+		});
 		
+		var onRectMouseOver = function(evt){
+			var targetRect = evt.target;
+			targetRect.classList.add("active");
+			var xPos = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
+			endline.classList.add("active");
+			endline.x1.baseVal.valueAsString = xPos;
+			endline.x2.baseVal.valueAsString = xPos;
+
+			targetRect.parentNode.appendChild(endline);
+			console.log("mouseover", targetRect);
+		};
+
+		var onRectMouseLeave = function(evt){
+			evt.target.classList.remove("active");
+			endline.classList.remove("active");
+			console.log("mouseout", evt);
+		};
 
 		var createRect = function(width, height, x, y, fill, label){
 			var rect = newElementNs("rect", {
@@ -106,14 +131,8 @@ onIFrameLoaded(function(){
 				})); // Add tile to wedge path
 			}
 
-			rect.addEventListener("mouseover", function(evt){
-				evt.target.classList.add("active");
-				console.log("mouseover", evt);
-			});
-			rect.addEventListener("mouseout", function(evt){
-				evt.target.classList.remove("active");
-				console.log("mouseout", evt);
-			});
+			rect.addEventListener("mouseover", onRectMouseOver);
+			rect.addEventListener("mouseout", onRectMouseLeave);
 
 			return rect;
 		};
