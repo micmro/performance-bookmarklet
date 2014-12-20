@@ -2,7 +2,7 @@
 Logic for Resource Timing API Waterfall 
 */
 
-(function(){
+onIFrameLoaded(function(){
 
 	var calc = {
 		"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.responseStart,
@@ -53,7 +53,7 @@ Logic for Resource Timing API Waterfall
 		]),
 	];
 
-	allRessourcesCalc.forEach(function(resource, i){
+	allResourcesCalc.forEach(function(resource, i){
 		var segments = [
 			resourceSectionSegment("redirect", resource.redirectStart, resource.redirectEnd, "#030"),
 			resourceSectionSegment("domainLookup", resource.domainLookupStart, resource.domainLookupEnd, "#060"),
@@ -240,4 +240,4 @@ Logic for Resource Timing API Waterfall
 	};
 
 	setupTimeLine(calc.loadDuration, calc.blocks);
-}());
+});

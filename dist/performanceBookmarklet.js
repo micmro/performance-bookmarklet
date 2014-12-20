@@ -14,7 +14,7 @@ Initiallize Bookmarklet wide variables, holders and helpers - all other files on
 //bookmarklet wide vars
 var tablesToLog = [],	
 	resources,
-	allRessourcesCalc,
+	allResourcesCalc,
 	marks,
 	measures,
 	perfTiming,
@@ -51,7 +51,7 @@ if(perfTiming.loadEventEnd - perfTiming.navigationStart < 0){
 }
 
 
-allRessourcesCalc = resources.filter(function(currR){
+allResourcesCalc = resources.filter(function(currR){
 		//remove this bookmarklet from the result
 		return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
 	}).map(function(currR, i, arr){
@@ -98,8 +98,8 @@ allRessourcesCalc = resources.filter(function(currR){
 	});
 
 tablesToLog.push({
-	name : "All loaded ressources",
-	data : allRessourcesCalc,
+	name : "All loaded resources",
+	data : allResourcesCalc,
 	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isRequestToHost", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
 });
 
@@ -211,6 +211,43 @@ var getItemCount = function(arr, keyName){
 	});
 };
 
+var triggerEvent = function(element, name){
+	var event;
+	if(document.createEvent) {
+		event = document.createEvent("HTMLEvents");
+		event.initEvent(name, true, true);
+	}else{
+		event = document.createEventObject();
+		event.eventType = name;
+	}
+	event.eventName = name;
+	if(document.createEvent) {
+		element.dispatchEvent(event);
+	}else{
+		element.fireEvent("on" + event.eventType, event);
+	}
+};
+
+var onIFrameLoaded = (function(){
+	var hasLoaded = false;
+	var callOnLoad = [];
+	var onIFrameLoadedCb = function(){
+		hasLoaded = true;
+		window.removeEventListener("iFrameLoaded", onIFrameLoadedCb, false);
+		callOnLoad.forEach(function(cb){
+			cb();
+		})
+	};
+	window.addEventListener("iFrameLoaded", onIFrameLoadedCb, false);
+	return function(cb){
+		if(hasLoaded){
+			cb();
+		}else{
+			callOnLoad.push(cb);
+		}
+	};
+})();
+
 
 
 //setup iFrame overlay
@@ -218,42 +255,49 @@ iFrameEl = document.getElementById("perfbook-iframe");
 if(iFrameEl){
 	outputIFrame = iFrameEl.contentWindow.document;
 	outputHolder = outputIFrame.getElementById("perfbook-holder");
+	triggerEvent(window, "iFrameLoaded");
 }else{
 	iFrameEl = newTag("iframe", {
-		id : "perfbook-iframe"
+		id : "perfbook-iframe",
+		onload : function(){
+			outputIFrame = iFrameEl.contentWindow.document;
+
+			//add style to iFrame
+			outputIFrame.head.appendChild(newTag("style", {
+				type : "text/css",
+				html : cssFileText
+			}));
+			
+			triggerEvent(window, "iFrameLoaded");
+		}
 	}, "position:absolute; top:1%; right:1%; margin-bottom:1em; left:1%; z-index: 9999; width:98%; z-index: 9999; border:0; box-shadow:0 0 25px 0 rgba(0,0,0,0.5); background:#fff;");
 	document.body.appendChild(iFrameEl);
-	outputIFrame = iFrameEl.contentWindow.document;
-
-	//add style to iFrame
-	outputIFrame.head.appendChild(newTag("style", {
-		type : "text/css",
-		html : cssFileText
-	}));
 }
 
-// find or create holder element
-if(!outputHolder){
-	outputHolder = newTag("div", {id : "perfbook-holder"});
-	outputContent = newTag("div", {id : "perfbook-content"});
-		
-	var closeBtn = newTag("button", {
-		class : "perfbook-close",
-		text: "close"
-	});
-	closeBtn.addEventListener("click", function(){
-		iFrameEl.parentNode.removeChild(iFrameEl);
-	});
+onIFrameLoaded(function(){
+	// find or create holder element
+	if(!outputHolder){
+		outputHolder = newTag("div", {id : "perfbook-holder"});
+		outputContent = newTag("div", {id : "perfbook-content"});
+			
+		var closeBtn = newTag("button", {
+			class : "perfbook-close",
+			text: "close"
+		});
+		closeBtn.addEventListener("click", function(){
+			iFrameEl.parentNode.removeChild(iFrameEl);
+		});
 
-	outputHolder.appendChild(closeBtn);
-	outputHolder.appendChild(outputContent);
-}else{
-	outputContent = outputIFrame.getElementById("perfbook-content");
-	//clear existing data
-	while (outputContent.firstChild) {
-		outputContent.removeChild(outputContent.firstChild);
+		outputHolder.appendChild(closeBtn);
+		outputHolder.appendChild(outputContent);
+	}else{
+		outputContent = outputIFrame.getElementById("perfbook-content");
+		//clear existing data
+		while (outputContent.firstChild) {
+			outputContent.removeChild(outputContent.firstChild);
+		}
 	}
-}
+});
 
 
 
@@ -262,10 +306,10 @@ Tiles to summarize page performance
 */
 
 
-(function(){
+onIFrameLoaded(function(){
 
 	//filter out non-http[s] and sourcemaps
-	var requestsOnly = allRessourcesCalc.filter(function(currR) {
+	var requestsOnly = allResourcesCalc.filter(function(currR) {
 		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
 	});
 
@@ -289,7 +333,7 @@ Tiles to summarize page performance
 		return endsWith(domain.domain, location.host.split(".").slice(-2).join(".")) && domain.domain !== location.host;
 	}).length;
 
-	var slowestCalls = allRessourcesCalc.filter(function(a){
+	var slowestCalls = allResourcesCalc.filter(function(a){
 		return a.name !== location.href;
 	}).sort(function(a, b) {
 		return b.duration - a.duration;
@@ -344,7 +388,8 @@ Tiles to summarize page performance
 
 	tilesHolder.appendChild(appendix);
 	outputContent.appendChild(tilesHolder);
-}());
+});
+
 
 
 /*
@@ -352,7 +397,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 */
 
 
-(function(){
+onIFrameLoaded(function(){
 
 	var perfTimingCalc = {
 		"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.navigationStart,
@@ -580,7 +625,7 @@ Logic for Naviagtion Timing API and Markers Waterfall
 		{name: "Navigation Events", data : perfTimingCalc.output},
 		{name: "Marks", data : marks, columns : ["name", "startTime", "duration"]}
 	]);
-}());
+});
 
 
 /*
@@ -588,7 +633,7 @@ Logic for Request analysis pie charts
 */
 
 
-(function(){
+onIFrameLoaded(function(){
 	function createPieChart(data, size){
 		//inpired by http://jsfiddle.net/da5LN/62/
 
@@ -715,7 +760,7 @@ Logic for Request analysis pie charts
 	};
 
 	//filter out non-http[s] and sourcemaps
-	var requestsOnly = allRessourcesCalc.filter(function(currR) {
+	var requestsOnly = allResourcesCalc.filter(function(currR) {
 		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
 	});
 
@@ -825,14 +870,15 @@ Logic for Request analysis pie charts
 		{name : "File type count (host / external)", data : fileExtensionCounts, columns : ["fileType", "count", "perc"]},
 		{name : "File type count", data : fileExtensionCountHostExt, columns : ["fileType", "count", "perc"]}
 	]);
-}());
+});
+
 
 
 /*
 Logic for Resource Timing API Waterfall 
 */
 
-(function(){
+onIFrameLoaded(function(){
 
 	var calc = {
 		"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.responseStart,
@@ -883,7 +929,7 @@ Logic for Resource Timing API Waterfall
 		]),
 	];
 
-	allRessourcesCalc.forEach(function(resource, i){
+	allResourcesCalc.forEach(function(resource, i){
 		var segments = [
 			resourceSectionSegment("redirect", resource.redirectStart, resource.redirectEnd, "#030"),
 			resourceSectionSegment("domainLookup", resource.domainLookupStart, resource.domainLookupEnd, "#060"),
@@ -1073,7 +1119,8 @@ Logic for Resource Timing API Waterfall
 	};
 
 	setupTimeLine(calc.loadDuration, calc.blocks);
-}());
+});
+
 
 
 /*
@@ -1081,8 +1128,10 @@ Footer that finally outputs the data to the DOM and the console
 */
 
 //add charts to iFrame holder in body
-outputIFrame.body.appendChild(outputHolder);
-iFrameEl.style.height = outputHolder.clientHeight + "px";
+onIFrameLoaded(function(){
+	outputIFrame.body.appendChild(outputHolder);
+	iFrameEl.style.height = outputHolder.clientHeight + "px";
+});
 
 
 // also output the data as table in console

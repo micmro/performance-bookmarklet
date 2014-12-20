@@ -3,7 +3,7 @@ Logic for Request analysis pie charts
 */
 
 
-(function(){
+onIFrameLoaded(function(){
 	function createPieChart(data, size){
 		//inpired by http://jsfiddle.net/da5LN/62/
 
@@ -130,7 +130,7 @@ Logic for Request analysis pie charts
 	};
 
 	//filter out non-http[s] and sourcemaps
-	var requestsOnly = allRessourcesCalc.filter(function(currR) {
+	var requestsOnly = allResourcesCalc.filter(function(currR) {
 		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
 	});
 
@@ -240,4 +240,4 @@ Logic for Request analysis pie charts
 		{name : "File type count (host / external)", data : fileExtensionCounts, columns : ["fileType", "count", "perc"]},
 		{name : "File type count", data : fileExtensionCountHostExt, columns : ["fileType", "count", "perc"]}
 	]);
-}());
+});

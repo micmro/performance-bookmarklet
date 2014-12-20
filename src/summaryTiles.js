@@ -3,10 +3,10 @@ Tiles to summarize page performance
 */
 
 
-(function(){
+onIFrameLoaded(function(){
 
 	//filter out non-http[s] and sourcemaps
-	var requestsOnly = allRessourcesCalc.filter(function(currR) {
+	var requestsOnly = allResourcesCalc.filter(function(currR) {
 		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
 	});
 
@@ -30,7 +30,7 @@ Tiles to summarize page performance
 		return endsWith(domain.domain, location.host.split(".").slice(-2).join(".")) && domain.domain !== location.host;
 	}).length;
 
-	var slowestCalls = allRessourcesCalc.filter(function(a){
+	var slowestCalls = allResourcesCalc.filter(function(a){
 		return a.name !== location.href;
 	}).sort(function(a, b) {
 		return b.duration - a.duration;
@@ -85,4 +85,4 @@ Tiles to summarize page performance
 
 	tilesHolder.appendChild(appendix);
 	outputContent.appendChild(tilesHolder);
-}());
+});
