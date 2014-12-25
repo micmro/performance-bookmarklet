@@ -98,22 +98,34 @@ onIFrameLoaded(function(){
 			class : "line-end"
 		});
 		
+		var startline = newElementNs("line", {
+			x1 : "0",
+			y1 : "0",
+			x2 : "0",
+			y2 : diagramHeight,
+			class : "line-start"
+		});
+
 		var onRectMouseOver = function(evt){
 			var targetRect = evt.target;
 			targetRect.classList.add("active");
-			var xPos = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
+			var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
+			var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
+			endline.x1.baseVal.valueAsString = xPosEnd;
+			endline.x2.baseVal.valueAsString = xPosEnd;
+			startline.x1.baseVal.valueAsString = xPosStart;
+			startline.x2.baseVal.valueAsString = xPosStart;
 			endline.classList.add("active");
-			endline.x1.baseVal.valueAsString = xPos;
-			endline.x2.baseVal.valueAsString = xPos;
+			startline.classList.add("active");
 
 			targetRect.parentNode.appendChild(endline);
-			console.log("mouseover", targetRect);
+			targetRect.parentNode.appendChild(startline);
 		};
 
 		var onRectMouseLeave = function(evt){
 			evt.target.classList.remove("active");
 			endline.classList.remove("active");
-			console.log("mouseout", evt);
+			startline.classList.remove("active");
 		};
 
 		var createRect = function(width, height, x, y, fill, label){
