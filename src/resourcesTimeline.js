@@ -110,24 +110,24 @@ onIFrameLoaded(function(){
 
 		var onRectMouseOver = function(evt){
 			var targetRect = evt.target;
-			targetRect.classList.add("active");
+			addClass(targetRect, "active");
 			var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
 			var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
 			endline.x1.baseVal.valueAsString = xPosEnd;
 			endline.x2.baseVal.valueAsString = xPosEnd;
 			startline.x1.baseVal.valueAsString = xPosStart;
 			startline.x2.baseVal.valueAsString = xPosStart;
-			endline.classList.add("active");
-			startline.classList.add("active");
+			addClass(endline, "active");
+			addClass(startline, "active");
 
 			targetRect.parentNode.appendChild(endline);
 			targetRect.parentNode.appendChild(startline);
 		};
 
 		var onRectMouseLeave = function(evt){
-			evt.target.classList.remove("active");
-			endline.classList.remove("active");
-			startline.classList.remove("active");
+			removeClass(evt.target, "active");
+			removeClass(endline, "active");
+			removeClass(startline, "active");
 		};
 
 		var createRect = function(width, height, x, y, fill, label, segments){
@@ -229,11 +229,11 @@ onIFrameLoaded(function(){
 				}));
 
 				lineLabel.addEventListener("mouseover", function(evt){
-					lineHolder.classList.add("active");
+					addClass(lineHolder, "active");
 					markHolder.parentNode.appendChild(markHolder);
 				});
 				lineLabel.addEventListener("mouseout", function(evt){
-					lineHolder.classList.remove("active");
+					removeClass(lineHolder, "active");
 				});
 
 				markHolder.appendChild(newElementNs("title", {

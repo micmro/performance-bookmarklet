@@ -232,6 +232,27 @@ var triggerEvent = function(element, name){
 	}
 };
 
+var addClass = function(el, className){
+	if(el.classList){
+		el.classList.add(className);
+	}else{
+		// IE doesn't support classList in SVG - also no need for dublication check i.t.m.
+		el.setAttribute("class", el.getAttribute("class") + " " + className);
+	}
+	return el;
+}
+
+
+var removeClass = function(el, className){
+	if(el.classList){
+		el.classList.remove(className);
+	}else{
+		//IE doesn't support classList in SVG - also no need for dublication check i.t.m.
+        el.setAttribute("class", el.getAttribute("class").replace(new RegExp("(\\s|^)" + className + "(\\s|$)", "g"), "$2"));
+	}
+	return el;
+}
+
 var onIFrameLoaded = (function(){
 	var hasLoaded = false;
 	var callOnLoad = [];
