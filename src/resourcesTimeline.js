@@ -91,7 +91,44 @@ onIFrameLoaded(function(){
 			class : "water-fall-chart"
 		});
 		var timeLineLabelHolder = newElementNs("g", {class : "labels"});
+
+		var endline = newElementNs("line", {
+			x1 : "0",
+			y1 : "0",
+			x2 : "0",
+			y2 : diagramHeight,
+			class : "line-end"
+		});
 		
+		var startline = newElementNs("line", {
+			x1 : "0",
+			y1 : "0",
+			x2 : "0",
+			y2 : diagramHeight,
+			class : "line-start"
+		});
+
+		var onRectMouseOver = function(evt){
+			var targetRect = evt.target;
+			targetRect.classList.add("active");
+			var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
+			var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
+			endline.x1.baseVal.valueAsString = xPosEnd;
+			endline.x2.baseVal.valueAsString = xPosEnd;
+			startline.x1.baseVal.valueAsString = xPosStart;
+			startline.x2.baseVal.valueAsString = xPosStart;
+			endline.classList.add("active");
+			startline.classList.add("active");
+
+			targetRect.parentNode.appendChild(endline);
+			targetRect.parentNode.appendChild(startline);
+		};
+
+		var onRectMouseLeave = function(evt){
+			evt.target.classList.remove("active");
+			endline.classList.remove("active");
+			startline.classList.remove("active");
+		};
 
 		var createRect = function(width, height, x, y, fill, label, segments){
 			var rectHolder;
@@ -101,13 +138,17 @@ onIFrameLoaded(function(){
 				x :  (x / unit) + "%",
 				y : y,
 				fill : fill,
-				class : (segments && segments.length > 0) ? "main" : "segment"
+				class : (segments && segments.length > 0) ? "time-block" : "segment"
 			});
 			if(label){
 				rect.appendChild(newElementNs("title", {
 					text : label
 				})); // Add tile to wedge path
 			}
+
+			rect.addEventListener("mouseover", onRectMouseOver);
+			rect.addEventListener("mouseout", onRectMouseLeave);
+
 			if(segments && segments.length > 0){
 				rectHolder = newElementNs("g");
 				rectHolder.appendChild(rect);
@@ -120,7 +161,6 @@ onIFrameLoaded(function(){
 			}else{
 				return rect;
 			}
-			
 		};
 
 		var createTimeWrapper = function(){
@@ -219,6 +259,7 @@ onIFrameLoaded(function(){
 			var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 20));
 
 			if(((block.total||1) / unit) > 10 && getNodeTextWidth(blockLabel) < 200){
+				blockLabel.setAttribute("class", "inner-label");
 				blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
 				blockLabel.setAttribute("width", (blockWidth / unit) + "%");
 			}else if(((block.start||0.001) / unit) + (blockWidth / unit) < 80){

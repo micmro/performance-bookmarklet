@@ -244,6 +244,7 @@ onIFrameLoaded(function(){
 			var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 18));
 
 			if(((block.total||1) / unit) > 10){
+				blockLabel.setAttribute("class", "inner-label");
 				blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
 				blockLabel.setAttribute("width", (blockWidth / unit) + "%");
 			}else if(((block.start||0.001) / unit) + (blockWidth / unit) < 80){
