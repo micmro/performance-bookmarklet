@@ -4,7 +4,7 @@
 (function(){
 "use strict";
 
-var cssFileText = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .tiles-holder {margin: 2em -18px 1em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin: 0 -72px 0 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:400px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th { padding:0 0.5em 0 0;} .table-holder td {padding:0 0.5em 0 0;} .water-fall-holder {margin: 25px 0; fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #aac;} .water-fall-chart .labels {width:100%;} .navigation-timing {} .resource-timing .chart-holder {} ";
+var cssFileText = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .tiles-holder {margin: 2em -18px 1em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin: 0 -72px 0 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:400px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th { padding:0 0.5em 0 0;} .table-holder td {padding:0 0.5em 0 0;} .water-fall-holder {margin: 25px 0; fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #aac;} .water-fall-chart .line-holder.active {stroke: #009; stroke-width:2;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .resource-timing .chart-holder {} ";
 
 
 /*
@@ -100,7 +100,20 @@ allResourcesCalc = resources.filter(function(currR){
 tablesToLog.push({
 	name : "All loaded resources",
 	data : allResourcesCalc,
-	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isRequestToHost", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
+	columns : [
+			"name",
+			"domain",
+			"initiatorType",
+			"fileExtension",
+			"loadtime",
+			"isRequestToHost",
+			"requestStartDelay",
+			"dns",
+			"tcp",
+			"ttfb",
+			"requestDuration",
+			"ssl"
+		]
 });
 
 
@@ -227,6 +240,27 @@ var triggerEvent = function(element, name){
 		element.fireEvent("on" + event.eventType, event);
 	}
 };
+
+var addClass = function(el, className){
+	if(el.classList){
+		el.classList.add(className);
+	}else{
+		// IE doesn't support classList in SVG - also no need for dublication check i.t.m.
+		el.setAttribute("class", el.getAttribute("class") + " " + className);
+	}
+	return el;
+}
+
+
+var removeClass = function(el, className){
+	if(el.classList){
+		el.classList.remove(className);
+	}else{
+		//IE doesn't support classList in SVG - also no need for dublication check i.t.m.
+        el.setAttribute("class", el.getAttribute("class").replace(new RegExp("(\\s|^)" + className + "(\\s|$)", "g"), "$2"));
+	}
+	return el;
+}
 
 var onIFrameLoaded = (function(){
 	var hasLoaded = false;
@@ -483,7 +517,45 @@ onIFrameLoaded(function(){
 			class : "water-fall-chart"
 		});
 		var timeLineLabelHolder = newElementNs("g", {class : "labels"});
+
+		var endline = newElementNs("line", {
+			x1 : "0",
+			y1 : "0",
+			x2 : "0",
+			y2 : diagramHeight,
+			class : "line-end"
+		});
 		
+		var startline = newElementNs("line", {
+			x1 : "0",
+			y1 : "0",
+			x2 : "0",
+			y2 : diagramHeight,
+			class : "line-start"
+		});
+
+		var onRectMouseOver = function(evt){
+			var targetRect = evt.target;
+			addClass(targetRect, "active");
+
+			var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
+			var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
+			endline.x1.baseVal.valueAsString = xPosEnd;
+			endline.x2.baseVal.valueAsString = xPosEnd;
+			startline.x1.baseVal.valueAsString = xPosStart;
+			startline.x2.baseVal.valueAsString = xPosStart;
+			addClass(endline, "active");
+			addClass(startline, "active");
+
+			targetRect.parentNode.appendChild(endline);
+			targetRect.parentNode.appendChild(startline);
+		};
+
+		var onRectMouseLeave = function(evt){
+			removeClass(evt.target, "active");
+			removeClass(endline, "active");
+			removeClass(startline, "active");
+		};
 
 		var createRect = function(width, height, x, y, fill, label){
 			var rect = newElementNs("rect", {
@@ -491,20 +563,25 @@ onIFrameLoaded(function(){
 				height : height,
 				x :  (x / unit) + "%",
 				y : y,
-				fill : fill
+				fill : fill,
+				class : "time-block"
 			});
 			if(label){
 				rect.appendChild(newElementNs("title", {
 					text : label
 				})); // Add tile to wedge path
 			}
+
+			rect.addEventListener("mouseover", onRectMouseOver);
+			rect.addEventListener("mouseout", onRectMouseLeave);
+
 			return rect;
 		};
 
 		var createTimeWrapper = function(){
 			var timeHolder = newElementNs("g", { class : "time-scale full-width" });
 			for(var i = 0, secs = perfTimingCalc.pageLoadTime / 1000, secPerc = 100 / secs; i <= secs; i++){
-				var lineLabel = newTextElementNs(i + "sec",  diagramHeight, "font-weight:bold;");
+				var lineLabel = newTextElementNs(i + "sec",  diagramHeight);
 				if(i > secs - 0.2){
 					lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
 					lineLabel.setAttribute("text-anchor", "end");
@@ -517,7 +594,7 @@ onIFrameLoaded(function(){
 					y1 : "0",
 					x2 : secPerc * i + "%",
 					y2 : diagramHeight
-				}, "stroke:#0cc; stroke-width:1;");
+				});
 				timeHolder.appendChild(lineEl);
 				timeHolder.appendChild(lineLabel);
 			}
@@ -530,7 +607,6 @@ onIFrameLoaded(function(){
 				transform : "scale(1, 1)",
 				class : "marker-holder"
 			});
-			var markerColour = "#aac";
 
 			marks.forEach(function(mark, i){
 				//mark.duration
@@ -568,13 +644,11 @@ onIFrameLoaded(function(){
 				}));
 
 				markHolder.addEventListener("mouseover", function(evt){
-					lineHolder.style.stroke = "#009";
-					lineHolder.style.strokeWidth = "2";
+					addClass(lineHolder, "active");
 					markHolder.parentNode.appendChild(markHolder);
 				});
 				markHolder.addEventListener("mouseout", function(evt){
-					lineHolder.style.strokeWidth = "1";
-					lineHolder.style.stroke = markerColour;
+					removeClass(lineHolder, "active");
 				});
 
 				markHolder.appendChild(newElementNs("title", {
@@ -599,6 +673,7 @@ onIFrameLoaded(function(){
 			var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 18));
 
 			if(((block.total||1) / unit) > 10){
+				blockLabel.setAttribute("class", "inner-label");
 				blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
 				blockLabel.setAttribute("width", (blockWidth / unit) + "%");
 			}else if(((block.start||0.001) / unit) + (blockWidth / unit) < 80){
@@ -866,9 +941,19 @@ onIFrameLoaded(function(){
 	}));
 
 	tablesToLog = tablesToLog.concat([
-		{name : "Requests by domain", data : requestsByDomain},
-		{name : "File type count (host / external)", data : fileExtensionCounts, columns : ["fileType", "count", "perc"]},
-		{name : "File type count", data : fileExtensionCountHostExt, columns : ["fileType", "count", "perc"]}
+		{
+			name : "Requests by domain",
+			data : requestsByDomain
+		},
+		{
+			name : "File type count (host / external)",
+			data : fileExtensionCounts,
+			columns : ["fileType", "count", "perc"]},
+		{
+			name : "File type count",
+			data : fileExtensionCountHostExt,
+			columns : ["fileType", "count", "perc"]
+		}
 	]);
 });
 
@@ -967,7 +1052,44 @@ onIFrameLoaded(function(){
 			class : "water-fall-chart"
 		});
 		var timeLineLabelHolder = newElementNs("g", {class : "labels"});
+
+		var endline = newElementNs("line", {
+			x1 : "0",
+			y1 : "0",
+			x2 : "0",
+			y2 : diagramHeight,
+			class : "line-end"
+		});
 		
+		var startline = newElementNs("line", {
+			x1 : "0",
+			y1 : "0",
+			x2 : "0",
+			y2 : diagramHeight,
+			class : "line-start"
+		});
+
+		var onRectMouseOver = function(evt){
+			var targetRect = evt.target;
+			addClass(targetRect, "active");
+			var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
+			var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
+			endline.x1.baseVal.valueAsString = xPosEnd;
+			endline.x2.baseVal.valueAsString = xPosEnd;
+			startline.x1.baseVal.valueAsString = xPosStart;
+			startline.x2.baseVal.valueAsString = xPosStart;
+			addClass(endline, "active");
+			addClass(startline, "active");
+
+			targetRect.parentNode.appendChild(endline);
+			targetRect.parentNode.appendChild(startline);
+		};
+
+		var onRectMouseLeave = function(evt){
+			removeClass(evt.target, "active");
+			removeClass(endline, "active");
+			removeClass(startline, "active");
+		};
 
 		var createRect = function(width, height, x, y, fill, label, segments){
 			var rectHolder;
@@ -977,13 +1099,17 @@ onIFrameLoaded(function(){
 				x :  (x / unit) + "%",
 				y : y,
 				fill : fill,
-				class : (segments && segments.length > 0) ? "main" : "segment"
+				class : (segments && segments.length > 0) ? "time-block" : "segment"
 			});
 			if(label){
 				rect.appendChild(newElementNs("title", {
 					text : label
 				})); // Add tile to wedge path
 			}
+
+			rect.addEventListener("mouseover", onRectMouseOver);
+			rect.addEventListener("mouseout", onRectMouseLeave);
+
 			if(segments && segments.length > 0){
 				rectHolder = newElementNs("g");
 				rectHolder.appendChild(rect);
@@ -996,13 +1122,12 @@ onIFrameLoaded(function(){
 			}else{
 				return rect;
 			}
-			
 		};
 
 		var createTimeWrapper = function(){
 			var timeHolder = newElementNs("g", { class : "time-scale full-width" });
 			for(var i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++){
-				var lineLabel = newTextElementNs(i + "sec",  diagramHeight, "font-weight:bold;");
+				var lineLabel = newTextElementNs(i + "sec",  diagramHeight);
 				if(i > secs - 0.2){
 					lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
 					lineLabel.setAttribute("text-anchor", "end");
@@ -1015,7 +1140,7 @@ onIFrameLoaded(function(){
 					y1 : "0",
 					x2 : secPerc * i + "%",
 					y2 : diagramHeight
-				}, "stroke:#0cc; stroke-width:1;");
+				});
 				timeHolder.appendChild(lineEl);
 				timeHolder.appendChild(lineLabel);
 			}
@@ -1065,14 +1190,11 @@ onIFrameLoaded(function(){
 				}));
 
 				lineLabel.addEventListener("mouseover", function(evt){
-					//evt.target.parent.
-					lineHolder.style.stroke = "#009";
-					lineHolder.style.strokeWidth = "2";
+					addClass(lineHolder, "active");
 					markHolder.parentNode.appendChild(markHolder);
 				});
 				lineLabel.addEventListener("mouseout", function(evt){
-					lineHolder.style.strokeWidth = "1";
-					lineHolder.style.stroke = "#aac";
+					removeClass(lineHolder, "active");
 				});
 
 				markHolder.appendChild(newElementNs("title", {
@@ -1098,6 +1220,7 @@ onIFrameLoaded(function(){
 			var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 20));
 
 			if(((block.total||1) / unit) > 10 && getNodeTextWidth(blockLabel) < 200){
+				blockLabel.setAttribute("class", "inner-label");
 				blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
 				blockLabel.setAttribute("width", (blockWidth / unit) + "%");
 			}else if(((block.start||0.001) / unit) + (blockWidth / unit) < 80){

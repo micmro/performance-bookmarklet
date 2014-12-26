@@ -91,7 +91,20 @@ allResourcesCalc = resources.filter(function(currR){
 tablesToLog.push({
 	name : "All loaded resources",
 	data : allResourcesCalc,
-	columns : ["name", "domain", "initiatorType", "fileExtension", "loadtime", "isRequestToHost", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
+	columns : [
+			"name",
+			"domain",
+			"initiatorType",
+			"fileExtension",
+			"loadtime",
+			"isRequestToHost",
+			"requestStartDelay",
+			"dns",
+			"tcp",
+			"ttfb",
+			"requestDuration",
+			"ssl"
+		]
 });
 
 
@@ -218,6 +231,27 @@ var triggerEvent = function(element, name){
 		element.fireEvent("on" + event.eventType, event);
 	}
 };
+
+var addClass = function(el, className){
+	if(el.classList){
+		el.classList.add(className);
+	}else{
+		// IE doesn't support classList in SVG - also no need for dublication check i.t.m.
+		el.setAttribute("class", el.getAttribute("class") + " " + className);
+	}
+	return el;
+}
+
+
+var removeClass = function(el, className){
+	if(el.classList){
+		el.classList.remove(className);
+	}else{
+		//IE doesn't support classList in SVG - also no need for dublication check i.t.m.
+        el.setAttribute("class", el.getAttribute("class").replace(new RegExp("(\\s|^)" + className + "(\\s|$)", "g"), "$2"));
+	}
+	return el;
+}
 
 var onIFrameLoaded = (function(){
 	var hasLoaded = false;

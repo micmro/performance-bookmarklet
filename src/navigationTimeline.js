@@ -89,7 +89,45 @@ onIFrameLoaded(function(){
 			class : "water-fall-chart"
 		});
 		var timeLineLabelHolder = newElementNs("g", {class : "labels"});
+
+		var endline = newElementNs("line", {
+			x1 : "0",
+			y1 : "0",
+			x2 : "0",
+			y2 : diagramHeight,
+			class : "line-end"
+		});
 		
+		var startline = newElementNs("line", {
+			x1 : "0",
+			y1 : "0",
+			x2 : "0",
+			y2 : diagramHeight,
+			class : "line-start"
+		});
+
+		var onRectMouseOver = function(evt){
+			var targetRect = evt.target;
+			addClass(targetRect, "active");
+
+			var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
+			var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
+			endline.x1.baseVal.valueAsString = xPosEnd;
+			endline.x2.baseVal.valueAsString = xPosEnd;
+			startline.x1.baseVal.valueAsString = xPosStart;
+			startline.x2.baseVal.valueAsString = xPosStart;
+			addClass(endline, "active");
+			addClass(startline, "active");
+
+			targetRect.parentNode.appendChild(endline);
+			targetRect.parentNode.appendChild(startline);
+		};
+
+		var onRectMouseLeave = function(evt){
+			removeClass(evt.target, "active");
+			removeClass(endline, "active");
+			removeClass(startline, "active");
+		};
 
 		var createRect = function(width, height, x, y, fill, label){
 			var rect = newElementNs("rect", {
@@ -97,20 +135,25 @@ onIFrameLoaded(function(){
 				height : height,
 				x :  (x / unit) + "%",
 				y : y,
-				fill : fill
+				fill : fill,
+				class : "time-block"
 			});
 			if(label){
 				rect.appendChild(newElementNs("title", {
 					text : label
 				})); // Add tile to wedge path
 			}
+
+			rect.addEventListener("mouseover", onRectMouseOver);
+			rect.addEventListener("mouseout", onRectMouseLeave);
+
 			return rect;
 		};
 
 		var createTimeWrapper = function(){
 			var timeHolder = newElementNs("g", { class : "time-scale full-width" });
 			for(var i = 0, secs = perfTimingCalc.pageLoadTime / 1000, secPerc = 100 / secs; i <= secs; i++){
-				var lineLabel = newTextElementNs(i + "sec",  diagramHeight, "font-weight:bold;");
+				var lineLabel = newTextElementNs(i + "sec",  diagramHeight);
 				if(i > secs - 0.2){
 					lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
 					lineLabel.setAttribute("text-anchor", "end");
@@ -123,7 +166,7 @@ onIFrameLoaded(function(){
 					y1 : "0",
 					x2 : secPerc * i + "%",
 					y2 : diagramHeight
-				}, "stroke:#0cc; stroke-width:1;");
+				});
 				timeHolder.appendChild(lineEl);
 				timeHolder.appendChild(lineLabel);
 			}
@@ -136,7 +179,6 @@ onIFrameLoaded(function(){
 				transform : "scale(1, 1)",
 				class : "marker-holder"
 			});
-			var markerColour = "#aac";
 
 			marks.forEach(function(mark, i){
 				//mark.duration
@@ -174,13 +216,11 @@ onIFrameLoaded(function(){
 				}));
 
 				markHolder.addEventListener("mouseover", function(evt){
-					lineHolder.style.stroke = "#009";
-					lineHolder.style.strokeWidth = "2";
+					addClass(lineHolder, "active");
 					markHolder.parentNode.appendChild(markHolder);
 				});
 				markHolder.addEventListener("mouseout", function(evt){
-					lineHolder.style.strokeWidth = "1";
-					lineHolder.style.stroke = markerColour;
+					removeClass(lineHolder, "active");
 				});
 
 				markHolder.appendChild(newElementNs("title", {
@@ -205,6 +245,7 @@ onIFrameLoaded(function(){
 			var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 18));
 
 			if(((block.total||1) / unit) > 10){
+				blockLabel.setAttribute("class", "inner-label");
 				blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
 				blockLabel.setAttribute("width", (blockWidth / unit) + "%");
 			}else if(((block.start||0.001) / unit) + (blockWidth / unit) < 80){

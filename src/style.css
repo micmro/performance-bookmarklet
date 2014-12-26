@@ -45,7 +45,15 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 .water-fall-chart {width:100%; background:#f0f5f0;}
 .water-fall-chart .marker-holder {width:100%;}
 .water-fall-chart .line-holder {stroke-width:1; stroke: #aac;}
+.water-fall-chart .line-holder.active {stroke: #009; stroke-width:2;}
 .water-fall-chart .labels {width:100%;}
+.water-fall-chart .labels .inner-label {pointer-events: none;}
+.water-fall-chart .time-block.active {opacity: 0.8;}
+.water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;}
+.water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;}
+
+.time-scale line {stroke:#0cc; stroke-width:1;}
+.time-scale text {font-weight:bold;}
 
 /*Navigation Timing*/
 .navigation-timing {}
