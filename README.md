@@ -1,7 +1,7 @@
 Performance-Bookmarklet
 =======================
 
-Bookmarklet to analyze the current page through the [Resource Timing API](http://www.w3.org/TR/resource-timing), [Navigation Timing API](http://www.w3.org/TR/navigation-timing) and [User-Timing](http://www.w3.org/TR/user-timing/) - requests by type, domain, load times, marks and more. Sort of a light live WebPageTest.
+Bookmarklet and [Chrome Extension](https://chrome.google.com/webstore/detail/performance-analyser/djgfmlohefpomchfabngccpbaflcahjf) to analyze the current page through the [Resource Timing API](http://www.w3.org/TR/resource-timing), [Navigation Timing API](http://www.w3.org/TR/navigation-timing) and [User-Timing](http://www.w3.org/TR/user-timing/) - requests by type, domain, load times, marks and more. Sort of a light live WebPageTest.
 
 
 Just add this into the URL section of a new bookmark:
@@ -9,6 +9,8 @@ Just add this into the URL section of a new bookmark:
 ```
 javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js';el.onerror=function(){alert("Looks like the Content Security Policy directive is blocking the use of bookmarklets\n\nYou can copy and paste the content of:\n\n\"https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js\"\n\ninto your console instead\n\n(link is in console already)");console.log("https://nurun.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js");};document.getElementsByTagName('body')[0].appendChild(el);})();
 ```
+
+You can use the Performance-Bookmarklet also as Chrome Extension called [Performance-Analyser](https://chrome.google.com/webstore/detail/performance-analyser/djgfmlohefpomchfabngccpbaflcahjf).
 
 <a href="https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-full.png"><img src="https://raw.githubusercontent.com/nurun/resourceTable/gh-pages/readme-assets/perfbook-full.png" alt="screenshot showing the whole bookmarklet on http://google.com" height="500" /></a>
 
