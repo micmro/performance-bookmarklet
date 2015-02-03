@@ -845,7 +845,7 @@ onIFrameLoaded(function(){
 	}), "fileType");
 
 	var fileExtensionCountHostExt = getItemCount(requestsOnly.map(function(currR, i, arr){
-		return (currR.initiatorType  || currR.fileExtension) + " " + (currR.isRequestToHost ? "(host)" : "(extenal)");
+		return (currR.initiatorType  || currR.fileExtension) + " " + (currR.isRequestToHost ? "(host)" : "(external)");
 	}), "fileType");
 
 	var requestsByDomain = getItemCount(requestsOnly.map(function(currR, i, arr){
