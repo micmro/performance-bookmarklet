@@ -3,7 +3,7 @@ Initiallize Bookmarklet wide variables, holders and helpers - all other files on
 */
 
 //bookmarklet wide vars
-var tablesToLog = [],	
+var tablesToLog = [],
 	resources,
 	allResourcesCalc,
 	marks,
@@ -14,6 +14,10 @@ var tablesToLog = [],
 	outputHolder,
 	outputContent;
 
+//skip browser internal pages
+if(location.protocol === "about:"){
+	return;
+}
 
 //feature check gate
 if(window.performance && window.performance.getEntriesByType !== undefined) {

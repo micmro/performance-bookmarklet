@@ -1,6 +1,7 @@
 # Logs
 logs
 *.log
+.DS_Store
 
 # Editor Project Files
 *.sublime-project
