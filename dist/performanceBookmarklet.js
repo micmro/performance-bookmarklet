@@ -4,7 +4,7 @@
 (function(){
 "use strict";
 
-var cssFileText = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .tiles-holder {margin: 2em -18px 1em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin: 0 -72px 0 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:400px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th { padding:0 0.5em 0 0;} .table-holder td {padding:0 0.5em 0 0;} .water-fall-holder {margin: 25px 0; fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #aac;} .water-fall-chart .line-holder.active {stroke: #009; stroke-width:2;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .resource-timing .chart-holder {} ";
+var cssFileText = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .tiles-holder {margin: 2em -18px 1em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin: 0 -72px 0 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:400px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th { padding:0 0.5em 0 0;} .table-holder td {padding:0 0.5em 0 0;} .water-fall-holder {margin: 25px 0; fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #a971c5; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .legend dt {clear: both; float: left;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;} .resource-timing .chart-holder {} ";
 
 
 /*
@@ -486,29 +486,33 @@ onIFrameLoaded(function(){
 	};
 
 	perfTimingCalc.blocks = [
-		timeBlock("total", 0, perfTimingCalc.pageLoadTime, "#ccc"),
-		timeBlock("ttfb", perfTimingCalc.navigationStart, perfTimingCalc.responseStart, "#bbb"),
-		timeBlock("unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd, "#909"),
-		timeBlock("redirect", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd, "#009"),
-		timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart, "#099"),
-		timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd, "#090"),
-		timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd, "#990"),
-		timeBlock("Request", perfTimingCalc.requestStart, perfTimingCalc.responseStart, "#c90"),
-		timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd, "#6c0"),
+		timeBlock("Total", 0, perfTimingCalc.pageLoadTime, "#ccc"),
+		timeBlock("Unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd, "#909"),
+		timeBlock("Redirect (" + performance.navigation.redirectCount + "x)", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd, "#ffff60"),
+		timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart, "#1f831f"),
+		timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd, "#1f7c83"),
+		timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd, "#e58226"),
+		timeBlock("Timer to First Byte", perfTimingCalc.requestStart, perfTimingCalc.responseStart, "#1fe11f"),
+		timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd, "#1977dd"),
 		timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete, "#9cc"),
-		timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd, "#c33"),
-		timeBlock("Onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd, "#cf3")
+		timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd, "#d888df"),
+		timeBlock("onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd, "#c0c0ff")
 	];
 
 	if(perfTimingCalc.secureConnectionStart){
-		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "#990"));
+		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "#c141cd"));
 	}
 	if(perfTimingCalc.msFirstPaint){
-		perfTimingCalc.blocks.push(timeBlock("msFirstPaint Event", perfTimingCalc.msFirstPaint, perfTimingCalc.msFirstPaint, "#c33"));
+		perfTimingCalc.blocks.push(timeBlock("msFirstPaint Event", perfTimingCalc.msFirstPaint, perfTimingCalc.msFirstPaint, "#8FBC83"));
 	}
 	if(perfTimingCalc.domInteractive){
-		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive, "#c33"));
+		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive, "#d888df"));
 	}
+	if(!perfTimingCalc.redirectEnd && !perfTimingCalc.redirectStart && perfTimingCalc.fetchStart > perfTimingCalc.navigationStart){
+		perfTimingCalc.blocks.push(timeBlock("Cross-Domain Redirect (and/or other Delay)", perfTimingCalc.navigationStart, perfTimingCalc.fetchStart, "#ffff60"));
+	}
+
+	perfTimingCalc.blocks.push(timeBlock("Network/Server", perfTimingCalc.navigationStart, perfTimingCalc.responseStart, "#8cd18c"));
 
 	//add measures to be added as bars
 	measures.forEach(function(measure){
@@ -707,6 +711,7 @@ onIFrameLoaded(function(){
 		});
 
 		timeLineHolder.appendChild(timeLineLabelHolder);
+
 		chartHolder.appendChild(newTag("h1", {
 			text : "Navigation Timing"
 		}));
@@ -1019,19 +1024,37 @@ onIFrameLoaded(function(){
 		}
 	};
 
+	/*
+perfTimingCalc.blocks = [
+		timeBlock("total", 0, perfTimingCalc.pageLoadTime, "#ccc"),
+		timeBlock("network/server", perfTimingCalc.navigationStart, perfTimingCalc.responseStart, "#8cd18c"),
+		timeBlock("unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd, "#909"),
+		timeBlock("redirect (" + performance.navigation.redirectCount + "x)", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd, "#ffff60"),
+		timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart, "#1f831f"),
+		timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd, "#1f7c83"),
+		timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd, "#e58226"),
+		timeBlock("Timer to First Byte", perfTimingCalc.requestStart, perfTimingCalc.responseStart, "#1fe11f"),
+		timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd, "#1977dd"),
+		timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete, "#9cc"),
+		timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd, "#d888df"),
+		timeBlock("Onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd, "#c0c0ff")
+	];
+
+	*/
+
 	calc.blocks = [
 		resourceSection("Navigation API total", 0, calc.loadEventEnd, "#ccc", [
-			resourceSectionSegment("ttfb", calc.navigationStart, calc.responseStart, "#bbb"),
+			resourceSectionSegment("ttfb", calc.navigationStart, calc.responseStart, "#1fe11f"),
 			resourceSectionSegment("unload", calc.unloadEventStart, calc.unloadEventEnd, "#909"),
-			resourceSectionSegment("redirect", calc.redirectStart, calc.redirectEnd, "#009"),
-			resourceSectionSegment("App cache", calc.fetchStart, calc.domainLookupStart, "#099"),
-			resourceSectionSegment("DNS", calc.domainLookupStart, calc.domainLookupEnd, "#090"),
-			resourceSectionSegment("TCP", calc.connectStart, calc.connectEnd, "#990"),
-			resourceSectionSegment("Request", calc.requestStart, calc.responseStart, "#c90"),
-			resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "#6c0"),
+			resourceSectionSegment("redirect", calc.redirectStart, calc.redirectEnd, "#ffff60"),
+			resourceSectionSegment("App cache", calc.fetchStart, calc.domainLookupStart, "#1f831f"),
+			resourceSectionSegment("DNS", calc.domainLookupStart, calc.domainLookupEnd, "#1f7c83"),
+			resourceSectionSegment("TCP", calc.connectStart, calc.connectEnd, "#c141cd"),
+			resourceSectionSegment("Request", calc.requestStart, calc.responseStart, "#1fe11f"),
+			resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "#1977dd"),
 			resourceSectionSegment("DOM Processing", calc.domLoading, calc.domComplete, "#9cc"),
-			resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "#c33"),
-			resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "#cf3")
+			resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "#d888df"),
+			resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "#c0c0ff")
 		]),
 	];
 
@@ -1039,8 +1062,8 @@ onIFrameLoaded(function(){
 		var segments = [
 			resourceSectionSegment("redirect", resource.redirectStart, resource.redirectEnd, "#030"),
 			resourceSectionSegment("domainLookup", resource.domainLookupStart, resource.domainLookupEnd, "#060"),
-			resourceSectionSegment("connect", resource.connectStart, resource.connectEnd, "#090"),
-			resourceSectionSegment("secureConnect", resource.secureConnectionStart, resource.connectEnd, "#0c0"),
+			resourceSectionSegment("connect", resource.connectStart, resource.connectEnd, "#1fe11f"),
+			resourceSectionSegment("secureConnect", resource.secureConnectionStart, resource.connectEnd, "#c141cd"),
 			resourceSectionSegment("requestToResponseStart", resource.requestStart, resource.responseStart, "#0f0"),
 			resourceSectionSegment("response", resource.responseStart, resource.responseEnd, "#0fc")
 		];
@@ -1258,6 +1281,37 @@ onIFrameLoaded(function(){
 		chartHolder.appendChild(newTag("h1", {
 			text : "Resource Timing"
 		}));
+
+		var dl = newTag("dl", {
+			class : "legend"
+		});
+
+
+		[
+			["Time to First Byte", "#1fe11f"],
+			["Redirect", "#ffff60"],
+			["App Cache","#1f831f"],
+			["DNS Lookup", "#1f7c83"],
+			["TCP","#e58226"],
+			["SSL Negotiation","#c141cd"],
+			["Request", "#1fe11f"],
+			["Response", "#1977dd"],
+			["Content Download", "#1977dd"],
+			["DOM Processing", "#9cc"],
+			["DOM Content Loaded", "#d888df"],
+			["On Load", "#c0c0ff"]
+		].forEach(function(definition){
+			dl.appendChild(newTag("dt", {
+				class : "colorBoxHolder",
+				html : "<span style=\"background:"+definition[1]+"\"></span>"
+			}));
+			dl.appendChild(newTag("dd", {
+				text : definition[0]
+			}));
+		});
+
+		chartHolder.appendChild(dl);
+
 		chartHolder.appendChild(timeLineHolder);
 		outputContent.appendChild(chartHolder);
 	};

@@ -37,19 +37,37 @@ onIFrameLoaded(function(){
 		}
 	};
 
+	/*
+perfTimingCalc.blocks = [
+		timeBlock("total", 0, perfTimingCalc.pageLoadTime, "#ccc"),
+		timeBlock("network/server", perfTimingCalc.navigationStart, perfTimingCalc.responseStart, "#8cd18c"),
+		timeBlock("unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd, "#909"),
+		timeBlock("redirect (" + performance.navigation.redirectCount + "x)", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd, "#ffff60"),
+		timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart, "#1f831f"),
+		timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd, "#1f7c83"),
+		timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd, "#e58226"),
+		timeBlock("Timer to First Byte", perfTimingCalc.requestStart, perfTimingCalc.responseStart, "#1fe11f"),
+		timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd, "#1977dd"),
+		timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete, "#9cc"),
+		timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd, "#d888df"),
+		timeBlock("Onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd, "#c0c0ff")
+	];
+
+	*/
+
 	calc.blocks = [
 		resourceSection("Navigation API total", 0, calc.loadEventEnd, "#ccc", [
-			resourceSectionSegment("ttfb", calc.navigationStart, calc.responseStart, "#bbb"),
+			resourceSectionSegment("ttfb", calc.navigationStart, calc.responseStart, "#1fe11f"),
 			resourceSectionSegment("unload", calc.unloadEventStart, calc.unloadEventEnd, "#909"),
-			resourceSectionSegment("redirect", calc.redirectStart, calc.redirectEnd, "#009"),
-			resourceSectionSegment("App cache", calc.fetchStart, calc.domainLookupStart, "#099"),
-			resourceSectionSegment("DNS", calc.domainLookupStart, calc.domainLookupEnd, "#090"),
-			resourceSectionSegment("TCP", calc.connectStart, calc.connectEnd, "#990"),
-			resourceSectionSegment("Request", calc.requestStart, calc.responseStart, "#c90"),
-			resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "#6c0"),
+			resourceSectionSegment("redirect", calc.redirectStart, calc.redirectEnd, "#ffff60"),
+			resourceSectionSegment("App cache", calc.fetchStart, calc.domainLookupStart, "#1f831f"),
+			resourceSectionSegment("DNS", calc.domainLookupStart, calc.domainLookupEnd, "#1f7c83"),
+			resourceSectionSegment("TCP", calc.connectStart, calc.connectEnd, "#c141cd"),
+			resourceSectionSegment("Request", calc.requestStart, calc.responseStart, "#1fe11f"),
+			resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "#1977dd"),
 			resourceSectionSegment("DOM Processing", calc.domLoading, calc.domComplete, "#9cc"),
-			resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "#c33"),
-			resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "#cf3")
+			resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "#d888df"),
+			resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "#c0c0ff")
 		]),
 	];
 
@@ -57,8 +75,8 @@ onIFrameLoaded(function(){
 		var segments = [
 			resourceSectionSegment("redirect", resource.redirectStart, resource.redirectEnd, "#030"),
 			resourceSectionSegment("domainLookup", resource.domainLookupStart, resource.domainLookupEnd, "#060"),
-			resourceSectionSegment("connect", resource.connectStart, resource.connectEnd, "#090"),
-			resourceSectionSegment("secureConnect", resource.secureConnectionStart, resource.connectEnd, "#0c0"),
+			resourceSectionSegment("connect", resource.connectStart, resource.connectEnd, "#1fe11f"),
+			resourceSectionSegment("secureConnect", resource.secureConnectionStart, resource.connectEnd, "#c141cd"),
 			resourceSectionSegment("requestToResponseStart", resource.requestStart, resource.responseStart, "#0f0"),
 			resourceSectionSegment("response", resource.responseStart, resource.responseEnd, "#0fc")
 		];
@@ -276,6 +294,37 @@ onIFrameLoaded(function(){
 		chartHolder.appendChild(newTag("h1", {
 			text : "Resource Timing"
 		}));
+
+		var dl = newTag("dl", {
+			class : "legend"
+		});
+
+
+		[
+			["Time to First Byte", "#1fe11f"],
+			["Redirect", "#ffff60"],
+			["App Cache","#1f831f"],
+			["DNS Lookup", "#1f7c83"],
+			["TCP","#e58226"],
+			["SSL Negotiation","#c141cd"],
+			["Request", "#1fe11f"],
+			["Response", "#1977dd"],
+			["Content Download", "#1977dd"],
+			["DOM Processing", "#9cc"],
+			["DOM Content Loaded", "#d888df"],
+			["On Load", "#c0c0ff"]
+		].forEach(function(definition){
+			dl.appendChild(newTag("dt", {
+				class : "colorBoxHolder",
+				html : "<span style=\"background:"+definition[1]+"\"></span>"
+			}));
+			dl.appendChild(newTag("dd", {
+				text : definition[0]
+			}));
+		});
+
+		chartHolder.appendChild(dl);
+
 		chartHolder.appendChild(timeLineHolder);
 		outputContent.appendChild(chartHolder);
 	};
