@@ -58,7 +58,12 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 /*Navigation Timing*/
 .navigation-timing {}
 
-.legend dt {clear: both; float: left;}
+.legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; }
+.legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; }
+.legends-group .legend-holder h4 { margin: 0; padding: 0; }
+
+.legend dt {float: left; clear: left; padding: 0 0 0.5em;}
+.legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;}
 .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}
 
 /*Resource Timing*/
