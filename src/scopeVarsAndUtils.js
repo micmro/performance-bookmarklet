@@ -193,7 +193,7 @@ var getInitiatorTypeColour = function(initiatorType, fallbackColour){
 		case "link" : colour = "#2f78dd"; break;
 		case "swf" : colour = "#4db3ba"; break; 
 		case "font" : colour = "#e96859"; break; //TODO check if this works
-		case "xmlhttprequest" : colour = "#de9138"; break;
+		case "xmlhttprequest" : colour = "#e7d98c"; break;
 	}
 	return colour;
 };
