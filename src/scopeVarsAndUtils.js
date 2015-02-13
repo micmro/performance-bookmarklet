@@ -182,16 +182,18 @@ var endsWith = function(str, suffix){
 };
 
 var getInitiatorTypeColour = function(initiatorType, fallbackColour){
-	var colour = fallbackColour||"#d6d6d7"; //default
+	var colour = fallbackColour||"#bebebe"; //default
 
 	//colour the resources by initiator type
 	switch(initiatorType) {
-		case "css" : colour = "#c5efaf"; break;
+		case "css" : colour = "#afd899"; break;
 		case "iframe" : colour = "#85b3f2"; break;
-		case "img" : colour = "#c98dfd"; break;
-		case "script" : colour = "#feb06a"; break; 
-		case "link" : colour = "#6c7385"; break;
-		case "xmlhttprequest" : colour = "#efef70"; break;
+		case "img" : colour = "#bc9dd6"; break;
+		case "script" : colour = "#e7bd8c"; break; 
+		case "link" : colour = "#2f78dd"; break;
+		case "swf" : colour = "#4db3ba"; break; 
+		case "font" : colour = "#e96859"; break; //TODO check if this works
+		case "xmlhttprequest" : colour = "#e7d98c"; break;
 	}
 	return colour;
 };

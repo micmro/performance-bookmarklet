@@ -4,7 +4,7 @@
 (function(){
 "use strict";
 
-var cssFileText = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .tiles-holder {margin: 2em -18px 1em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin: 0 -72px 0 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:400px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th { padding:0 0.5em 0 0;} .table-holder td {padding:0 0.5em 0 0;} .water-fall-holder {margin: 25px 0; fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #aac;} .water-fall-chart .line-holder.active {stroke: #009; stroke-width:2;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .resource-timing .chart-holder {} ";
+var cssFileText = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .tiles-holder {margin: 2em -18px 1em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin: 0 -72px 0 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:400px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th { padding:0 0.5em 0 0;} .table-holder td {padding:0 0.5em 0 0;} .water-fall-holder {margin: 25px 0; fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #a971c5; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;} .resource-timing .chart-holder {} ";
 
 
 /*
@@ -191,16 +191,18 @@ var endsWith = function(str, suffix){
 };
 
 var getInitiatorTypeColour = function(initiatorType, fallbackColour){
-	var colour = fallbackColour||"#d6d6d7"; //default
+	var colour = fallbackColour||"#bebebe"; //default
 
 	//colour the resources by initiator type
 	switch(initiatorType) {
-		case "css" : colour = "#c5efaf"; break;
+		case "css" : colour = "#afd899"; break;
 		case "iframe" : colour = "#85b3f2"; break;
-		case "img" : colour = "#c98dfd"; break;
-		case "script" : colour = "#feb06a"; break; 
-		case "link" : colour = "#6c7385"; break;
-		case "xmlhttprequest" : colour = "#efef70"; break;
+		case "img" : colour = "#bc9dd6"; break;
+		case "script" : colour = "#e7bd8c"; break; 
+		case "link" : colour = "#2f78dd"; break;
+		case "swf" : colour = "#4db3ba"; break; 
+		case "font" : colour = "#e96859"; break; //TODO check if this works
+		case "xmlhttprequest" : colour = "#e7d98c"; break;
 	}
 	return colour;
 };
@@ -486,29 +488,33 @@ onIFrameLoaded(function(){
 	};
 
 	perfTimingCalc.blocks = [
-		timeBlock("total", 0, perfTimingCalc.pageLoadTime, "#ccc"),
-		timeBlock("ttfb", perfTimingCalc.navigationStart, perfTimingCalc.responseStart, "#bbb"),
-		timeBlock("unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd, "#909"),
-		timeBlock("redirect", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd, "#009"),
-		timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart, "#099"),
-		timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd, "#090"),
-		timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd, "#990"),
-		timeBlock("Request", perfTimingCalc.requestStart, perfTimingCalc.responseStart, "#c90"),
-		timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd, "#6c0"),
+		timeBlock("Total", 0, perfTimingCalc.pageLoadTime, "#ccc"),
+		timeBlock("Unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd, "#909"),
+		timeBlock("Redirect (" + performance.navigation.redirectCount + "x)", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd, "#ffff60"),
+		timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart, "#1f831f"),
+		timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd, "#1f7c83"),
+		timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd, "#e58226"),
+		timeBlock("Timer to First Byte", perfTimingCalc.requestStart, perfTimingCalc.responseStart, "#1fe11f"),
+		timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd, "#1977dd"),
 		timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete, "#9cc"),
-		timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd, "#c33"),
-		timeBlock("Onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd, "#cf3")
+		timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd, "#d888df"),
+		timeBlock("onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd, "#c0c0ff")
 	];
 
 	if(perfTimingCalc.secureConnectionStart){
-		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "#990"));
+		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "#c141cd"));
 	}
 	if(perfTimingCalc.msFirstPaint){
-		perfTimingCalc.blocks.push(timeBlock("msFirstPaint Event", perfTimingCalc.msFirstPaint, perfTimingCalc.msFirstPaint, "#c33"));
+		perfTimingCalc.blocks.push(timeBlock("msFirstPaint Event", perfTimingCalc.msFirstPaint, perfTimingCalc.msFirstPaint, "#8FBC83"));
 	}
 	if(perfTimingCalc.domInteractive){
-		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive, "#c33"));
+		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive, "#d888df"));
 	}
+	if(!perfTimingCalc.redirectEnd && !perfTimingCalc.redirectStart && perfTimingCalc.fetchStart > perfTimingCalc.navigationStart){
+		perfTimingCalc.blocks.push(timeBlock("Cross-Domain Redirect (and/or other Delay)", perfTimingCalc.navigationStart, perfTimingCalc.fetchStart, "#ffff60"));
+	}
+
+	perfTimingCalc.blocks.push(timeBlock("Network/Server", perfTimingCalc.navigationStart, perfTimingCalc.responseStart, "#8cd18c"));
 
 	//add measures to be added as bars
 	measures.forEach(function(measure){
@@ -707,6 +713,7 @@ onIFrameLoaded(function(){
 		});
 
 		timeLineHolder.appendChild(timeLineLabelHolder);
+
 		chartHolder.appendChild(newTag("h1", {
 			text : "Navigation Timing"
 		}));
@@ -1019,31 +1026,87 @@ onIFrameLoaded(function(){
 		}
 	};
 
+
+	var createLegend = function(className, title, dlArray){
+		var legendHolder = newTag("div", {
+			class : "legend-holder"
+		});
+
+		legendHolder.appendChild(newTag("h4", {
+			text : title
+		}));
+
+		var dl = newTag("dl", {
+			class : "legend " + className
+		});
+
+		dlArray.forEach(function(definition){
+			dl.appendChild(newTag("dt", {
+				class : "colorBoxHolder",
+				html : "<span style=\"background:"+definition[1]+"\"></span>"
+			}));
+			dl.appendChild(newTag("dd", {
+				text : definition[0]
+			}));
+		});
+		legendHolder.appendChild(dl);
+
+		return legendHolder;
+	};
+
+	var navigationApiTotal = [
+		resourceSectionSegment("Unload", calc.unloadEventStart, calc.unloadEventEnd, "#909"),
+		resourceSectionSegment("Redirect", calc.redirectStart, calc.redirectEnd, "#ffff60"),
+		resourceSectionSegment("App cache", calc.fetchStart, calc.domainLookupStart, "#1f831f"),
+		resourceSectionSegment("DNS", calc.domainLookupStart, calc.domainLookupEnd, "#1f7c83"),
+		resourceSectionSegment("TCP", calc.connectStart, calc.connectEnd, "#e58226"),
+		resourceSectionSegment("Timer to First Byte", calc.requestStart, calc.responseStart, "#1fe11f"),
+		resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "#1977dd"),
+		resourceSectionSegment("DOM Processing", calc.domLoading, calc.domComplete, "#9cc"),
+		resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "#d888df"),
+		resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "#c0c0ff")
+	];
+
+	if(calc.secureConnectionStart){
+		navigationApiTotal.push(resourceSectionSegment("SSL", calc.connectStart, calc.secureConnectionStart, "#c141cd"));
+	}
+	if(calc.msFirstPaint){
+		navigationApiTotal.push(resourceSectionSegment("msFirstPaint Event", calc.msFirstPaint, calc.msFirstPaint, "#8FBC83"));
+	}
+	if(calc.domInteractive){
+		navigationApiTotal.push(resourceSectionSegment("domInteractive Event", calc.domInteractive, calc.domInteractive, "#d888df"));
+	}
+	if(!calc.redirectEnd && !calc.redirectStart && calc.fetchStart > calc.navigationStart){
+		navigationApiTotal.push(resourceSectionSegment("Cross-Domain Redirect", calc.navigationStart, calc.fetchStart, "#ffff60"));
+	}
+
 	calc.blocks = [
-		resourceSection("Navigation API total", 0, calc.loadEventEnd, "#ccc", [
-			resourceSectionSegment("ttfb", calc.navigationStart, calc.responseStart, "#bbb"),
-			resourceSectionSegment("unload", calc.unloadEventStart, calc.unloadEventEnd, "#909"),
-			resourceSectionSegment("redirect", calc.redirectStart, calc.redirectEnd, "#009"),
-			resourceSectionSegment("App cache", calc.fetchStart, calc.domainLookupStart, "#099"),
-			resourceSectionSegment("DNS", calc.domainLookupStart, calc.domainLookupEnd, "#090"),
-			resourceSectionSegment("TCP", calc.connectStart, calc.connectEnd, "#990"),
-			resourceSectionSegment("Request", calc.requestStart, calc.responseStart, "#c90"),
-			resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "#6c0"),
-			resourceSectionSegment("DOM Processing", calc.domLoading, calc.domComplete, "#9cc"),
-			resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "#c33"),
-			resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "#cf3")
-		]),
+		resourceSection("Navigation API total", 0, calc.loadEventEnd, "#ccc", navigationApiTotal),
 	];
 
 	allResourcesCalc.forEach(function(resource, i){
 		var segments = [
-			resourceSectionSegment("redirect", resource.redirectStart, resource.redirectEnd, "#030"),
-			resourceSectionSegment("domainLookup", resource.domainLookupStart, resource.domainLookupEnd, "#060"),
-			resourceSectionSegment("connect", resource.connectStart, resource.connectEnd, "#090"),
-			resourceSectionSegment("secureConnect", resource.secureConnectionStart, resource.connectEnd, "#0c0"),
-			resourceSectionSegment("requestToResponseStart", resource.requestStart, resource.responseStart, "#0f0"),
-			resourceSectionSegment("response", resource.responseStart, resource.responseEnd, "#0fc")
+			resourceSectionSegment("Redirect", resource.redirectStart, resource.redirectEnd, "#ffff60"),
+			resourceSectionSegment("DNS Lookup", resource.domainLookupStart, resource.domainLookupEnd, "#1f7c83"),
+			resourceSectionSegment("Initial Connection (TCP)", resource.connectStart, resource.connectEnd, "#e58226"),
+			resourceSectionSegment("secureConnect", resource.secureConnectionStart||undefined, resource.connectEnd, "#c141cd"),
+			resourceSectionSegment("Timer to First Byte", resource.requestStart, resource.responseStart, "#1fe11f"),
+			resourceSectionSegment("Content Download", resource.responseStart||undefined, resource.responseEnd, "#1977dd")
 		];
+
+		var resourceTimings = [0, resource.redirectStart, resource.domainLookupStart, resource.connectStart, resource.secureConnectionStart, resource.requestStart, resource.responseStart];
+
+		var firstTiming = resourceTimings.reduce(function(currMinTiming, currentValue) {
+			if(currentValue > 0 && (currentValue < currMinTiming || currMinTiming <= 0) && currentValue != resource.startTime){
+				return currentValue;
+			} else {
+				return currMinTiming;
+			}
+		});
+
+		if(resource.startTime < firstTiming){
+			segments.unshift(resourceSectionSegment("Stalled/Blocking", resource.startTime, firstTiming, "#cdcdcd"));
+		}
 
 		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), getInitiatorTypeColour(resource.initiatorType), segments, resource));
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
@@ -1135,7 +1198,7 @@ onIFrameLoaded(function(){
 				rectHolder = newElementNs("g");
 				rectHolder.appendChild(rect);
 				segments.forEach(function(segment){
-					if(segment.total > 0 && segment.start){
+					if(segment.total > 0 && typeof segment.start === "number"){
 						rectHolder.appendChild(createRect(segment.total, 8, segment.start||0.001, y,  segment.colour, segment.name + " (" + Math.round(segment.start) + "ms - " +  Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
 					}
 				});
@@ -1255,10 +1318,57 @@ onIFrameLoaded(function(){
 		});
 
 		timeLineHolder.appendChild(timeLineLabelHolder);
+		
 		chartHolder.appendChild(newTag("h1", {
 			text : "Resource Timing"
 		}));
 		chartHolder.appendChild(timeLineHolder);
+
+		chartHolder.appendChild(newTag("h3", {
+			text : "Legend"
+		}));
+
+		var legendsHolder = newTag("div", {
+			class : "legends-group "
+		});
+
+		legendsHolder.appendChild(createLegend("initiator-type-legend", "Block color: Initiator Type", [
+			["css", "#afd899"],
+			["iframe", "#85b3f2"],
+			["img", "#bc9dd6"],
+			["script", "#e7bd8c"],
+			["link", "#2f78dd"],
+			["swf", "#4db3ba"],
+			//["font", "#e96859"],
+			["xmlhttprequest", "#e7d98c"]
+		]));
+
+		legendsHolder.appendChild(createLegend("navigation-legend", "Navigation Timing", [
+			["Redirect", "#ffff60"],
+			["App Cache","#1f831f"],
+			["DNS Lookup", "#1f7c83"],
+			["TCP","#e58226"],
+			["SSL Negotiation","#c141cd"],
+			["Time to First Byte", "#1fe11f"],
+			["Content Download", "#1977dd"],
+			["DOM Processing", "#9cc"],
+			["DOM Content Loaded", "#d888df"],
+			["On Load", "#c0c0ff"]
+		]));
+
+		legendsHolder.appendChild(createLegend("resource-legend", "Resource Timing", [
+			["Stalled/Blocking", "#cdcdcd"],
+			["Redirect", "#ffff60"],
+			["App Cache","#1f831f"],
+			["DNS Lookup", "#1f7c83"],
+			["TCP","#e58226"],
+			["SSL Negotiation","#c141cd"],
+			["Initial Connection (TCP)", "#e58226"],
+			["Time to First Byte", "#1fe11f"],
+			["Content Download", "#1977dd"]
+		]));
+
+		chartHolder.appendChild(legendsHolder);
 		outputContent.appendChild(chartHolder);
 	};
 
