@@ -43,17 +43,6 @@ Bookmarklet Output in Detail
 - The small bars inside the resource bar represent the different stages of the request (redirect, domainLookup, connect, secureConnect, requestToResponseStart, response), but are mostly not available for cross domain requests.
 - The resource bar colours visualize the initiatorType
 
-	| Type  	| Colour 	| HEX 		|
-	| ----------| ----------|---------- |
-	| css	  	| green 	| #c5efaf 	|
-	| iframe	| blue 		| #85b3f2 	|
-	| img	  	| purple 	| #c98dfd 	|
-	| script 	| orange 	|  #feb06a 	|
-	| link	  	| gray 		|  #6c7385 	|
-	| xmlhttprequest | yellow | #efef70 |
-	| other	  	| light gray  | #d6d6d7 |
-
-
 
 Console Output
 --------------
