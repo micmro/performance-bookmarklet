@@ -78,8 +78,11 @@ javascript:(function(){var el=document.createElement('script');el.type='text/jav
 
 Or alternatifly just copy and paste the content of [resourceTable.js](https://raw.githubusercontent.com/nurun/resourceTable/master/resourceTable.js) to your browser console and off you go.
 
-**You need to fall back to the copy and paste version for sites that block external scripts in their Content Security Policy directives.**
+**You need to fall back to the browser extension or the copy and paste version for sites that block external scripts in their Content Security Policy directives.**
 
+Browser Extensions
+------------------
+performance-bookmarklet can also be used as [Chrome Extension](https://chrome.google.com/webstore/detail/performance-analyser/djgfmlohefpomchfabngccpbaflcahjf) and [Firefox add-on](https://addons.mozilla.org/en-US/firefox/addon/performance-analyser/). It uses the same code, but has some usability advantages, e.g. you don't need to worry about the Content Security Policy directives.
 
 
 Read more
