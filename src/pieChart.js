@@ -44,11 +44,11 @@ onIFrameLoaded(function(){
 			path.appendChild(newElementNs("title", {
 				text : labelTxt
 			})); // Add tile to wedge path
-			path.addEventListener("mouseover", function(evt){
+			path.addEventListener("mouseenter", function(evt){
 				evt.target.style.opacity = "0.5";
 				outputIFrame.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
 			});
-			path.addEventListener("mouseout", function(evt){
+			path.addEventListener("mouseleave", function(evt){
 				evt.target.style.opacity = "1";
 				outputIFrame.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "transparent";
 			});

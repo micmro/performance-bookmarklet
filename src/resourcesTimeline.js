@@ -164,7 +164,7 @@ onIFrameLoaded(function(){
 			class : "line-start"
 		});
 
-		var onRectMouseOver = function(evt){
+		var onRectMouseEnter = function(evt){
 			var targetRect = evt.target;
 			addClass(targetRect, "active");
 			var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
@@ -202,8 +202,8 @@ onIFrameLoaded(function(){
 				})); // Add tile to wedge path
 			}
 
-			rect.addEventListener("mouseover", onRectMouseOver);
-			rect.addEventListener("mouseout", onRectMouseLeave);
+			rect.addEventListener("mouseenter", onRectMouseEnter);
+			rect.addEventListener("mouseleave", onRectMouseLeave);
 
 			if(segments && segments.length > 0){
 				rectHolder = newElementNs("g");
@@ -284,11 +284,11 @@ onIFrameLoaded(function(){
 					y2 : diagramHeight + 23
 				}));
 
-				lineLabel.addEventListener("mouseover", function(evt){
+				lineLabel.addEventListener("mouseenter", function(evt){
 					addClass(lineHolder, "active");
 					markHolder.parentNode.appendChild(markHolder);
 				});
-				lineLabel.addEventListener("mouseout", function(evt){
+				lineLabel.addEventListener("mouseleave", function(evt){
 					removeClass(lineHolder, "active");
 				});
 

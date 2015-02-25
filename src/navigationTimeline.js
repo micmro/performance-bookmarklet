@@ -110,7 +110,7 @@ onIFrameLoaded(function(){
 			class : "line-start"
 		});
 
-		var onRectMouseOver = function(evt){
+		var onRectMouseEnter = function(evt){
 			var targetRect = evt.target;
 			addClass(targetRect, "active");
 
@@ -148,8 +148,8 @@ onIFrameLoaded(function(){
 				})); // Add tile to wedge path
 			}
 
-			rect.addEventListener("mouseover", onRectMouseOver);
-			rect.addEventListener("mouseout", onRectMouseLeave);
+			rect.addEventListener("mouseenter", onRectMouseEnter);
+			rect.addEventListener("mouseleave", onRectMouseLeave);
 
 			return rect;
 		};
@@ -219,11 +219,11 @@ onIFrameLoaded(function(){
 					y2 : diagramHeight + 23
 				}));
 
-				markHolder.addEventListener("mouseover", function(evt){
+				markHolder.addEventListener("mouseenter", function(evt){
 					addClass(lineHolder, "active");
 					markHolder.parentNode.appendChild(markHolder);
 				});
-				markHolder.addEventListener("mouseout", function(evt){
+				markHolder.addEventListener("mouseleave", function(evt){
 					removeClass(lineHolder, "active");
 				});
 
