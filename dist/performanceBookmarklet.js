@@ -123,6 +123,11 @@ tablesToLog.push({
 
 //helper functions
 
+
+var newTextNode = function(text){
+	return document.createTextNode(text);
+};
+
 //creat html tag
 var newTag = function(tagName, settings, css){
 	settings = settings || {};
@@ -134,14 +139,42 @@ var newTag = function(tagName, settings, css){
 	}
 	if(settings.text){
 		tag.textContent = settings.text;
-	}else if(settings.html){
-		tag.innerHTML = settings.html;
+	}else if(settings.childElement){
+		if(typeof settings.childElement === "object"){
+			//if childNodes NodeList is passed in
+			if(settings.childElement instanceof NodeList){
+				//NodeList is does not inherit from array
+				Array.prototype.slice.call(settings.childElement,0).forEach(function(childNode){
+					tag.appendChild(childNode);
+				});
+			}else{
+				tag.appendChild(settings.childElement);
+			}
+		}else{
+			tag.appendChild(newTextNode(settings.childElement));
+		}
 	}
 	if(settings.class){
 		tag.className = settings.class;
 	}
 	tag.style.cssText = css||"";
 	return tag;
+};
+
+
+var combineNodes = function(a, b){
+	var wrapper = document.createElement("div");
+	if(typeof a === "object"){
+		wrapper.appendChild(a);
+	}else if(typeof a === "string"){
+		wrapper.appendChild(newTextNode(a));
+	}
+	if(typeof b === "object"){
+		wrapper.appendChild(b);
+	}else if(typeof b === "string"){
+		wrapper.appendChild(newTextNode(b));
+	}
+	return wrapper.childNodes;
 };
 
 //create svg element
@@ -303,10 +336,12 @@ if(iFrameEl){
 			outputIFrame = iFrameEl.contentWindow.document;
 
 			//add style to iFrame
-			outputIFrame.head.appendChild(newTag("style", {
+			var styleTag = newTag("style", {
 				type : "text/css",
-				html : cssFileText
-			}));
+				text : cssFileText
+			});
+
+			outputIFrame.head.appendChild(styleTag);
 			
 			triggerEvent(window, "iFrameLoaded");
 		}
@@ -406,32 +441,36 @@ onIFrameLoaded(function(){
 		var dl = newTag("dl", {
 			class : "summary-tile"
 		});
-		dl.appendChild(newTag("dt", {html : title}));
-		dl.appendChild(newTag("dd", {html : value}, "font-size:"+titleFontSize+"px;"));
+		dl.appendChild(newTag("dt", {childElement : title}));
+		dl.appendChild(newTag("dd", {childElement : value}, "font-size:"+titleFontSize+"px;"));
 		return dl;
 	};
 
 	createAppendixDefValue = function(a, definition, value){
-		a.appendChild(newTag("dt", {html : definition}));
-		a.appendChild(newTag("dd", {html : value}));
+		a.appendChild(newTag("dt", {childElement : definition}));
+		a.appendChild(newTag("dd", {text : value}));
 	};
 
 	tilesHolder = newTag("div", {
 		class : "tiles-holder"
 	});
-	
-	tilesHolder.appendChild(createTile("Requests", requestsOnly.length||"0"));
-	tilesHolder.appendChild(createTile("Domains", requestsByDomain.length||"0"));
-	tilesHolder.appendChild(createTile("Subdomains of <abbr title=\"Top Level Domain\">TLD</abbr>", hostSubdomains||"0"));
-	tilesHolder.appendChild(createTile("Requests to <span title=\""+location.host+"\">Host</span>", hostRequests||"0"));
-	tilesHolder.appendChild(createTile("<abbr title=\"Top Level Domain\">TLD</abbr> & Subdomain Requests", currAndSubdomainRequests||"0"));
-	tilesHolder.appendChild(createTile("Total", perfTiming.loadEventEnd - perfTiming.navigationStart + "ms", 40));
-	tilesHolder.appendChild(createTile("Time to First Byte", perfTiming.responseStart - perfTiming.navigationStart + "ms", 40));
-	tilesHolder.appendChild(createTile("<span title=\"domLoading to domContentLoadedEventStart\">DOM Content Loading</span>", perfTiming.domContentLoadedEventStart - perfTiming.domLoading + "ms", 40));
-	tilesHolder.appendChild(createTile("<span title=\"domLoading to loadEventStart\">DOM Processing</span>", perfTiming.domComplete - perfTiming.domLoading + "ms", 40));
-	
+
+	[
+		createTile("Requests", requestsOnly.length||"0"),
+		createTile("Domains", requestsByDomain.length||"0"),
+		createTile(combineNodes("Subdomains of ", newTag("abbr", {title : "Top Level Domain", text : "TLD"})), hostSubdomains||"0"),
+		createTile(combineNodes("Requests to ", newTag("span", {title : location.host, text : "Host"})), hostRequests||"0"),
+		createTile(combineNodes(newTag("abbr", {title : "Top Level Domain", text : "TLD"}), "& Subdomain Requests"), currAndSubdomainRequests||"0"),
+		createTile("Total", perfTiming.loadEventEnd - perfTiming.navigationStart + "ms", 40),
+		createTile("Time to First Byte", perfTiming.responseStart - perfTiming.navigationStart + "ms", 40),
+		createTile(newTag("span", {title : "domLoading to domContentLoadedEventStart", text : "DOM Content Loading"}), perfTiming.domContentLoadedEventStart - perfTiming.domLoading + "ms", 40),
+		createTile(newTag("span", {title : "domLoading to loadEventStart", text : "DOM Processing"}), perfTiming.domComplete - perfTiming.domLoading + "ms", 40)
+	].forEach(function(tile){
+		tilesHolder.appendChild(tile);
+	});
+
 	if(allResourcesCalc.length > 0){
-		tilesHolder.appendChild(createTile("<span title=\"" + slowestCalls[0].name +"\">Slowest Call</span>", "<span title=\"" + slowestCalls[0].name +"\">"+ Math.floor(slowestCalls[0].duration) + "ms</span>", 40));
+		tilesHolder.appendChild(createTile(newTag("span", {title : slowestCalls[0].name, text : "Slowest Call"}), newTag("span", {title : slowestCalls[0].name, text : Math.floor(slowestCalls[0].duration) + "ms"}), 40));
 		tilesHolder.appendChild(createTile("Average Call", average + "ms", 40));
 	}
 
@@ -439,9 +478,9 @@ onIFrameLoaded(function(){
 		class : "summary-tile-appendix"
 	});
 
-	createAppendixDefValue(appendix, "<abbr title=\"Top Level Domain\">TLD</abbr>:", location.host.split(".").slice(-2).join("."));
-	createAppendixDefValue(appendix, "Host:", location.host);
-	createAppendixDefValue(appendix, "document.domain:", document.domain);
+	createAppendixDefValue(appendix, newTag("abbr", {title : "Top Level Domain", text : "TLD"}, location.host.split(".").slice(-2).join(".")));
+	createAppendixDefValue(appendix, newTextNode("Host:"), location.host);
+	createAppendixDefValue(appendix, newTextNode("document.domain:"), document.domain);
 
 	tilesHolder.appendChild(appendix);
 	outputContent.appendChild(tilesHolder);
@@ -1043,7 +1082,7 @@ onIFrameLoaded(function(){
 		dlArray.forEach(function(definition){
 			dl.appendChild(newTag("dt", {
 				class : "colorBoxHolder",
-				html : "<span style=\"background:"+definition[1]+"\"></span>"
+				childElement :  newTag("span", {}, "background:"+definition[1])
 			}));
 			dl.appendChild(newTag("dd", {
 				text : definition[0]

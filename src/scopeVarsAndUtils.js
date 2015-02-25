@@ -114,6 +114,11 @@ tablesToLog.push({
 
 //helper functions
 
+
+var newTextNode = function(text){
+	return document.createTextNode(text);
+};
+
 //creat html tag
 var newTag = function(tagName, settings, css){
 	settings = settings || {};
@@ -125,14 +130,42 @@ var newTag = function(tagName, settings, css){
 	}
 	if(settings.text){
 		tag.textContent = settings.text;
-	}else if(settings.html){
-		tag.innerHTML = settings.html;
+	}else if(settings.childElement){
+		if(typeof settings.childElement === "object"){
+			//if childNodes NodeList is passed in
+			if(settings.childElement instanceof NodeList){
+				//NodeList is does not inherit from array
+				Array.prototype.slice.call(settings.childElement,0).forEach(function(childNode){
+					tag.appendChild(childNode);
+				});
+			}else{
+				tag.appendChild(settings.childElement);
+			}
+		}else{
+			tag.appendChild(newTextNode(settings.childElement));
+		}
 	}
 	if(settings.class){
 		tag.className = settings.class;
 	}
 	tag.style.cssText = css||"";
 	return tag;
+};
+
+
+var combineNodes = function(a, b){
+	var wrapper = document.createElement("div");
+	if(typeof a === "object"){
+		wrapper.appendChild(a);
+	}else if(typeof a === "string"){
+		wrapper.appendChild(newTextNode(a));
+	}
+	if(typeof b === "object"){
+		wrapper.appendChild(b);
+	}else if(typeof b === "string"){
+		wrapper.appendChild(newTextNode(b));
+	}
+	return wrapper.childNodes;
 };
 
 //create svg element
@@ -294,10 +327,12 @@ if(iFrameEl){
 			outputIFrame = iFrameEl.contentWindow.document;
 
 			//add style to iFrame
-			outputIFrame.head.appendChild(newTag("style", {
+			var styleTag = newTag("style", {
 				type : "text/css",
-				html : cssFileText
-			}));
+				text : cssFileText
+			});
+
+			outputIFrame.head.appendChild(styleTag);
 			
 			triggerEvent(window, "iFrameLoaded");
 		}

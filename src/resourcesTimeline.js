@@ -54,7 +54,7 @@ onIFrameLoaded(function(){
 		dlArray.forEach(function(definition){
 			dl.appendChild(newTag("dt", {
 				class : "colorBoxHolder",
-				html : "<span style=\"background:"+definition[1]+"\"></span>"
+				childElement :  newTag("span", {}, "background:"+definition[1])
 			}));
 			dl.appendChild(newTag("dd", {
 				text : definition[0]
