@@ -71,7 +71,7 @@ allResourcesCalc = resources.filter(function(currR){
 			urlFragments = ["", location.host];
 			fileExtension = currR.name.split(":")[0];
 		}
-
+		console.log("xxxxxx", currR.initiatorType);
 		var currRes = {
 			name : currR.name,
 			domain : urlFragments[1],
@@ -232,7 +232,7 @@ var getInitiatorTypeColour = function(initiatorType, fallbackColour){
 		case "iframe" : colour = "#85b3f2"; break;
 		case "img" : colour = "#bc9dd6"; break;
 		case "script" : colour = "#e7bd8c"; break; 
-		case "link" : colour = "#2f78dd"; break;
+		case "link" : colour = "#89afe6"; break;
 		case "swf" : colour = "#4db3ba"; break; 
 		case "font" : colour = "#e96859"; break; //TODO check if this works
 		case "xmlhttprequest" : colour = "#e7d98c"; break;
@@ -1376,7 +1376,7 @@ onIFrameLoaded(function(){
 			["iframe", "#85b3f2"],
 			["img", "#bc9dd6"],
 			["script", "#e7bd8c"],
-			["link", "#2f78dd"],
+			["link", "#89afe6"],
 			["swf", "#4db3ba"],
 			//["font", "#e96859"],
 			["xmlhttprequest", "#e7d98c"]

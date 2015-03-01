@@ -348,7 +348,7 @@ onIFrameLoaded(function(){
 			["iframe", "#85b3f2"],
 			["img", "#bc9dd6"],
 			["script", "#e7bd8c"],
-			["link", "#2f78dd"],
+			["link", "#89afe6"],
 			["swf", "#4db3ba"],
 			//["font", "#e96859"],
 			["xmlhttprequest", "#e7d98c"]
