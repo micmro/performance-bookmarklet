@@ -2,6 +2,7 @@
 logs
 *.log
 .DS_Store
+dist/style.js
 
 # Editor Project Files
 *.sublime-project
