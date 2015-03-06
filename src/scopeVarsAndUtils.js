@@ -264,7 +264,14 @@ var endsWith = function(str, suffix){
 	return str.indexOf(suffix, str.length - suffix.length) !== -1;
 };
 
-var getInitiatorTypeColour = function(initiatorType, fallbackColour){
+var getColourVariation = function(hexColour, variation){
+	var r = ((parseInt(hexColour.substr(1,2), 16)) + variation).toString(16);
+	var g = ((parseInt(hexColour.substr(3,2), 16)) + variation).toString(16);
+	var b = ((parseInt(hexColour.substr(5,2), 16)) + variation).toString(16);
+	return "#" + r + g + b;
+}
+
+var getInitiatorTypeColour = function(initiatorType, fallbackColour, variation){
 	var colour = fallbackColour||"#bebebe"; //default
 
 	//colour the resources by initiator type
@@ -278,10 +285,13 @@ var getInitiatorTypeColour = function(initiatorType, fallbackColour){
 		case "font" : colour = "#e96859"; break; //TODO check if this works
 		case "xmlhttprequest" : colour = "#e7d98c"; break;
 	}
+	if(variation === true){
+		return getColourVariation(colour, -5);
+	}
 	return colour;
 };
 
-var getFileTypeColour = function(initiatorType, fallbackColour){
+var getFileTypeColour = function(initiatorType, fallbackColour, variation){
 	var colour = fallbackColour||"#bebebe"; //default
 
 	//colour the resources by initiator type
@@ -294,6 +304,9 @@ var getFileTypeColour = function(initiatorType, fallbackColour){
 		case "swf" : colour = "#4db3ba"; break; 
 		case "font" : colour = "#e96859"; break; //TODO check if this works
 		case "ajax" : colour = "#e7d98c"; break;
+	}
+	if(variation === true){
+		return getColourVariation(colour, -5);
 	}
 	return colour;
 };

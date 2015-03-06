@@ -147,6 +147,10 @@ onIFrameLoaded(function(){
 		return currR.domain;
 	}), "domain");
 
+	var fileTypeCountHostExt = getItemCount(requestsOnly.map(function(currR, i, arr){
+		return currR.fileType  + " " + (currR.isRequestToHost ? "(host)" : "(external)");
+	}), "fileType");
+
 	var fileTypeCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.fileType;
 	}), "fileType");
@@ -220,32 +224,45 @@ onIFrameLoaded(function(){
 		{name: "Avg. Duration (ms)", field: "durationAverage"}
 	]);
 
-	setupChart("Requests by Initiator Type (host/external domain)", initiatorTypeCountHostExt.map(function(initiatorype){
+	setupChart("Requests by Initiator Type", initiatorTypeCounts.map(function(initiatorype){
 		initiatorype.perc = initiatorype.count / requestsUnit;
 		initiatorype.label = initiatorype.initiatorType;
-		initiatorype.colour = getInitiatorTypeColour((initiatorype.initiatorType.split(" ")[0]), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
-		initiatorype.id = "reqByTypeLocEx-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
+		initiatorype.colour = getInitiatorTypeColour((initiatorype.initiatorType), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		initiatorype.id = "reqByInitiatorType-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
+		return initiatorype;
+	}));
+
+	setupChart("Requests by Initiator Type (host/external domain)", initiatorTypeCountHostExt.map(function(initiatorype){
+		var typeSegments = initiatorype.initiatorType.split(" ");
+		initiatorype.perc = initiatorype.count / requestsUnit;
+		initiatorype.label = initiatorype.initiatorType;
+		initiatorype.colour = getInitiatorTypeColour(typeSegments[0], getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
+		initiatorype.id = "reqByInitiatorTypeLocEx-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
 		return initiatorype;
 	}),[
 		"Requests to Host: " + hostRequests,
 		"Host: " + location.host,
 	]);
 
-	setupChart("Requests by Initiator Type", initiatorTypeCounts.map(function(initiatorype){
-		initiatorype.perc = initiatorype.count / requestsUnit;
-		initiatorype.label = initiatorype.initiatorType;
-		initiatorype.colour = getInitiatorTypeColour((initiatorype.initiatorType), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
-		initiatorype.id = "reqByType-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
-		return initiatorype;
-	}));
-
 	setupChart("Requests by File Type", fileTypeCounts.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
 		fileType.colour = getFileTypeColour((fileType.fileType), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
-		fileType.id = "reqByType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
+		fileType.id = "reqByFileType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}));
+
+	setupChart("Requests by File Type (host/external domain)", fileTypeCountHostExt.map(function(fileType){
+		var typeSegments = fileType.fileType.split(" ");
+		fileType.perc = fileType.count / requestsUnit;
+		fileType.label = fileType.fileType;
+		fileType.colour = getFileTypeColour(typeSegments[0], getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
+		fileType.id = "reqByFileType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
+		return fileType;
+	}),[
+		"Requests to Host: " + hostRequests,
+		"Host: " + location.host,
+	]);
 
 	tablesToLog = tablesToLog.concat([
 		{
