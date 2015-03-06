@@ -54,6 +54,54 @@ if(perfTiming.loadEventEnd - perfTiming.navigationStart < 0){
 	return;
 }
 
+//extract a resources file type
+var getFileType = function(fileExtension, initiatorType){
+	if(fileExtension){
+		switch(fileExtension){
+			case "jpg" :
+			case "jpeg" :
+			case "png" :
+			case "gif" :
+			case "webp" :
+			case "svg" :
+			case "ico" :
+				return "image";
+			case "js" : 
+				return "js"
+			case "css":
+				return "css"
+			case "html":
+				return "html"
+			case "woff":
+			case "woff2":
+			case "ttf":
+			case "eot":
+			case "otf":
+				return "font"
+			case "swf":
+				return "flash"
+			case "map":
+				return "source-map"
+		}
+	}
+	if(initiatorType){
+		switch(initiatorType){
+			case "xmlhttprequest" :
+				return "ajax"
+			case "img" :
+				return "image"
+			case "script" :
+				return "js"
+			case "internal" :
+			case "iframe" :
+				return "html" //actual page
+			default :
+				return "other"
+		}
+	}
+	return initiatorType;
+};
+
 
 allResourcesCalc = resources.filter(function(currR){
 		//remove this bookmarklet from the result
@@ -71,13 +119,14 @@ allResourcesCalc = resources.filter(function(currR){
 			urlFragments = ["", location.host];
 			fileExtension = currR.name.split(":")[0];
 		}
-		console.log("xxxxxx", currR.initiatorType);
+
 		var currRes = {
 			name : currR.name,
 			domain : urlFragments[1],
 			initiatorType : currR.initiatorType || fileExtension || "SourceMap or Not Defined",
 			fileExtension : fileExtension || "XHR or Not Defined",
 			loadtime : currR.duration,
+			fileType : getFileType(fileExtension, currR.initiatorType),
 			isRequestToHost : urlFragments[1] === location.host
 		};
 
@@ -108,6 +157,7 @@ tablesToLog.push({
 			"name",
 			"domain",
 			"initiatorType",
+			"fileType",
 			"fileExtension",
 			"loadtime",
 			"isRequestToHost",
@@ -236,6 +286,23 @@ var getInitiatorTypeColour = function(initiatorType, fallbackColour){
 		case "swf" : colour = "#4db3ba"; break; 
 		case "font" : colour = "#e96859"; break; //TODO check if this works
 		case "xmlhttprequest" : colour = "#e7d98c"; break;
+	}
+	return colour;
+};
+
+var getFileTypeColour = function(initiatorType, fallbackColour){
+	var colour = fallbackColour||"#bebebe"; //default
+
+	//colour the resources by initiator type
+	switch(initiatorType) {
+		case "css" : colour = "#afd899"; break;
+		case "html" : colour = "#85b3f2"; break;
+		case "image" : colour = "#bc9dd6"; break;
+		case "js" : colour = "#e7bd8c"; break; 
+		case "link" : colour = "#89afe6"; break;
+		case "swf" : colour = "#4db3ba"; break; 
+		case "font" : colour = "#e96859"; break; //TODO check if this works
+		case "ajax" : colour = "#e7d98c"; break;
 	}
 	return colour;
 };
@@ -907,17 +974,21 @@ onIFrameLoaded(function(){
 	});
 
 	//get counts
-	var fileExtensionCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
+	var initiatorTypeCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.initiatorType || currR.fileExtension;
-	}), "fileType");
+	}), "initiatorType");
 
-	var fileExtensionCountHostExt = getItemCount(requestsOnly.map(function(currR, i, arr){
+	var initiatorTypeCountHostExt = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return (currR.initiatorType  || currR.fileExtension) + " " + (currR.isRequestToHost ? "(host)" : "(external)");
-	}), "fileType");
+	}), "initiatorType");
 
 	var requestsByDomain = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.domain;
 	}), "domain");
+
+	var fileTypeCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
+		return currR.fileType;
+	}), "fileType");
 
 	requestsOnly.forEach(function(currR){
 		var entry = requestsByDomain.filter(function(a){
@@ -988,21 +1059,29 @@ onIFrameLoaded(function(){
 		{name: "Avg. Duration (ms)", field: "durationAverage"}
 	]);
 
-	setupChart("Requests by Initiator Type (host/external domain)", fileExtensionCountHostExt.map(function(fileType){
-		fileType.perc = fileType.count / requestsUnit;
-		fileType.label = fileType.fileType;
-		fileType.colour = getInitiatorTypeColour((fileType.fileType.split(" ")[0]), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
-		fileType.id = "reqByTypeLocEx-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
-		return fileType;
+	setupChart("Requests by Initiator Type (host/external domain)", initiatorTypeCountHostExt.map(function(initiatorype){
+		initiatorype.perc = initiatorype.count / requestsUnit;
+		initiatorype.label = initiatorype.initiatorType;
+		initiatorype.colour = getInitiatorTypeColour((initiatorype.initiatorType.split(" ")[0]), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		initiatorype.id = "reqByTypeLocEx-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
+		return initiatorype;
 	}),[
 		"Requests to Host: " + hostRequests,
 		"Host: " + location.host,
 	]);
 
-	setupChart("Requests by Initiator Type", fileExtensionCounts.map(function(fileType){
+	setupChart("Requests by Initiator Type", initiatorTypeCounts.map(function(initiatorype){
+		initiatorype.perc = initiatorype.count / requestsUnit;
+		initiatorype.label = initiatorype.initiatorType;
+		initiatorype.colour = getInitiatorTypeColour((initiatorype.initiatorType), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		initiatorype.id = "reqByType-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
+		return initiatorype;
+	}));
+
+	setupChart("Requests by File Type", fileTypeCounts.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
-		fileType.colour = getInitiatorTypeColour((fileType.fileType), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		fileType.colour = getFileTypeColour((fileType.fileType), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
 		fileType.id = "reqByType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}));
@@ -1013,12 +1092,18 @@ onIFrameLoaded(function(){
 			data : requestsByDomain
 		},
 		{
-			name : "File type count (host / external)",
-			data : fileExtensionCounts,
-			columns : ["fileType", "count", "perc"]},
+			name : "Requests by Initiator Type",
+			data : initiatorTypeCounts,
+			columns : ["initiatorType", "count", "perc"]
+		},
 		{
-			name : "File type count",
-			data : fileExtensionCountHostExt,
+			name : "Requests by Initiator Type (host/external domain)",
+			data : initiatorTypeCountHostExt,
+			columns : ["initiatorType", "count", "perc"]
+		},
+		{
+			name : "Requests by File Type",
+			data : fileTypeCounts,
 			columns : ["fileType", "count", "perc"]
 		}
 	]);

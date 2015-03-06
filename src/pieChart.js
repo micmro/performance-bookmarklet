@@ -135,17 +135,21 @@ onIFrameLoaded(function(){
 	});
 
 	//get counts
-	var fileExtensionCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
+	var initiatorTypeCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.initiatorType || currR.fileExtension;
-	}), "fileType");
+	}), "initiatorType");
 
-	var fileExtensionCountHostExt = getItemCount(requestsOnly.map(function(currR, i, arr){
+	var initiatorTypeCountHostExt = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return (currR.initiatorType  || currR.fileExtension) + " " + (currR.isRequestToHost ? "(host)" : "(external)");
-	}), "fileType");
+	}), "initiatorType");
 
 	var requestsByDomain = getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.domain;
 	}), "domain");
+
+	var fileTypeCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
+		return currR.fileType;
+	}), "fileType");
 
 	requestsOnly.forEach(function(currR){
 		var entry = requestsByDomain.filter(function(a){
@@ -216,21 +220,29 @@ onIFrameLoaded(function(){
 		{name: "Avg. Duration (ms)", field: "durationAverage"}
 	]);
 
-	setupChart("Requests by Initiator Type (host/external domain)", fileExtensionCountHostExt.map(function(fileType){
-		fileType.perc = fileType.count / requestsUnit;
-		fileType.label = fileType.fileType;
-		fileType.colour = getInitiatorTypeColour((fileType.fileType.split(" ")[0]), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
-		fileType.id = "reqByTypeLocEx-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
-		return fileType;
+	setupChart("Requests by Initiator Type (host/external domain)", initiatorTypeCountHostExt.map(function(initiatorype){
+		initiatorype.perc = initiatorype.count / requestsUnit;
+		initiatorype.label = initiatorype.initiatorType;
+		initiatorype.colour = getInitiatorTypeColour((initiatorype.initiatorType.split(" ")[0]), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		initiatorype.id = "reqByTypeLocEx-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
+		return initiatorype;
 	}),[
 		"Requests to Host: " + hostRequests,
 		"Host: " + location.host,
 	]);
 
-	setupChart("Requests by Initiator Type", fileExtensionCounts.map(function(fileType){
+	setupChart("Requests by Initiator Type", initiatorTypeCounts.map(function(initiatorype){
+		initiatorype.perc = initiatorype.count / requestsUnit;
+		initiatorype.label = initiatorype.initiatorType;
+		initiatorype.colour = getInitiatorTypeColour((initiatorype.initiatorType), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		initiatorype.id = "reqByType-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
+		return initiatorype;
+	}));
+
+	setupChart("Requests by File Type", fileTypeCounts.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
-		fileType.colour = getInitiatorTypeColour((fileType.fileType), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		fileType.colour = getFileTypeColour((fileType.fileType), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
 		fileType.id = "reqByType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}));
@@ -241,12 +253,18 @@ onIFrameLoaded(function(){
 			data : requestsByDomain
 		},
 		{
-			name : "File type count (host / external)",
-			data : fileExtensionCounts,
-			columns : ["fileType", "count", "perc"]},
+			name : "Requests by Initiator Type",
+			data : initiatorTypeCounts,
+			columns : ["initiatorType", "count", "perc"]
+		},
 		{
-			name : "File type count",
-			data : fileExtensionCountHostExt,
+			name : "Requests by Initiator Type (host/external domain)",
+			data : initiatorTypeCountHostExt,
+			columns : ["initiatorType", "count", "perc"]
+		},
+		{
+			name : "Requests by File Type",
+			data : fileTypeCounts,
 			columns : ["fileType", "count", "perc"]
 		}
 	]);
