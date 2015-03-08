@@ -147,8 +147,8 @@ tablesToLog.push({
 	columns : [
 			"name",
 			"domain",
-			"initiatorType",
 			"fileType",
+			"initiatorType",
 			"fileExtension",
 			"loadtime",
 			"isRequestToHost",
@@ -311,7 +311,8 @@ var getFileTypeColour = function(initiatorType, fallbackColour, variation){
 	return colour;
 };
 
-
+//counts occurences of items in array arr and returns them as array of key valure pairs
+//keyName overwrites the name of the key attribute 
 var getItemCount = function(arr, keyName){
 	var counts = {},
 		resultArr = [],

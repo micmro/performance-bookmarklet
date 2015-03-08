@@ -156,8 +156,8 @@ tablesToLog.push({
 	columns : [
 			"name",
 			"domain",
-			"initiatorType",
 			"fileType",
+			"initiatorType",
 			"fileExtension",
 			"loadtime",
 			"isRequestToHost",
@@ -320,7 +320,8 @@ var getFileTypeColour = function(initiatorType, fallbackColour, variation){
 	return colour;
 };
 
-
+//counts occurences of items in array arr and returns them as array of key valure pairs
+//keyName overwrites the name of the key attribute 
 var getItemCount = function(arr, keyName){
 	var counts = {},
 		resultArr = [],
@@ -1142,6 +1143,69 @@ onIFrameLoaded(function(){
 
 
 /*
+Logic for Request analysis table
+*/
+
+
+onIFrameLoaded(function(){
+	var requestsOnly = allResourcesCalc.filter(function(currR) {
+		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
+	});
+
+	window.requestsOnly = requestsOnly;
+
+	var output = requestsOnly.reduce(function(collectObj, currR){
+		if(collectObj[currR.fileType]){
+			collectObj[currR.fileType].count++;
+		}else{
+			collectObj[currR.fileType] = {
+				"fileType" : currR.fileType,
+				"count" : 1,
+				"initiatorType" : {},
+				"requestsToHost" : 0,
+				"requestsToExternal" : 0
+			};
+		}
+		collectObj[currR.fileType].initiatorType[currR.initiatorType] = (collectObj[currR.fileType].initiatorType[currR.initiatorType]||0) + 1;
+		if(currR.isRequestToHost){
+			collectObj[currR.fileType].requestsToHost++;
+		}else{
+			collectObj[currR.fileType].requestsToExternal++;
+		}
+
+		return collectObj;
+	}, {});
+
+	Object.keys(output).map(function(key){
+		console.log(output[key]);
+	});
+
+
+	//| FileType || Count || Count Internal || count external || Count by Initiator Type || Initiator Type Internal || Initiator Type external ||
+
+	/*
+	<table>
+		<thead>
+			<tr>
+				<th>FileType</th>
+				<th>Count</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<tr rowspan="x">JS</tr>
+				<tr rowspan="x">4</tr>
+
+			</tr>
+		</tbody>
+	</table>
+
+	*/
+});
+
+
+
+/*
 Logic for Resource Timing API Waterfall 
 */
 
@@ -1545,8 +1609,8 @@ onIFrameLoaded(function(){
 // also output the data as table in console
 tablesToLog.forEach(function(table, i){
 	if(table.data.length > 0 && console.table){
-		console.log("\n\n\n" + table.name + ":");
-		console.table(table.data, table.columns);
+		// console.log("\n\n\n" + table.name + ":");
+		// console.table(table.data, table.columns);
 	}
 });
 
