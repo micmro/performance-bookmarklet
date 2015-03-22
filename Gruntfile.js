@@ -6,7 +6,7 @@ module.exports = function( grunt ) {
 		concat: {
 			options: {
 				separator: "\n\n\n",
-				banner: "/*https://github.com/nurun/performance-bookmarklet\n by Michael Mrowetz @MicMro*/\n\n(function(){\n\"use strict\";\n\n",
+				banner: "/*https://github.com/micmro/performance-bookmarklet\n by Michael Mrowetz @MicMro*/\n\n(function(){\n\"use strict\";\n\n",
 				footer: "\n\n})();",
 			},
 			dist: {
@@ -22,7 +22,7 @@ module.exports = function( grunt ) {
 					},
 					dead_code: true
 				},
-				banner : "/*https://github.com/nurun/performance-bookmarklet by Michael Mrowetz @MicMro*/\n"
+				banner : "/*https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro*/\n"
 			},
 			my_target: {
 				files: {

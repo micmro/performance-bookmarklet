@@ -203,6 +203,22 @@ var newTag = function(tagName, settings, css){
 };
 
 
+var tableFactory = function(id, headerBuilder, rowBuilder){
+	var tableHolder = newTag("div", {
+		id : id || "",
+		class : "table-holder"
+	});
+	var table = newTag("table");
+	var thead = newTag("thead");
+
+	thead.appendChild(headerBuilder(newTag("tr")));
+	table.appendChild(thead);
+	table.appendChild(rowBuilder(newTag("tbody")));
+	tableHolder.appendChild(table);
+	return tableHolder;
+};
+
+
 var combineNodes = function(a, b){
 	var wrapper = document.createElement("div");
 	if(typeof a === "object"){

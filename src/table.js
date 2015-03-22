@@ -48,78 +48,90 @@ onIFrameLoaded(function(){
 		return collectObj;
 	}, {});
 
-	var outputHtml = "<table><thead>";
-	[
-		"FileType",
-		"Count",
-		"Count Internal",
-		"count external",
-		"Initiator Type",
-		"Count by Initiator Type",
-		"Initiator Type Internal",
-		"Initiator Type external"
-	].map(function(title){
-		outputHtml += "<th>" + title + "</th>\n";
+	var sectionHolder = newTag("div", {
+		class : "table-seciton-holder"
 	});
+	sectionHolder.appendChild(newTag("h1", {text : "Resource Initiation"}));
 
-	outputHtml +=  "</thead><tbody>\n"
+	
+	sectionHolder.appendChild(tableFactory("filetypes-and-intiators-table", function(theadTr){
+			[
+				"FileType",
+				"Count",
+				"Count Internal",
+				"count external",
+				"Initiator Type",
+				"Count by Initiator Type",
+				"Initiator Type Internal",
+				"Initiator Type external"
+			].forEach(function(x){
+				theadTr.appendChild(newTag("th", {
+					text : x
+				}));
+			});
+			return theadTr;
 
-	Object.keys(output).forEach(function(key){
-		var fileTypeData = output[key],
-			initiatorTypeKeys = Object.keys(fileTypeData.initiatorType),
-			firstinitiatorTypeKey = fileTypeData.initiatorType[initiatorTypeKeys[0]],
-			rowspan = initiatorTypeKeys.length;
+		}, function(tbody){
+			Object.keys(output).forEach(function(key, i){
+				var fileTypeData = output[key],
+					initiatorTypeKeys = Object.keys(fileTypeData.initiatorType),
+					firstinitiatorTypeKey = fileTypeData.initiatorType[initiatorTypeKeys[0]],
+					rowspan = initiatorTypeKeys.length;
 
-		console.log(fileTypeData, initiatorTypeKeys);
+				var tr = newTag("tr", {
+					class : "file-type-row " + (fileTypeData.fileType||"other") + "-light"
+				});
 
-		outputHtml += "<tr>\n";
+				[
+					fileTypeData.fileType,
+					fileTypeData.count,
+					fileTypeData.requestsToHost,
+					fileTypeData.requestsToExternal,
+					firstinitiatorTypeKey.initiatorType,
+					firstinitiatorTypeKey.count,
+					firstinitiatorTypeKey.requestsToHost,
+					firstinitiatorTypeKey.requestsToExternal,
 
-		[
-			fileTypeData.fileType,
-			fileTypeData.count,
-			fileTypeData.requestsToHost,
-			fileTypeData.requestsToExternal,
-			firstinitiatorTypeKey.initiatorType,
-			firstinitiatorTypeKey.count,
-			firstinitiatorTypeKey.requestsToHost,
-			firstinitiatorTypeKey.requestsToExternal,
+				].forEach(function(val, i){
+					var settings = {
+						text : val
+					};
+					if(i < 4 && initiatorTypeKeys.length > 1){
+						settings.rowSpan = rowspan;
+					}else if(i >= 4){
+						settings.class = (initiatorTypeKeys[0]||"other") + "-light";
 
-		].forEach(function(val, i){
-			outputHtml += "\t<td" + ((i < 4 && initiatorTypeKeys.length > 1) ? " rowspan=\""+rowspan+"\"" : "") + ">" + val + "</td>\n";
-		});
-		outputHtml += "</tr>";
+					}
+					tr.appendChild(newTag("td", settings));
+				});
 
-		initiatorTypeKeys.slice(1).forEach(function(initiatorTypeKey){
-			var initiatorTypeData = fileTypeData.initiatorType[initiatorTypeKey];
-			console.log(initiatorTypeData);
-			outputHtml += "<tr>\n\t<td>" + initiatorTypeKey + "</td><td>" + initiatorTypeData.count + "</td><td>" + initiatorTypeData.requestsToHost + "</td><td>" + initiatorTypeData.requestsToExternal + "</td>\n</tr>\n"
-		});
-	});
+				tbody.appendChild(tr);
 
-	outputHtml += "\n</tbody></table>";
+				initiatorTypeKeys.slice(1).forEach(function(initiatorTypeKey){
+					var initiatorTypeData = fileTypeData.initiatorType[initiatorTypeKey];
+					var tr2 = newTag("tr", {
+						class : "initiator-type-more " + (initiatorTypeKey||"other") + "-light"
+					});
+					tr2.appendChild(newTag("td", {
+						text : initiatorTypeKey
+					}));
+					tr2.appendChild(newTag("td", {
+						text : initiatorTypeData.count
+					}));
+					tr2.appendChild(newTag("td", {
+						text : initiatorTypeData.requestsToHost
+					}));  
+					tr2.appendChild(newTag("td", {
+						text : initiatorTypeData.requestsToExternal
+					}));  
 
-	// outputContent.appendChild(outputHtml);
-	console.log(outputHtml);
+					tbody.appendChild(tr2)
+				});
+			});
 
+			return tbody;
+	}));
 
-	//| FileType || Count || Count Internal || count external || Count by Initiator Type || Initiator Type Internal || Initiator Type external ||
+	outputContent.appendChild(sectionHolder);
 
-	/*
-	<table>
-		<thead>
-			<tr>
-				<th>FileType</th>
-				<th>Count</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<tr rowspan="x">JS</tr>
-				<tr rowspan="x">4</tr>
-
-			</tr>
-		</tbody>
-	</table>
-
-	*/
 });
