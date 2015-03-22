@@ -1,10 +1,10 @@
-/*https://github.com/nurun/performance-bookmarklet
+/*https://github.com/micmro/performance-bookmarklet
  by Michael Mrowetz @MicMro*/
 
 (function(){
 "use strict";
 
-var cssFileText = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .tiles-holder {margin: 2em -18px 1em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin: 0 -72px 0 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th { padding:0 0.5em 0 0;} .table-holder td {padding:0 0.5em 0 0;} .water-fall-holder {margin: 25px 0; fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #a971c5; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;} .resource-timing .chart-holder {} ";
+var cssFileText = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #a971c5; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;} .resource-timing .chart-holder {} ";
 
 
 /*
@@ -156,8 +156,8 @@ tablesToLog.push({
 	columns : [
 			"name",
 			"domain",
-			"initiatorType",
 			"fileType",
+			"initiatorType",
 			"fileExtension",
 			"loadtime",
 			"isRequestToHost",
@@ -209,6 +209,22 @@ var newTag = function(tagName, settings, css){
 	}
 	tag.style.cssText = css||"";
 	return tag;
+};
+
+
+var tableFactory = function(id, headerBuilder, rowBuilder){
+	var tableHolder = newTag("div", {
+		id : id || "",
+		class : "table-holder"
+	});
+	var table = newTag("table");
+	var thead = newTag("thead");
+
+	thead.appendChild(headerBuilder(newTag("tr")));
+	table.appendChild(thead);
+	table.appendChild(rowBuilder(newTag("tbody")));
+	tableHolder.appendChild(table);
+	return tableHolder;
 };
 
 
@@ -320,7 +336,8 @@ var getFileTypeColour = function(initiatorType, fallbackColour, variation){
 	return colour;
 };
 
-
+//counts occurences of items in array arr and returns them as array of key valure pairs
+//keyName overwrites the name of the key attribute 
 var getItemCount = function(arr, keyName){
 	var counts = {},
 		resultArr = [],
@@ -531,8 +548,8 @@ onIFrameLoaded(function(){
 		a.appendChild(newTag("dd", {text : value}));
 	};
 
-	tilesHolder = newTag("div", {
-		class : "tiles-holder"
+	tilesHolder = newTag("section", {
+		class : "tiles-holder chart-holder"
 	});
 
 	[
@@ -655,7 +672,7 @@ onIFrameLoaded(function(){
 		var diagramHeight = (barsToShow.length + 1) * 25;
 		var chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
 
-		var chartHolder = newTag("div", {
+		var chartHolder = newTag("section", {
 			class : "navigation-timing water-fall-holder chart-holder"
 		});
 		var timeLineHolder = newElementNs("svg:svg", {
@@ -947,38 +964,30 @@ onIFrameLoaded(function(){
 		return chart;
 	};
 
-	var createTable = function(title, data, columns){
+	var createChartTable = function(title, data, columns){
 		columns = columns||[{name: "Requests", field: "count"}];
 
 		//create table
-		var tableHolder = newTag("div", {
-			class : "table-holder"
-		});
-		var table = newTag("table", {}, "");
-		var thead = newTag("thead");
-		var tbody = newTag("tbody");
-		thead.appendChild(newTag("th", {text : title, class: "text-left"}));
-		// thead.appendChild(newTag("th", {text : "Requests"}));
-		columns.forEach(function(column){
-			thead.appendChild(newTag("th", {text : column.name, class: "text-right"}));
-		});
-		thead.appendChild(newTag("th", {text : "Percentage", class: "text-right"}));
-		table.appendChild(thead);
+		return tableFactory("", function(thead){
+				thead.appendChild(newTag("th", {text : title, class: "text-left"}));
+				columns.forEach(function(column){
+					thead.appendChild(newTag("th", {text : column.name, class: "text-right"}));
+				});
+				thead.appendChild(newTag("th", {text : "Percentage", class: "text-right"}));
 
-		data.forEach(function(y){
-			var row = newTag("tr", {id : y.id + "-table"});
-			row.appendChild(newTag("td", {text : y.label}));
-			columns.forEach(function(column){				
-				row.appendChild(newTag("td", {text : y[column.field], class: "text-right"}));
-			});
-			row.appendChild(newTag("td", {text : y.perc.toPrecision(2) + "%", class: "text-right"}));
-			tbody.appendChild(row);
+				return thead;
+			}, function(tbody){
+				data.forEach(function(y){
+					var row = newTag("tr", {id : y.id + "-table"});
+					row.appendChild(newTag("td", {text : y.label}));
+					columns.forEach(function(column){				
+						row.appendChild(newTag("td", {text : y[column.field], class: "text-right"}));
+					});
+					row.appendChild(newTag("td", {text : y.perc.toPrecision(2) + "%", class: "text-right"}));
+					tbody.appendChild(row);
+				});
+				return tbody;
 		});
-
-		table.appendChild(tbody);
-		tableHolder.appendChild(table);
-
-		return tableHolder;
 	};
 
 	//filter out non-http[s] and sourcemaps
@@ -1038,7 +1047,7 @@ onIFrameLoaded(function(){
 				chartHolder.appendChild(newTag("p", {text : countText}, "margin-top:-1em"));
 			})
 		}
-		chartHolder.appendChild(createTable(title, data, columns));
+		chartHolder.appendChild(createChartTable(title, data, columns));
 		chartsHolder.appendChild(chartHolder);
 	};
 
@@ -1137,6 +1146,147 @@ onIFrameLoaded(function(){
 			columns : ["fileType", "count", "perc"]
 		}
 	]);
+});
+
+
+
+/*
+Logic for Request analysis table
+*/
+
+
+onIFrameLoaded(function(){
+	var requestsOnly = allResourcesCalc.filter(function(currR) {
+		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
+	});
+
+	window.requestsOnly = requestsOnly;
+
+	var output = requestsOnly.reduce(function(collectObj, currR){
+		var fileTypeData = collectObj[currR.fileType],
+			initiatorTypeData;
+
+		if(!fileTypeData){
+			fileTypeData = collectObj[currR.fileType] = {
+				"fileType" : currR.fileType,
+				"count" : 0,
+				"initiatorType" : {},
+				"requestsToHost" : 0,
+				"requestsToExternal" : 0
+			};
+		}
+
+		initiatorTypeData = fileTypeData.initiatorType[currR.initiatorType];
+		if(!initiatorTypeData){
+			initiatorTypeData = fileTypeData.initiatorType[currR.initiatorType] = {
+				"initiatorType" : currR.initiatorType,
+				"count" : 0,
+				"requestsToHost" : 0,
+				"requestsToExternal" : 0
+			}
+		}
+
+		fileTypeData.count++;
+		initiatorTypeData.count++;
+
+		if(currR.isRequestToHost){
+			fileTypeData.requestsToHost++;
+			initiatorTypeData.requestsToHost++;
+		}else{
+			fileTypeData.requestsToExternal++;
+			initiatorTypeData.requestsToExternal++;
+		}
+
+		return collectObj;
+	}, {});
+
+	var sectionHolder = newTag("section", {
+		class : "table-section-holder chart-holder"
+	});
+	sectionHolder.appendChild(newTag("h1", {text : "Request FileTypes & Initiators"}));
+
+	
+	sectionHolder.appendChild(tableFactory("filetypes-and-intiators-table", function(theadTr){
+			[
+				"FileType",
+				"Count",
+				"Count Internal",
+				"Count External",
+				"Initiator Type",
+				"Count by Initiator Type",
+				"Initiator Type Internal",
+				"Initiator Type External"
+			].forEach(function(x){
+				theadTr.appendChild(newTag("th", {
+					text : x,
+					width : (x.indexOf("ternal") > 0) ? "12%" : ""
+				}));
+			});
+			return theadTr;
+
+		}, function(tbody){
+			Object.keys(output).forEach(function(key, i){
+				var fileTypeData = output[key],
+					initiatorTypeKeys = Object.keys(fileTypeData.initiatorType),
+					firstinitiatorTypeKey = fileTypeData.initiatorType[initiatorTypeKeys[0]],
+					rowspan = initiatorTypeKeys.length;
+
+				var tr = newTag("tr", {
+					class : "file-type-row " + (fileTypeData.fileType||"other") + "-light"
+				});
+
+				[
+					fileTypeData.fileType,
+					fileTypeData.count,
+					fileTypeData.requestsToHost,
+					fileTypeData.requestsToExternal,
+					firstinitiatorTypeKey.initiatorType,
+					firstinitiatorTypeKey.count,
+					firstinitiatorTypeKey.requestsToHost,
+					firstinitiatorTypeKey.requestsToExternal,
+
+				].forEach(function(val, i){
+					var settings = {
+						text : val
+					};
+					if(i < 4 && initiatorTypeKeys.length > 1){
+						settings.rowSpan = rowspan;
+					}else if(i >= 4){
+						settings.class = (initiatorTypeKeys[0]||"other") + "-light";
+
+					}
+					tr.appendChild(newTag("td", settings));
+				});
+
+				tbody.appendChild(tr);
+
+				initiatorTypeKeys.slice(1).forEach(function(initiatorTypeKey){
+					var initiatorTypeData = fileTypeData.initiatorType[initiatorTypeKey];
+					var tr2 = newTag("tr", {
+						class : "initiator-type-more " + (initiatorTypeKey||"other") + "-light"
+					});
+					tr2.appendChild(newTag("td", {
+						text : initiatorTypeKey
+					}));
+					tr2.appendChild(newTag("td", {
+						text : initiatorTypeData.count
+					}));
+					tr2.appendChild(newTag("td", {
+						text : initiatorTypeData.requestsToHost
+					}));  
+					tr2.appendChild(newTag("td", {
+						text : initiatorTypeData.requestsToExternal
+					}));  
+
+					tbody.appendChild(tr2)
+				});
+			});
+
+			return tbody;
+	}));
+
+	outputContent.appendChild(sectionHolder);
+
 });
 
 
@@ -1282,7 +1432,7 @@ onIFrameLoaded(function(){
 		var diagramHeight = (barsToShow.length + 1) * 25;
 		var chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
 
-		var chartHolder = newTag("div", {
+		var chartHolder = newTag("section", {
 			class : "resource-timing water-fall-holder chart-holder"
 		});
 		var timeLineHolder = newElementNs("svg:svg", {
@@ -1545,8 +1695,8 @@ onIFrameLoaded(function(){
 // also output the data as table in console
 tablesToLog.forEach(function(table, i){
 	if(table.data.length > 0 && console.table){
-		console.log("\n\n\n" + table.name + ":");
-		console.table(table.data, table.columns);
+		// console.log("\n\n\n" + table.name + ":");
+		// console.table(table.data, table.columns);
 	}
 });
 
