@@ -147,8 +147,8 @@ tablesToLog.push({
 	columns : [
 			"name",
 			"domain",
-			"initiatorType",
 			"fileType",
+			"initiatorType",
 			"fileExtension",
 			"loadtime",
 			"isRequestToHost",
@@ -200,6 +200,22 @@ var newTag = function(tagName, settings, css){
 	}
 	tag.style.cssText = css||"";
 	return tag;
+};
+
+
+var tableFactory = function(id, headerBuilder, rowBuilder){
+	var tableHolder = newTag("div", {
+		id : id || "",
+		class : "table-holder"
+	});
+	var table = newTag("table");
+	var thead = newTag("thead");
+
+	thead.appendChild(headerBuilder(newTag("tr")));
+	table.appendChild(thead);
+	table.appendChild(rowBuilder(newTag("tbody")));
+	tableHolder.appendChild(table);
+	return tableHolder;
 };
 
 
@@ -311,7 +327,8 @@ var getFileTypeColour = function(initiatorType, fallbackColour, variation){
 	return colour;
 };
 
-
+//counts occurences of items in array arr and returns them as array of key valure pairs
+//keyName overwrites the name of the key attribute 
 var getItemCount = function(arr, keyName){
 	var counts = {},
 		resultArr = [],

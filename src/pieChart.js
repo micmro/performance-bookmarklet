@@ -95,38 +95,30 @@ onIFrameLoaded(function(){
 		return chart;
 	};
 
-	var createTable = function(title, data, columns){
+	var createChartTable = function(title, data, columns){
 		columns = columns||[{name: "Requests", field: "count"}];
 
 		//create table
-		var tableHolder = newTag("div", {
-			class : "table-holder"
-		});
-		var table = newTag("table", {}, "");
-		var thead = newTag("thead");
-		var tbody = newTag("tbody");
-		thead.appendChild(newTag("th", {text : title, class: "text-left"}));
-		// thead.appendChild(newTag("th", {text : "Requests"}));
-		columns.forEach(function(column){
-			thead.appendChild(newTag("th", {text : column.name, class: "text-right"}));
-		});
-		thead.appendChild(newTag("th", {text : "Percentage", class: "text-right"}));
-		table.appendChild(thead);
+		return tableFactory("", function(thead){
+				thead.appendChild(newTag("th", {text : title, class: "text-left"}));
+				columns.forEach(function(column){
+					thead.appendChild(newTag("th", {text : column.name, class: "text-right"}));
+				});
+				thead.appendChild(newTag("th", {text : "Percentage", class: "text-right"}));
 
-		data.forEach(function(y){
-			var row = newTag("tr", {id : y.id + "-table"});
-			row.appendChild(newTag("td", {text : y.label}));
-			columns.forEach(function(column){				
-				row.appendChild(newTag("td", {text : y[column.field], class: "text-right"}));
-			});
-			row.appendChild(newTag("td", {text : y.perc.toPrecision(2) + "%", class: "text-right"}));
-			tbody.appendChild(row);
+				return thead;
+			}, function(tbody){
+				data.forEach(function(y){
+					var row = newTag("tr", {id : y.id + "-table"});
+					row.appendChild(newTag("td", {text : y.label}));
+					columns.forEach(function(column){				
+						row.appendChild(newTag("td", {text : y[column.field], class: "text-right"}));
+					});
+					row.appendChild(newTag("td", {text : y.perc.toPrecision(2) + "%", class: "text-right"}));
+					tbody.appendChild(row);
+				});
+				return tbody;
 		});
-
-		table.appendChild(tbody);
-		tableHolder.appendChild(table);
-
-		return tableHolder;
 	};
 
 	//filter out non-http[s] and sourcemaps
@@ -186,7 +178,7 @@ onIFrameLoaded(function(){
 				chartHolder.appendChild(newTag("p", {text : countText}, "margin-top:-1em"));
 			})
 		}
-		chartHolder.appendChild(createTable(title, data, columns));
+		chartHolder.appendChild(createChartTable(title, data, columns));
 		chartsHolder.appendChild(chartHolder);
 	};
 
