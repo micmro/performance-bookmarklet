@@ -7,6 +7,9 @@ logs
 *.sublime-project
 *.sublime-workspace
 
+# temp-files
+dist/style.js
+
 # Runtime data
 pids
 *.pid
