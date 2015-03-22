@@ -22,7 +22,8 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 .script,
 .js {background: #e7bd8c;}
 .link {background: #89afe6;}
-.swf {background: #4db3ba;}
+.swf,
+.flash {background: #4db3ba;}
 .font {background: #e96859;}
 .xmlhttprequest,
 .ajax {background: #e7d98c;}
@@ -36,7 +37,8 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 .script-light,
 .js-light {background: #f3dec6;}
 .link-light {background: #c4d7f3;}
-.swf-light {background: #a6d9dd;}
+.swf-light,
+.flash-light {background: #a6d9dd;}
 .font-light {background: #f4b4ac;}
 .xmlhttprequest-light,
 .ajax-light {background: #f3ecc6;}

@@ -51,7 +51,7 @@ onIFrameLoaded(function(){
 	var sectionHolder = newTag("div", {
 		class : "table-seciton-holder"
 	});
-	sectionHolder.appendChild(newTag("h1", {text : "Resource Initiation"}));
+	sectionHolder.appendChild(newTag("h1", {text : "Request Types & Initiators"}));
 
 	
 	sectionHolder.appendChild(tableFactory("filetypes-and-intiators-table", function(theadTr){
