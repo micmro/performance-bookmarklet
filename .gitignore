@@ -2,6 +2,8 @@
 logs
 *.log
 .DS_Store
+
+#Temp files
 dist/style.js
 
 # Editor Project Files
