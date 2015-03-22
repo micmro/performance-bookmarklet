@@ -85,7 +85,7 @@ onIFrameLoaded(function(){
 		var diagramHeight = (barsToShow.length + 1) * 25;
 		var chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
 
-		var chartHolder = newTag("div", {
+		var chartHolder = newTag("section", {
 			class : "navigation-timing water-fall-holder chart-holder"
 		});
 		var timeLineHolder = newElementNs("svg:svg", {

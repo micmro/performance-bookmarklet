@@ -10,13 +10,16 @@ th {text-align: left;}
 .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;}
 .full-width {width:100%;}
 
+.chart-holder {margin: 5em 0;}
+
 h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 .text-right {text-align: right;}
 .text-left {text-align: left;}
 
 .css {background: #afd899;}
 .iframe,
-.html {background: #85b3f2;}
+.html,
+.internal {background: #85b3f2;}
 .img,
 .image {background: #bc9dd6;}
 .script,
@@ -31,7 +34,8 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 
 .css-light {background: #b9cfa0;}
 .iframe-light,
-.html-light {background: #c2d9f9;}
+.html-light,
+.internal-light {background: #c2d9f9;}
 .img-light,
 .image-light {background: #deceeb;}
 .script-light,
@@ -45,7 +49,7 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 .other-light {background: #dfdfdf;}
 
 /*Summary Tiles*/
-.tiles-holder {margin: 2em -18px 1em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; }
+.tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; }
 
 .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;}
 .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;}
@@ -57,7 +61,7 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 
 
 /*Pie Charts*/
-.pie-charts-holder {margin: 0 -72px 0 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;}
+.pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;}
 .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;}
 .pie-chart-holder h1 {min-height:2em;}
 
@@ -69,16 +73,17 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;}
 
 /* tables */
-#filetypes-and-intiators-table {margin: 2em 0 1em;}
-#filetypes-and-intiators-table table {vertical-align: middle;}
-#filetypes-and-intiators-table td {padding:0.25em;}
-#filetypes-and-intiators-table .file-type-row td {border-top: solid 1px #666;}
+#filetypes-and-intiators-table {margin: 2em 0 5em;}
+#filetypes-and-intiators-table table {vertical-align: middle;  border-collapse: collapse;}
+#filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;}
+#filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;}
+#filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;}
 #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;}
 
 
 
 /*All Water Fall Charts */
-.water-fall-holder {margin: 25px 0; fill:#ccc;}
+.water-fall-holder {fill:#ccc;}
 
 .water-fall-chart {width:100%; background:#f0f5f0;}
 .water-fall-chart .marker-holder {width:100%;}

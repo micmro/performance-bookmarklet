@@ -48,10 +48,10 @@ onIFrameLoaded(function(){
 		return collectObj;
 	}, {});
 
-	var sectionHolder = newTag("div", {
-		class : "table-seciton-holder"
+	var sectionHolder = newTag("section", {
+		class : "table-section-holder chart-holder"
 	});
-	sectionHolder.appendChild(newTag("h1", {text : "Request Types & Initiators"}));
+	sectionHolder.appendChild(newTag("h1", {text : "Request FileTypes & Initiators"}));
 
 	
 	sectionHolder.appendChild(tableFactory("filetypes-and-intiators-table", function(theadTr){
@@ -59,14 +59,15 @@ onIFrameLoaded(function(){
 				"FileType",
 				"Count",
 				"Count Internal",
-				"count external",
+				"Count External",
 				"Initiator Type",
 				"Count by Initiator Type",
 				"Initiator Type Internal",
-				"Initiator Type external"
+				"Initiator Type External"
 			].forEach(function(x){
 				theadTr.appendChild(newTag("th", {
-					text : x
+					text : x,
+					width : (x.indexOf("ternal") > 0) ? "12%" : ""
 				}));
 			});
 			return theadTr;

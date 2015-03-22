@@ -73,8 +73,8 @@ onIFrameLoaded(function(){
 		a.appendChild(newTag("dd", {text : value}));
 	};
 
-	tilesHolder = newTag("div", {
-		class : "tiles-holder"
+	tilesHolder = newTag("section", {
+		class : "tiles-holder chart-holder"
 	});
 
 	[
