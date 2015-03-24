@@ -3,8 +3,8 @@ Logic for Request analysis table
 */
 
 
-onIFrameLoaded(function(){
-	var requestsOnly = allResourcesCalc.filter(function(currR) {
+onIFrameLoaded(function(helper, dom, svg){
+	var requestsOnly = data.allResourcesCalc.filter(function(currR) {
 		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
 	});
 
@@ -48,13 +48,13 @@ onIFrameLoaded(function(){
 		return collectObj;
 	}, {});
 
-	var sectionHolder = newTag("section", {
+	var sectionHolder = dom.newTag("section", {
 		class : "table-section-holder chart-holder"
 	});
-	sectionHolder.appendChild(newTag("h1", {text : "Request FileTypes & Initiators"}));
+	sectionHolder.appendChild(dom.newTag("h1", {text : "Request FileTypes & Initiators"}));
 
 	
-	sectionHolder.appendChild(tableFactory("filetypes-and-intiators-table", function(theadTr){
+	sectionHolder.appendChild(dom.tableFactory("filetypes-and-intiators-table", function(theadTr){
 			[
 				"FileType",
 				"Count",
@@ -65,7 +65,7 @@ onIFrameLoaded(function(){
 				"Initiator Type Internal",
 				"Initiator Type External"
 			].forEach(function(x){
-				theadTr.appendChild(newTag("th", {
+				theadTr.appendChild(dom.newTag("th", {
 					text : x,
 					width : (x.indexOf("ternal") > 0) ? "12%" : ""
 				}));
@@ -79,7 +79,7 @@ onIFrameLoaded(function(){
 					firstinitiatorTypeKey = fileTypeData.initiatorType[initiatorTypeKeys[0]],
 					rowspan = initiatorTypeKeys.length;
 
-				var tr = newTag("tr", {
+				var tr = dom.newTag("tr", {
 					class : "file-type-row " + (fileTypeData.fileType||"other") + "-light"
 				});
 
@@ -103,26 +103,26 @@ onIFrameLoaded(function(){
 						settings.class = (initiatorTypeKeys[0]||"other") + "-light";
 
 					}
-					tr.appendChild(newTag("td", settings));
+					tr.appendChild(dom.newTag("td", settings));
 				});
 
 				tbody.appendChild(tr);
 
 				initiatorTypeKeys.slice(1).forEach(function(initiatorTypeKey){
 					var initiatorTypeData = fileTypeData.initiatorType[initiatorTypeKey];
-					var tr2 = newTag("tr", {
+					var tr2 = dom.newTag("tr", {
 						class : "initiator-type-more " + (initiatorTypeKey||"other") + "-light"
 					});
-					tr2.appendChild(newTag("td", {
+					tr2.appendChild(dom.newTag("td", {
 						text : initiatorTypeKey
 					}));
-					tr2.appendChild(newTag("td", {
+					tr2.appendChild(dom.newTag("td", {
 						text : initiatorTypeData.count
 					}));
-					tr2.appendChild(newTag("td", {
+					tr2.appendChild(dom.newTag("td", {
 						text : initiatorTypeData.requestsToHost
 					}));  
-					tr2.appendChild(newTag("td", {
+					tr2.appendChild(dom.newTag("td", {
 						text : initiatorTypeData.requestsToExternal
 					}));  
 

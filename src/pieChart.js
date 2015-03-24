@@ -3,11 +3,11 @@ Logic for Request analysis pie charts
 */
 
 
-onIFrameLoaded(function(){
+onIFrameLoaded(function(helper, dom, svg){
 	function createPieChart(data, size){
 		//inpired by http://jsfiddle.net/da5LN/62/
 
-		var chart = newElementNs("svg:svg", {
+		var chart = svg.newEl("svg:svg", {
 			viewBox : "0 0 " + size + " " + size,
 			class : "pie-chart"
 		}, "max-height:"+((window.innerWidth * 0.98 - 64) / 3)+"px;");
@@ -35,13 +35,13 @@ onIFrameLoaded(function(){
 					x2 + "," + y2 +						// Arc goes to to (x2,y2)
 					" Z";								// Close path back to (cx,cy)
 
-			var path = newElementNs("path", {
+			var path = svg.newEl("path", {
 				id : id,
 				d : d,
 				fill : colour
 			});
 
-			path.appendChild(newElementNs("title", {
+			path.appendChild(svg.newEl("title", {
 				text : labelTxt
 			})); // Add tile to wedge path
 			path.addEventListener("mouseenter", function(evt){
@@ -55,11 +55,11 @@ onIFrameLoaded(function(){
 
 			startAngle = endAngle;
 			if(percentage > 10){
-				var wedgeLabel = newTextElementNs(labelTxt, y3);
+				var wedgeLabel = svg.newTextEl(labelTxt, y3);
 
 				//first half or second half
 				if(labelAngle < Math.PI){
-					wedgeLabel.setAttribute("x", x3 - getNodeTextWidth(wedgeLabel));
+					wedgeLabel.setAttribute("x", x3 - svg.getNodeTextWidth(wedgeLabel));
 				}else{
 					wedgeLabel.setAttribute("x", x3);
 				}
@@ -70,12 +70,12 @@ onIFrameLoaded(function(){
 		};
 		
 		//setup chart
-		var labelWrap = newElementNs("g", {}, "pointer-events:none; font-weight:bold;");
-		var wedgeWrap = newElementNs("g");
+		var labelWrap = svg.newEl("g", {}, "pointer-events:none; font-weight:bold;");
+		var wedgeWrap = svg.newEl("g");
 
 		//loop through data and create wedges
 		data.forEach(function(dataObj){
-			var wedgeAndLabel = createWedge(dataObj.id, size, dataObj.perc, dataObj.label + " (" + dataObj.count + ")", dataObj.colour || getRandomColor());
+			var wedgeAndLabel = createWedge(dataObj.id, size, dataObj.perc, dataObj.label + " (" + dataObj.count + ")", dataObj.colour || helper.getRandomColor());
 			wedgeWrap.appendChild(wedgeAndLabel.path);
 
 			if(wedgeAndLabel.wedgeLabel){
@@ -84,7 +84,7 @@ onIFrameLoaded(function(){
 		});
 
 		// foreground circle
-		wedgeWrap.appendChild(newElementNs("circle", {
+		wedgeWrap.appendChild(svg.newEl("circle", {
 			cx : size/2,
 			cy : size/2,
 			r : size*0.05,
@@ -99,22 +99,22 @@ onIFrameLoaded(function(){
 		columns = columns||[{name: "Requests", field: "count"}];
 
 		//create table
-		return tableFactory("", function(thead){
-				thead.appendChild(newTag("th", {text : title, class: "text-left"}));
+		return dom.tableFactory("", function(thead){
+				thead.appendChild(dom.newTag("th", {text : title, class: "text-left"}));
 				columns.forEach(function(column){
-					thead.appendChild(newTag("th", {text : column.name, class: "text-right"}));
+					thead.appendChild(dom.newTag("th", {text : column.name, class: "text-right"}));
 				});
-				thead.appendChild(newTag("th", {text : "Percentage", class: "text-right"}));
+				thead.appendChild(dom.newTag("th", {text : "Percentage", class: "text-right"}));
 
 				return thead;
 			}, function(tbody){
 				data.forEach(function(y){
-					var row = newTag("tr", {id : y.id + "-table"});
-					row.appendChild(newTag("td", {text : y.label}));
+					var row = dom.newTag("tr", {id : y.id + "-table"});
+					row.appendChild(dom.newTag("td", {text : y.label}));
 					columns.forEach(function(column){				
-						row.appendChild(newTag("td", {text : y[column.field], class: "text-right"}));
+						row.appendChild(dom.newTag("td", {text : y[column.field], class: "text-right"}));
 					});
-					row.appendChild(newTag("td", {text : y.perc.toPrecision(2) + "%", class: "text-right"}));
+					row.appendChild(dom.newTag("td", {text : y.perc.toPrecision(2) + "%", class: "text-right"}));
 					tbody.appendChild(row);
 				});
 				return tbody;
@@ -122,28 +122,28 @@ onIFrameLoaded(function(){
 	};
 
 	//filter out non-http[s] and sourcemaps
-	var requestsOnly = allResourcesCalc.filter(function(currR) {
+	var requestsOnly = data.allResourcesCalc.filter(function(currR) {
 		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
 	});
 
 	//get counts
-	var initiatorTypeCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
+	var initiatorTypeCounts = helper.getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.initiatorType || currR.fileExtension;
 	}), "initiatorType");
 
-	var initiatorTypeCountHostExt = getItemCount(requestsOnly.map(function(currR, i, arr){
+	var initiatorTypeCountHostExt = helper.getItemCount(requestsOnly.map(function(currR, i, arr){
 		return (currR.initiatorType  || currR.fileExtension) + " " + (currR.isRequestToHost ? "(host)" : "(external)");
 	}), "initiatorType");
 
-	var requestsByDomain = getItemCount(requestsOnly.map(function(currR, i, arr){
+	var requestsByDomain = helper.getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.domain;
 	}), "domain");
 
-	var fileTypeCountHostExt = getItemCount(requestsOnly.map(function(currR, i, arr){
+	var fileTypeCountHostExt = helper.getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.fileType  + " " + (currR.isRequestToHost ? "(host)" : "(external)");
 	}), "fileType");
 
-	var fileTypeCounts = getItemCount(requestsOnly.map(function(currR, i, arr){
+	var fileTypeCounts = helper.getItemCount(requestsOnly.map(function(currR, i, arr){
 		return currR.fileType;
 	}), "fileType");
 
@@ -161,21 +161,21 @@ onIFrameLoaded(function(){
 		return domain.domain === location.host;
 	}).length;
 
-	var chartsHolder = newTag("div", {
+	var chartsHolder = dom.newTag("div", {
 		class : "pie-charts-holder chart-holder"
 	});
 
 	// create a chart and table section
 	var setupChart = function(title, data, countTexts, columns){
-		var chartHolder = newTag("div", {
+		var chartHolder = dom.newTag("div", {
 			class : "pie-chart-holder"
 		});
-		chartHolder.appendChild(newTag("h1", {text : title}));
+		chartHolder.appendChild(dom.newTag("h1", {text : title}));
 		chartHolder.appendChild(createPieChart(data, 400));
-		chartHolder.appendChild(newTag("p", {text : "Total Requests: " + requestsOnly.length}));
+		chartHolder.appendChild(dom.newTag("p", {text : "Total Requests: " + requestsOnly.length}));
 		if(countTexts && countTexts.length){
 			countTexts.forEach(function(countText){
-				chartHolder.appendChild(newTag("p", {text : countText}, "margin-top:-1em"));
+				chartHolder.appendChild(dom.newTag("p", {text : countText}, "margin-top:-1em"));
 			})
 		}
 		chartHolder.appendChild(createChartTable(title, data, columns));
@@ -201,7 +201,7 @@ onIFrameLoaded(function(){
 		}else if(domain.domain.split(".").slice(-2).join(".") === location.host.split(".").slice(-2).join(".")){
 			domain.colour = "#0a0";
 		}else{
-			domain.colour = getRandomColor("56789abcdef", "01234567", "abcdef");
+			domain.colour = helper.getRandomColor("56789abcdef", "01234567", "abcdef");
 		}
 		domain.id = "reqByDomain-" + domain.label.replace(/[^a-zA-Z]/g, "-");
 		domain.durationAverage =  Math.round(domain.durationTotal / domain.count);
@@ -219,7 +219,7 @@ onIFrameLoaded(function(){
 	setupChart("Requests by Initiator Type", initiatorTypeCounts.map(function(initiatorype){
 		initiatorype.perc = initiatorype.count / requestsUnit;
 		initiatorype.label = initiatorype.initiatorType;
-		initiatorype.colour = getInitiatorTypeColour((initiatorype.initiatorType), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		initiatorype.colour = helper.getInitiatorTypeColour((initiatorype.initiatorType), helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
 		initiatorype.id = "reqByInitiatorType-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
 		return initiatorype;
 	}));
@@ -228,7 +228,7 @@ onIFrameLoaded(function(){
 		var typeSegments = initiatorype.initiatorType.split(" ");
 		initiatorype.perc = initiatorype.count / requestsUnit;
 		initiatorype.label = initiatorype.initiatorType;
-		initiatorype.colour = getInitiatorTypeColour(typeSegments[0], getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
+		initiatorype.colour = helper.getInitiatorTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
 		initiatorype.id = "reqByInitiatorTypeLocEx-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
 		return initiatorype;
 	}),[
@@ -239,7 +239,7 @@ onIFrameLoaded(function(){
 	setupChart("Requests by File Type", fileTypeCounts.map(function(fileType){
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
-		fileType.colour = getFileTypeColour((fileType.fileType), getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		fileType.colour = helper.getFileTypeColour((fileType.fileType), helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
 		fileType.id = "reqByFileType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}));
@@ -248,7 +248,7 @@ onIFrameLoaded(function(){
 		var typeSegments = fileType.fileType.split(" ");
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
-		fileType.colour = getFileTypeColour(typeSegments[0], getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
+		fileType.colour = helper.getFileTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
 		fileType.id = "reqByFileType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}),[

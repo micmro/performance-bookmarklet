@@ -10,7 +10,7 @@ module.exports = function( grunt ) {
 				footer: "\n\n})();",
 			},
 			dist: {
-				src: ["dist/style.js", "src/scopeVarsAndUtils.js", "src/summaryTiles.js", "src/navigationTimeline.js", "src/pieChart.js", "src/table.js", "src/resourcesTimeline.js", "src/consoleOutput.js"],
+				src: ["dist/style.js", "src/helpers/helpers.js", "src/helpers/dom.js", "src/helpers/svg.js", "src/scopeVarsAndUtils.js", "src/summaryTiles.js", "src/navigationTimeline.js", "src/pieChart.js", "src/table.js", "src/resourcesTimeline.js", "src/consoleOutput.js"],
 				dest: "dist/performanceBookmarklet.js",
 			},
 		},
@@ -59,7 +59,7 @@ module.exports = function( grunt ) {
 		cssContent = cssContent.replace( /\/\*(?:(?!\*\/)[\s\S])*\*\//g, "").replace(/[\r\n\t]+/g, " ").replace(/[ ]{2,}/g, " ").replace(/\"/g,"\\\"");
 
 		//make JS Var
-		cssContent = "var " + varName + " = \"" + cssContent + "\";";
+		cssContent = "var " + varName + " = \"" + cssContent.trim() + "\";";
 
 		grunt.log.writeln(cssFile + " transformed to " + cssFileDestination);
 

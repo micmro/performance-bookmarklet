@@ -108,7 +108,3 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 .legend dt {float: left; clear: left; padding: 0 0 0.5em;}
 .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;}
 .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}
-
-/*Resource Timing*/
-.resource-timing .chart-holder {}
-

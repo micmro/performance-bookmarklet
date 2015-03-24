@@ -2,16 +2,16 @@
 Logic for Resource Timing API Waterfall 
 */
 
-onIFrameLoaded(function(){
+onIFrameLoaded(function(helper, dom, svgs){
 
 	var calc = {
-		"pageLoadTime" : perfTiming.loadEventEnd - perfTiming.responseStart,
-		"lastResponseEnd" : perfTiming.loadEventEnd - perfTiming.responseStart,
+		"pageLoadTime" : data.perfTiming.loadEventEnd - data.perfTiming.responseStart,
+		"lastResponseEnd" : data.perfTiming.loadEventEnd - data.perfTiming.responseStart,
 	};
 
-	for (var perfProp in perfTiming) {
-		if(perfTiming[perfProp] && typeof perfTiming[perfProp] === "number"){
-			calc[perfProp] = perfTiming[perfProp] - perfTiming.navigationStart;
+	for (var perfProp in data.perfTiming) {
+		if(data.perfTiming[perfProp] && typeof data.perfTiming[perfProp] === "number"){
+			calc[perfProp] = data.perfTiming[perfProp] - data.perfTiming.navigationStart;
 		}
 	}
 
@@ -39,24 +39,24 @@ onIFrameLoaded(function(){
 
 
 	var createLegend = function(className, title, dlArray){
-		var legendHolder = newTag("div", {
+		var legendHolder = dom.newTag("div", {
 			class : "legend-holder"
 		});
 
-		legendHolder.appendChild(newTag("h4", {
+		legendHolder.appendChild(dom.newTag("h4", {
 			text : title
 		}));
 
-		var dl = newTag("dl", {
+		var dl = dom.newTag("dl", {
 			class : "legend " + className
 		});
 
 		dlArray.forEach(function(definition){
-			dl.appendChild(newTag("dt", {
+			dl.appendChild(dom.newTag("dt", {
 				class : "colorBoxHolder",
-				childElement :  newTag("span", {}, "background:"+definition[1])
+				childElement :  dom.newTag("span", {}, "background:"+definition[1])
 			}));
-			dl.appendChild(newTag("dd", {
+			dl.appendChild(dom.newTag("dd", {
 				text : definition[0]
 			}));
 		});
@@ -95,7 +95,7 @@ onIFrameLoaded(function(){
 		resourceSection("Navigation API total", 0, calc.loadEventEnd, "#ccc", navigationApiTotal),
 	];
 
-	allResourcesCalc.forEach(function(resource, i){
+	data.allResourcesCalc.forEach(function(resource, i){
 		var segments = [
 			resourceSectionSegment("Redirect", resource.redirectStart, resource.redirectEnd, "#ffff60"),
 			resourceSectionSegment("DNS Lookup", resource.domainLookupStart, resource.domainLookupEnd, "#1f7c83"),
@@ -119,7 +119,7 @@ onIFrameLoaded(function(){
 			segments.unshift(resourceSectionSegment("Stalled/Blocking", resource.startTime, firstTiming, "#cdcdcd"));
 		}
 
-		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), getInitiatorTypeColour(resource.initiatorType), segments, resource));
+		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), helper.getInitiatorTypeColour(resource.initiatorType), segments, resource));
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
 	});
 
@@ -132,23 +132,23 @@ onIFrameLoaded(function(){
 		}).sort(function(a, b){
 			return (a.start||0) - (b.start||0);
 		});
-		var maxMarkTextLength = marks.length > 0 ? marks.reduce(function(currMax, currValue) {
-			return Math.max((typeof currMax == "number" ? currMax : 0), getNodeTextWidth( newTextElementNs(currValue.name, "0")));
+		var maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce(function(currMax, currValue) {
+			return Math.max((typeof currMax == "number" ? currMax : 0), svg.getNodeTextWidth( svg.newTextEl(currValue.name, "0")));
 		}) : 0;
 
 		var diagramHeight = (barsToShow.length + 1) * 25;
 		var chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
 
-		var chartHolder = newTag("section", {
+		var chartHolder = dom.newTag("section", {
 			class : "resource-timing water-fall-holder chart-holder"
 		});
-		var timeLineHolder = newElementNs("svg:svg", {
+		var timeLineHolder = svg.newEl("svg:svg", {
 			height : Math.floor(chartHolderHeight),
 			class : "water-fall-chart"
 		});
-		var timeLineLabelHolder = newElementNs("g", {class : "labels"});
+		var timeLineLabelHolder = svg.newEl("g", {class : "labels"});
 
-		var endline = newElementNs("line", {
+		var endline = svg.newEl("line", {
 			x1 : "0",
 			y1 : "0",
 			x2 : "0",
@@ -156,7 +156,7 @@ onIFrameLoaded(function(){
 			class : "line-end"
 		});
 		
-		var startline = newElementNs("line", {
+		var startline = svg.newEl("line", {
 			x1 : "0",
 			y1 : "0",
 			x2 : "0",
@@ -166,29 +166,29 @@ onIFrameLoaded(function(){
 
 		var onRectMouseEnter = function(evt){
 			var targetRect = evt.target;
-			addClass(targetRect, "active");
+			dom.addClass(targetRect, "active");
 			var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
 			var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
 			endline.x1.baseVal.valueAsString = xPosEnd;
 			endline.x2.baseVal.valueAsString = xPosEnd;
 			startline.x1.baseVal.valueAsString = xPosStart;
 			startline.x2.baseVal.valueAsString = xPosStart;
-			addClass(endline, "active");
-			addClass(startline, "active");
+			dom.addClass(endline, "active");
+			dom.addClass(startline, "active");
 
 			targetRect.parentNode.appendChild(endline);
 			targetRect.parentNode.appendChild(startline);
 		};
 
 		var onRectMouseLeave = function(evt){
-			removeClass(evt.target, "active");
-			removeClass(endline, "active");
-			removeClass(startline, "active");
+			dom.removeClass(evt.target, "active");
+			dom.removeClass(endline, "active");
+			dom.removeClass(startline, "active");
 		};
 
 		var createRect = function(width, height, x, y, fill, label, segments){
 			var rectHolder;
-			var rect = newElementNs("rect", {
+			var rect = svg.newEl("rect", {
 				width : (width / unit) + "%",
 				height : height-1,
 				x :  (x / unit) + "%",
@@ -197,7 +197,7 @@ onIFrameLoaded(function(){
 				class : (segments && segments.length > 0) ? "time-block" : "segment"
 			});
 			if(label){
-				rect.appendChild(newElementNs("title", {
+				rect.appendChild(svg.newEl("title", {
 					text : label
 				})); // Add tile to wedge path
 			}
@@ -206,7 +206,7 @@ onIFrameLoaded(function(){
 			rect.addEventListener("mouseleave", onRectMouseLeave);
 
 			if(segments && segments.length > 0){
-				rectHolder = newElementNs("g");
+				rectHolder = svg.newEl("g");
 				rectHolder.appendChild(rect);
 				segments.forEach(function(segment){
 					if(segment.total > 0 && typeof segment.start === "number"){
@@ -220,9 +220,9 @@ onIFrameLoaded(function(){
 		};
 
 		var createTimeWrapper = function(){
-			var timeHolder = newElementNs("g", { class : "time-scale full-width" });
+			var timeHolder = svg.newEl("g", { class : "time-scale full-width" });
 			for(var i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++){
-				var lineLabel = newTextElementNs(i + "sec",  diagramHeight);
+				var lineLabel = svg.newTextEl(i + "sec",  diagramHeight);
 				if(i > secs - 0.2){
 					lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
 					lineLabel.setAttribute("text-anchor", "end");
@@ -230,7 +230,7 @@ onIFrameLoaded(function(){
 					lineLabel.setAttribute("x", secPerc * i + 0.5 + "%"); 
 				}
 				
-				var lineEl = newElementNs("line", {
+				var lineEl = svg.newEl("line", {
 					x1 : secPerc * i + "%",
 					y1 : "0",
 					x2 : secPerc * i + "%",
@@ -244,40 +244,40 @@ onIFrameLoaded(function(){
 
 		
 		var renderMarks = function(){
-			var marksHolder = newElementNs("g", {
+			var marksHolder = svg.newEl("g", {
 				transform : "scale(1, 1)",
 				class : "marker-holder"
 			});
 
-			marks.forEach(function(mark, i){
+			data.marks.forEach(function(mark, i){
 				//mark.duration
-				var markHolder = newElementNs("g", {
+				var markHolder = svg.newEl("g", {
 					class : "mark-holder"
 				});
-				var lineHolder = newElementNs("g", {
+				var lineHolder = svg.newEl("g", {
 					class : "line-holder"
 				});
 				var x = mark.startTime / unit;
 				mark.x = x;
-				var lineLabel = newTextElementNs(mark.name,  diagramHeight + 25 );
+				var lineLabel = svg.newTextEl(mark.name,  diagramHeight + 25 );
 				lineLabel.setAttribute("writing-mode", "tb");
 				lineLabel.setAttribute("x", x + "%");
 				lineLabel.setAttribute("stroke", "");
 
-				lineHolder.appendChild(newElementNs("line", {
+				lineHolder.appendChild(svg.newEl("line", {
 					x1 : x + "%",
 					y1 : 0,
 					x2 : x + "%",
 					y2 : diagramHeight
 				}));
 
-				if(marks[i-1] && mark.x - marks[i-1].x < 1){
-					lineLabel.setAttribute("x", marks[i-1].x+1 + "%");
-					mark.x = marks[i-1].x+1;
+				if(data.marks[i-1] && mark.x - data.marks[i-1].x < 1){
+					lineLabel.setAttribute("x", data.marks[i-1].x+1 + "%");
+					mark.x = data.marks[i-1].x+1;
 				}
 
 				//would use polyline but can't use percentage for points 
-				lineHolder.appendChild(newElementNs("line", {
+				lineHolder.appendChild(svg.newEl("line", {
 					x1 : x + "%",
 					y1 : diagramHeight,
 					x2 : mark.x + "%",
@@ -285,14 +285,14 @@ onIFrameLoaded(function(){
 				}));
 
 				lineLabel.addEventListener("mouseenter", function(evt){
-					addClass(lineHolder, "active");
+					dom.addClass(lineHolder, "active");
 					markHolder.parentNode.appendChild(markHolder);
 				});
 				lineLabel.addEventListener("mouseleave", function(evt){
-					removeClass(lineHolder, "active");
+					dom.removeClass(lineHolder, "active");
 				});
 
-				markHolder.appendChild(newElementNs("title", {
+				markHolder.appendChild(svg.newEl("title", {
 					text : mark.name + " (" + Math.round(mark.startTime) + "ms)",
 				}));
 				markHolder.appendChild(lineHolder);
@@ -312,9 +312,9 @@ onIFrameLoaded(function(){
 			var y = 25 * i;
 			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
 
-			var blockLabel = newTextElementNs(block.name + " (" + block.total + "ms)", (y + 20));
+			var blockLabel = svg.newTextEl(block.name + " (" + block.total + "ms)", (y + 20));
 
-			if(((block.total||1) / unit) > 10 && getNodeTextWidth(blockLabel) < 200){
+			if(((block.total||1) / unit) > 10 && svg.getNodeTextWidth(blockLabel) < 200){
 				blockLabel.setAttribute("class", "inner-label");
 				blockLabel.setAttribute("x", ((block.start||0.001) / unit) + 0.5 + "%");
 				blockLabel.setAttribute("width", (blockWidth / unit) + "%");
@@ -330,16 +330,16 @@ onIFrameLoaded(function(){
 
 		timeLineHolder.appendChild(timeLineLabelHolder);
 		
-		chartHolder.appendChild(newTag("h1", {
+		chartHolder.appendChild(dom.newTag("h1", {
 			text : "Resource Timing"
 		}));
 		chartHolder.appendChild(timeLineHolder);
 
-		chartHolder.appendChild(newTag("h3", {
+		chartHolder.appendChild(dom.newTag("h3", {
 			text : "Legend"
 		}));
 
-		var legendsHolder = newTag("div", {
+		var legendsHolder = dom.newTag("div", {
 			class : "legends-group "
 		});
 

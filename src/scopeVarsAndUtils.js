@@ -2,13 +2,16 @@
 Initiallize Bookmarklet wide variables, holders and helpers - all other files only don't share scope
 */
 
+var data = {
+	resources: [],
+	marks: [],
+	measures: [],
+	perfTiming: [],
+	allResourcesCalc: []
+};
+
 //bookmarklet wide vars
 var tablesToLog = [],
-	resources,
-	allResourcesCalc,
-	marks,
-	measures,
-	perfTiming,
 	iFrameEl,
 	outputIFrame,
 	outputHolder,
@@ -21,80 +24,32 @@ if(location.protocol === "about:"){
 
 //feature check gate
 if(window.performance && window.performance.getEntriesByType !== undefined) {
-	resources = window.performance.getEntriesByType("resource");
-	marks = window.performance.getEntriesByType("mark");
-	measures = window.performance.getEntriesByType("measure");
+	data.resources = window.performance.getEntriesByType("resource");
+	data.marks = window.performance.getEntriesByType("mark");
+	data.measures = window.performance.getEntriesByType("measure");
 }else if(window.performance && window.performance.webkitGetEntriesByType !== undefined) {
-	resources = window.performance.webkitGetEntriesByType("resource");
-	marks = window.performance.webkitGetEntriesByType("mark");
-	measures = window.performance.webkitGetEntriesByType("measure");
+	data.resources = window.performance.webkitGetEntriesByType("resource");
+	data.marks = window.performance.webkitGetEntriesByType("mark");
+	data.measures = window.performance.webkitGetEntriesByType("measure");
 }else{
 	alert("Oups, looks like this browser does not support the Resource Timing API\ncheck http://caniuse.com/#feat=resource-timing to see the ones supporting it \n\n");
 	return;
 }
 
 if(window.performance.timing){
-	perfTiming = window.performance.timing;
+	data.perfTiming = window.performance.timing;
 }else{
 	alert("Oups, looks like this browser does not support performance timing");
 	return;
 }
 
-if(perfTiming.loadEventEnd - perfTiming.navigationStart < 0){
+if(data.perfTiming.loadEventEnd - data.perfTiming.navigationStart < 0){
 	alert("Page is still loading - please try again when page is loaded.");
 	return;
 }
 
-//extract a resources file type
-var getFileType = function(fileExtension, initiatorType){
-	if(fileExtension){
-		switch(fileExtension){
-			case "jpg" :
-			case "jpeg" :
-			case "png" :
-			case "gif" :
-			case "webp" :
-			case "svg" :
-			case "ico" :
-				return "image";
-			case "js" : 
-				return "js"
-			case "css":
-				return "css"
-			case "html":
-				return "html"
-			case "woff":
-			case "woff2":
-			case "ttf":
-			case "eot":
-			case "otf":
-				return "font"
-			case "swf":
-				return "flash"
-			case "map":
-				return "source-map"
-		}
-	}
-	if(initiatorType){
-		switch(initiatorType){
-			case "xmlhttprequest" :
-				return "ajax"
-			case "img" :
-				return "image"
-			case "script" :
-				return "js"
-			case "internal" :
-			case "iframe" :
-				return "html" //actual page
-			default :
-				return "other"
-		}
-	}
-	return initiatorType;
-};
 
-
-allResourcesCalc = resources.filter(function(currR){
+data.allResourcesCalc = data.resources.filter(function(currR){
 		//remove this bookmarklet from the result
 		return !currR.name.match(/http[s]?\:\/\/nurun.github.io\/performance-bookmarklet\/.*/);
 	}).map(function(currR, i, arr){
@@ -117,7 +72,7 @@ allResourcesCalc = resources.filter(function(currR){
 			initiatorType : currR.initiatorType || fileExtension || "SourceMap or Not Defined",
 			fileExtension : fileExtension || "XHR or Not Defined",
 			loadtime : currR.duration,
-			fileType : getFileType(fileExtension, currR.initiatorType),
+			fileType : helper.getFileType(fileExtension, currR.initiatorType),
 			isRequestToHost : urlFragments[1] === location.host
 		};
 
@@ -143,7 +98,7 @@ allResourcesCalc = resources.filter(function(currR){
 
 tablesToLog.push({
 	name : "All loaded resources",
-	data : allResourcesCalc,
+	data : data.allResourcesCalc,
 	columns : [
 			"name",
 			"domain",
@@ -162,195 +117,6 @@ tablesToLog.push({
 });
 
 
-//helper functions
-
-
-var newTextNode = function(text){
-	return document.createTextNode(text);
-};
-
-//creat html tag
-var newTag = function(tagName, settings, css){
-	settings = settings || {};
-	var tag = document.createElement(tagName);
-	for(var attr in settings){
-		if(attr != "text"){
-			tag[attr] = settings[attr];
-		}
-	}
-	if(settings.text){
-		tag.textContent = settings.text;
-	}else if(settings.childElement){
-		if(typeof settings.childElement === "object"){
-			//if childNodes NodeList is passed in
-			if(settings.childElement instanceof NodeList){
-				//NodeList is does not inherit from array
-				Array.prototype.slice.call(settings.childElement,0).forEach(function(childNode){
-					tag.appendChild(childNode);
-				});
-			}else{
-				tag.appendChild(settings.childElement);
-			}
-		}else{
-			tag.appendChild(newTextNode(settings.childElement));
-		}
-	}
-	if(settings.class){
-		tag.className = settings.class;
-	}
-	tag.style.cssText = css||"";
-	return tag;
-};
-
-
-var tableFactory = function(id, headerBuilder, rowBuilder){
-	var tableHolder = newTag("div", {
-		id : id || "",
-		class : "table-holder"
-	});
-	var table = newTag("table");
-	var thead = newTag("thead");
-
-	thead.appendChild(headerBuilder(newTag("tr")));
-	table.appendChild(thead);
-	table.appendChild(rowBuilder(newTag("tbody")));
-	tableHolder.appendChild(table);
-	return tableHolder;
-};
-
-
-var combineNodes = function(a, b){
-	var wrapper = document.createElement("div");
-	if(typeof a === "object"){
-		wrapper.appendChild(a);
-	}else if(typeof a === "string"){
-		wrapper.appendChild(newTextNode(a));
-	}
-	if(typeof b === "object"){
-		wrapper.appendChild(b);
-	}else if(typeof b === "string"){
-		wrapper.appendChild(newTextNode(b));
-	}
-	return wrapper.childNodes;
-};
-
-//create svg element
-var newElementNs = function(tagName, settings, css){
-	var el = document.createElementNS("http://www.w3.org/2000/svg", tagName);
-	settings = settings || {};
-	for(var attr in settings){
-		if(attr != "text"){
-			el.setAttributeNS(null, attr, settings[attr]);
-		}
-	}
-	el.textContent = settings.text||"";
-	el.style.cssText = css||"";
-	return el;
-};
-
-var newTextElementNs = function(text, y, css){
-	return newElementNs("text", {
-			fill : "#111",
-			y : y,
-			text : text
-		}, (css||"") + " text-shadow:0 0 4px #fff;");
-};
-
-var getNodeTextWidth = function(textNode){
-	var tmp = newElementNs("svg:svg", {}, "visibility:hidden;");
-	tmp.appendChild(textNode);
-	outputIFrame.body.appendChild(tmp);
-	var nodeWidth = textNode.getBBox().width;
-	tmp.parentNode.removeChild(tmp);
-	return nodeWidth;
-};
-
-var getRandomColor = function(baseRangeRed, baseRangeGreen, baseRangeBlue){
-	var range = [baseRangeRed||"0123456789ABCDEF", baseRangeGreen||"0123456789ABCDEF", baseRangeBlue||"0123456789ABCDEF"];
-	var color = "#";
-	var r = 0;
-	for (var i = 0; i < 6; i++){
-		r = Math.floor(i/2);
-		color += range[r].split("")[Math.floor(Math.random() * range[r].length)];
-	}
-	return color;
-};
-
-var endsWith = function(str, suffix){
-	return str.indexOf(suffix, str.length - suffix.length) !== -1;
-};
-
-var getColourVariation = function(hexColour, variation){
-	var r = ((parseInt(hexColour.substr(1,2), 16)) + variation).toString(16);
-	var g = ((parseInt(hexColour.substr(3,2), 16)) + variation).toString(16);
-	var b = ((parseInt(hexColour.substr(5,2), 16)) + variation).toString(16);
-	return "#" + r + g + b;
-}
-
-var getInitiatorTypeColour = function(initiatorType, fallbackColour, variation){
-	var colour = fallbackColour||"#bebebe"; //default
-
-	//colour the resources by initiator type
-	switch(initiatorType) {
-		case "css" : colour = "#afd899"; break;
-		case "iframe" : colour = "#85b3f2"; break;
-		case "img" : colour = "#bc9dd6"; break;
-		case "script" : colour = "#e7bd8c"; break; 
-		case "link" : colour = "#89afe6"; break;
-		case "swf" : colour = "#4db3ba"; break; 
-		case "font" : colour = "#e96859"; break; //TODO check if this works
-		case "xmlhttprequest" : colour = "#e7d98c"; break;
-	}
-	if(variation === true){
-		return getColourVariation(colour, -5);
-	}
-	return colour;
-};
-
-var getFileTypeColour = function(initiatorType, fallbackColour, variation){
-	var colour = fallbackColour||"#bebebe"; //default
-
-	//colour the resources by initiator type
-	switch(initiatorType) {
-		case "css" : colour = "#afd899"; break;
-		case "html" : colour = "#85b3f2"; break;
-		case "image" : colour = "#bc9dd6"; break;
-		case "js" : colour = "#e7bd8c"; break; 
-		case "link" : colour = "#89afe6"; break;
-		case "swf" : colour = "#4db3ba"; break; 
-		case "font" : colour = "#e96859"; break; //TODO check if this works
-		case "ajax" : colour = "#e7d98c"; break;
-	}
-	if(variation === true){
-		return getColourVariation(colour, -5);
-	}
-	return colour;
-};
-
-//counts occurences of items in array arr and returns them as array of key valure pairs
-//keyName overwrites the name of the key attribute 
-var getItemCount = function(arr, keyName){
-	var counts = {},
-		resultArr = [],
-		obj;
-
-	arr.forEach(function(key){
-		counts[key] = counts[key] ? counts[key]+1 : 1;
-	});
-
-	//pivot data
-	for(var fe in counts){
-		obj = {};
-		obj[keyName||"key"] = fe;
-		obj.count = counts[fe];
-
-		resultArr.push(obj);
-	}
-	return resultArr.sort(function(a, b) {
-		return a.count < b.count ? 1 : -1;
-	});
-};
-
 var triggerEvent = function(element, name){
 	var event;
 	if(document.createEvent) {
@@ -368,27 +134,6 @@ var triggerEvent = function(element, name){
 	}
 };
 
-var addClass = function(el, className){
-	if(el.classList){
-		el.classList.add(className);
-	}else{
-		// IE doesn't support classList in SVG - also no need for dublication check i.t.m.
-		el.setAttribute("class", el.getAttribute("class") + " " + className);
-	}
-	return el;
-}
-
-
-var removeClass = function(el, className){
-	if(el.classList){
-		el.classList.remove(className);
-	}else{
-		//IE doesn't support classList in SVG - also no need for dublication check i.t.m.
-        el.setAttribute("class", el.getAttribute("class").replace(new RegExp("(\\s|^)" + className + "(\\s|$)", "g"), "$2"));
-	}
-	return el;
-}
-
 var onIFrameLoaded = (function(){
 	var hasLoaded = false;
 	var callOnLoad = [];
@@ -396,13 +141,13 @@ var onIFrameLoaded = (function(){
 		hasLoaded = true;
 		window.removeEventListener("iFrameLoaded", onIFrameLoadedCb, false);
 		callOnLoad.forEach(function(cb){
-			cb();
+			cb(helper, dom, svg);
 		})
 	};
 	window.addEventListener("iFrameLoaded", onIFrameLoadedCb, false);
 	return function(cb){
 		if(hasLoaded){
-			cb();
+			cb(helper, dom, svg);
 		}else{
 			callOnLoad.push(cb);
 		}
@@ -418,13 +163,13 @@ if(iFrameEl){
 	outputHolder = outputIFrame.getElementById("perfbook-holder");
 	triggerEvent(window, "iFrameLoaded");
 }else{
-	iFrameEl = newTag("iframe", {
+	iFrameEl = dom.newTag("iframe", {
 		id : "perfbook-iframe",
 		onload : function(){
 			outputIFrame = iFrameEl.contentWindow.document;
 
 			//add style to iFrame
-			var styleTag = newTag("style", {
+			var styleTag = dom.newTag("style", {
 				type : "text/css",
 				text : cssFileText
 			});
@@ -437,13 +182,13 @@ if(iFrameEl){
 	document.body.appendChild(iFrameEl);
 }
 
-onIFrameLoaded(function(){
+onIFrameLoaded(function(helper, dom, svg){
 	// find or create holder element
 	if(!outputHolder){
-		outputHolder = newTag("div", {id : "perfbook-holder"});
-		outputContent = newTag("div", {id : "perfbook-content"});
+		outputHolder = dom.newTag("div", {id : "perfbook-holder"});
+		outputContent = dom.newTag("div", {id : "perfbook-content"});
 			
-		var closeBtn = newTag("button", {
+		var closeBtn = dom.newTag("button", {
 			class : "perfbook-close",
 			text: "close"
 		});
