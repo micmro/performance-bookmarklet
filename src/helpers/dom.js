@@ -91,5 +91,24 @@ var dom = (function(dom){
 		}
 		return el;
 	};
+
+
+	dom.triggerEvent = function(element, name){
+		var event;
+		if(document.createEvent) {
+			event = document.createEvent("HTMLEvents");
+			event.initEvent(name, true, true);
+		}else{
+			event = document.createEventObject();
+			event.eventType = name;
+		}
+		event.eventName = name;
+		if(document.createEvent) {
+			element.dispatchEvent(event);
+		}else{
+			element.fireEvent("on" + event.eventType, event);
+		}
+	};
+
 	return dom;
 })({});

@@ -137,5 +137,6 @@ var helper = (function(helper){
 			return a.count < b.count ? 1 : -1;
 		});
 	};
-	 return helper;
+	
+	sreturn helper;
 })({});
