@@ -138,5 +138,5 @@ var helper = (function(helper){
 		});
 	};
 	
-	sreturn helper;
+	return helper;
 })({});
