@@ -1,10 +1,9 @@
 module.exports = function( grunt ) {
 	"use strict";
 
-	require("load-grunt-tasks")(grunt); // npm install --save-dev load-grunt-tasks
+	require("load-grunt-tasks")(grunt);
 
-
-	var banner = "/*https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro*/\n";
+	var banner = "/* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro\n   build:<%= grunt.template.today(\"dd/mm/yyyy\") %> */\n";
 
 	grunt.initConfig({
 		copy : {
@@ -34,23 +33,14 @@ module.exports = function( grunt ) {
 		},
 		browserify: {
 			options: {
-				banner : banner
-				},
-			files: {
-				"dist/performanceBookmarklet.js": ["dist/tempEs5/**/*.js"],
+				banner: banner
 			},
+			dist: {
+				files: {
+					"dist/performanceBookmarklet.js": ["dist/tempEs5/**/*.js"],
+				}
+			}
 		},
-		// concat: {
-		// 	options: {
-		// 		separator: "\n\n\n",
-		// 		banner: "/*https://github.com/micmro/performance-bookmarklet\n by Michael Mrowetz @MicMro*/\n\n(function(){\n\"use strict\";\n\n",
-		// 		footer: "\n\n})();",
-		// 	},
-		// 	dist: {
-		// 		src: ["dist/style.js", "src/helpers/helpers.js", "src/helpers/dom.js", "src/helpers/svg.js", "src/init.js", "src/summaryTiles.js", "src/navigationTimeline.js", "src/pieChart.js", "src/table.js", "src/resourcesTimeline.js", "src/consoleOutput.js"],
-		// 		dest: "dist/performanceBookmarklet.js",
-		// 	},
-		// },
 		uglify : {
 			options: {
 				compress: {
@@ -61,9 +51,9 @@ module.exports = function( grunt ) {
 				},
 				banner: banner
 			},
-			my_target: {
+			dist: {
 				files: {
-					'dist/performanceBookmarklet.min.js': ["dist/performanceBookmarklet.js"]
+					"dist/performanceBookmarklet.min.js": ["dist/performanceBookmarklet.js"]
 				}
 			}
 		},
@@ -100,5 +90,4 @@ module.exports = function( grunt ) {
 	});
 
 	grunt.registerTask("default", ["inlineCssToJs", "copy", "babel", "browserify", "uglify", "watch:babel"]);
-	//grunt.registerTask("default", ["inlineCssToJs", "concat", "uglify", "watch:scripts"]);
 };
