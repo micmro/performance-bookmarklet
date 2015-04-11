@@ -59,15 +59,18 @@ var createWedge = function(id, size, startAngle, percentage, labelTxt, colour){
 	return { path: path, endAngle: endAngle};
 };
 
-var contentWidth = (window.innerWidth * 0.98 - 64);
-var chartMaxHeight;
-if(contentWidth < 700){
-	chartMaxHeight = 350;
-} else if(contentWidth < 800){
-	chartMaxHeight = (window.innerWidth * 0.98 - 64) / 2 - 72;
-} else {
-	chartMaxHeight = (window.innerWidth * 0.98 - 64) / 3 - 72;
-}
+
+var chartMaxHeight = (function(){
+	var contentWidth = (window.innerWidth * 0.98 - 64);
+	if(contentWidth < 700){
+		return 350;
+	} else if(contentWidth < 800){
+		return contentWidth / 2 - 72;
+	} else {
+		return contentWidth / 3 - 72;
+	}
+})();
+
 pieChartHelpers.createPieChart = function(data, size){
 	//inpired by http://jsfiddle.net/da5LN/62/
 
