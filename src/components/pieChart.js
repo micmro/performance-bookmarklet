@@ -17,9 +17,10 @@ pieChartComponent.init = function(){
 	});
 
 	// create a chart and table section
-	var setupChart = function(title, chartData, countTexts, columns){
+	var setupChart = function(title, chartData, countTexts, columns, id){
 		var chartHolder = dom.newTag("div", {
-			class : "pie-chart-holder"
+			class : "pie-chart-holder",
+			id : id||""
 		});
 		chartHolder.appendChild(dom.newTag("h1", {text : title}));
 		chartHolder.appendChild(pieChartHelpers.createPieChart(chartData, 400));
@@ -42,7 +43,9 @@ pieChartComponent.init = function(){
 	var colourRangeB = "789abcdef";
 
 
-	var requestsByDomainData = data.requestsByDomain.map(function(domain){
+	//augment data
+	var requestsByDomainData = data.requestsByDomain.map(function(sourceDomain){
+		var domain = helper.clone(sourceDomain);
 		domain.perc = domain.count / requestsUnit;
 		domain.label = domain.domain;
 		if(domain.domain === location.host){
@@ -54,16 +57,19 @@ pieChartComponent.init = function(){
 		}
 		domain.id = "reqByDomain-" + domain.label.replace(/[^a-zA-Z]/g, "-");
 		domain.durationAverage =  Math.round(domain.durationTotal / domain.count);
+		domain.durationTotal =  Math.round(domain.durationTotal);
+		domain.durationTotalParallel =  Math.round(domain.durationTotalParallel);
 		return domain;
 	});
-
 	
 	setupChart("Requests by Domain", requestsByDomainData, [
 		"Domains Total: " + data.requestsByDomain.length
 	], [
 		{name:"Requests", field: "count"},
-		{name: "Avg. Duration (ms)", field: "durationAverage"}
-	]);
+		{name: "Avg. Duration (ms)", field: "durationAverage"},
+		{name: "Duration Parallel (ms)", field: "durationTotalParallel"},
+		{name: "Duration Sum (ms)", field: "durationTotal"}
+	], "pie-request-by-domain");
 
 	setupChart("Requests by Initiator Type", data.initiatorTypeCounts.map(function(initiatorype){
 		initiatorype.perc = initiatorype.count / requestsUnit;

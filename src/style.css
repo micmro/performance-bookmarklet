@@ -72,6 +72,8 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 .table-holder th,
 .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;}
 
+#pie-request-by-domain {flex-grow: 2; width:772px; max-width: 1272px;}
+
 /* tables */
 #filetypes-and-intiators-table {margin: 2em 0 5em;}
 #filetypes-and-intiators-table table {vertical-align: middle;  border-collapse: collapse;}

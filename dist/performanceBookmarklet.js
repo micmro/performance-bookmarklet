@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:10/04/2015 */
+   build:11/04/2015 */
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
@@ -308,9 +308,10 @@ pieChartComponent.init = function () {
 	});
 
 	// create a chart and table section
-	var setupChart = function setupChart(title, chartData, countTexts, columns) {
+	var setupChart = function setupChart(title, chartData, countTexts, columns, id) {
 		var chartHolder = dom.newTag("div", {
-			"class": "pie-chart-holder"
+			"class": "pie-chart-holder",
+			id: id || ""
 		});
 		chartHolder.appendChild(dom.newTag("h1", { text: title }));
 		chartHolder.appendChild(pieChartHelpers.createPieChart(chartData, 400));
@@ -331,7 +332,9 @@ pieChartComponent.init = function () {
 	var colourRangeG = "789abcdef";
 	var colourRangeB = "789abcdef";
 
-	var requestsByDomainData = data.requestsByDomain.map(function (domain) {
+	//augment data
+	var requestsByDomainData = data.requestsByDomain.map(function (sourceDomain) {
+		var domain = helper.clone(sourceDomain);
 		domain.perc = domain.count / requestsUnit;
 		domain.label = domain.domain;
 		if (domain.domain === location.host) {
@@ -343,10 +346,12 @@ pieChartComponent.init = function () {
 		}
 		domain.id = "reqByDomain-" + domain.label.replace(/[^a-zA-Z]/g, "-");
 		domain.durationAverage = Math.round(domain.durationTotal / domain.count);
+		domain.durationTotal = Math.round(domain.durationTotal);
+		domain.durationTotalParallel = Math.round(domain.durationTotalParallel);
 		return domain;
 	});
 
-	setupChart("Requests by Domain", requestsByDomainData, ["Domains Total: " + data.requestsByDomain.length], [{ name: "Requests", field: "count" }, { name: "Avg. Duration (ms)", field: "durationAverage" }]);
+	setupChart("Requests by Domain", requestsByDomainData, ["Domains Total: " + data.requestsByDomain.length], [{ name: "Requests", field: "count" }, { name: "Avg. Duration (ms)", field: "durationAverage" }, { name: "Duration Parallel (ms)", field: "durationTotalParallel" }, { name: "Duration Sum (ms)", field: "durationTotal" }], "pie-request-by-domain");
 
 	setupChart("Requests by Initiator Type", data.initiatorTypeCounts.map(function (initiatorype) {
 		initiatorype.perc = initiatorype.count / requestsUnit;
@@ -1059,13 +1064,23 @@ data.fileTypeCounts = helper.getItemCount(data.requestsOnly.map(function (currR,
 	return currR.fileType;
 }), "fileType");
 
-//enhance requestsOnly
+var tempResponseEnd = {};
 //TODO: make immutable
 data.requestsOnly.forEach(function (currR) {
 	var entry = data.requestsByDomain.filter(function (a) {
 		return a.domain == currR.domain;
 	})[0] || {};
 
+	var lastResponseEnd = tempResponseEnd[currR.domain] || 0;
+
+	currR.duration = entry.duration || currR.responseEnd - currR.startTime;
+
+	if (lastResponseEnd <= currR.startTime) {
+		entry.durationTotalParallel = (entry.durationTotalParallel || 0) + currR.duration;
+	} else if (lastResponseEnd < currR.responseEnd) {
+		entry.durationTotalParallel = (entry.durationTotalParallel || 0) + (currR.responseEnd - lastResponseEnd);
+	}
+	tempResponseEnd[currR.domain] = currR.responseEnd || 0;
 	entry.durationTotal = (entry.durationTotal || 0) + currR.duration;
 });
 
@@ -1360,6 +1375,40 @@ helper.getItemCount = function (arr, keyName) {
 	});
 };
 
+helper.clone = function (obj) {
+	var copy;
+
+	// Handle the 3 simple types, and null or undefined
+	if (null == obj || "object" != typeof obj) return obj;
+
+	// Handle Date
+	if (obj instanceof Date) {
+		copy = new Date();
+		copy.setTime(obj.getTime());
+		return copy;
+	}
+
+	// Handle Array
+	if (obj instanceof Array) {
+		copy = [];
+		for (var i = 0, len = obj.length; i < len; i++) {
+			copy[i] = helper.clone(obj[i]);
+		}
+		return copy;
+	}
+
+	// Handle Object
+	if (obj instanceof Object) {
+		copy = {};
+		for (var attr in obj) {
+			if (obj.hasOwnProperty(attr)) copy[attr] = helper.clone(obj[attr]);
+		}
+		return copy;
+	}
+
+	throw new Error("Unable to helper.clone obj");
+};
+
 module.exports = helper;
 },{}],9:[function(require,module,exports){
 "use strict";
@@ -1523,6 +1572,15 @@ var createWedge = function createWedge(id, size, startAngle, percentage, labelTx
 	return { path: path, endAngle: endAngle };
 };
 
+var contentWidth = window.innerWidth * 0.98 - 64;
+var chartMaxHeight;
+if (contentWidth < 700) {
+	chartMaxHeight = 350;
+} else if (contentWidth < 800) {
+	chartMaxHeight = (window.innerWidth * 0.98 - 64) / 2 - 72;
+} else {
+	chartMaxHeight = (window.innerWidth * 0.98 - 64) / 3 - 72;
+}
 pieChartHelpers.createPieChart = function (data, size) {
 	//inpired by http://jsfiddle.net/da5LN/62/
 
@@ -1531,7 +1589,7 @@ pieChartHelpers.createPieChart = function (data, size) {
 	chart = svg.newEl("svg:svg", {
 		viewBox: "0 0 " + size + " " + size,
 		"class": "pie-chart"
-	}, "max-height:" + (window.innerWidth * 0.98 - 64) / 3 + "px;"),
+	}, "max-height:" + chartMaxHeight + "px;"),
 	    labelWrap = svg.newEl("g", {}, "pointer-events:none; font-weight:bold;"),
 	    wedgeWrap = svg.newEl("g");
 
@@ -1575,7 +1633,7 @@ pieChartHelpers.createChartTable = function (title, data, columns) {
 			var row = dom.newTag("tr", { id: y.id + "-table" });
 			row.appendChild(dom.newTag("td", { text: y.label }));
 			columns.forEach(function (column) {
-				row.appendChild(dom.newTag("td", { text: y[column.field], "class": "text-right" }));
+				row.appendChild(dom.newTag("td", { text: y[column.field].toString(), "class": "text-right" }));
 			});
 			row.appendChild(dom.newTag("td", { text: y.perc.toPrecision(2) + "%", "class": "text-right" }));
 			tbody.appendChild(row);
@@ -1591,7 +1649,7 @@ module.exports = pieChartHelpers;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var style = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #a971c5; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}";
+var style = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #pie-request-by-domain {flex-grow: 2; width:772px; max-width: 1272px;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #a971c5; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}";
 exports.style = style;
 },{}],12:[function(require,module,exports){
 /*

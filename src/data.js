@@ -118,13 +118,23 @@ data.fileTypeCounts = helper.getItemCount(data.requestsOnly.map(function(currR, 
 	return currR.fileType;
 }), "fileType");
 
-//enhance requestsOnly
+var tempResponseEnd = {};
 //TODO: make immutable
 data.requestsOnly.forEach(function(currR){
 	var entry = data.requestsByDomain.filter(function(a){
 		return a.domain == currR.domain
 	})[0]||{};
 
+	var lastResponseEnd = tempResponseEnd[currR.domain]||0;
+
+	currR.duration = entry.duration||(currR.responseEnd - currR.startTime);
+
+	if(lastResponseEnd <= currR.startTime){
+		entry.durationTotalParallel = (entry.durationTotalParallel||0) + currR.duration;
+	} else if (lastResponseEnd < currR.responseEnd){
+		entry.durationTotalParallel = (entry.durationTotalParallel||0) + (currR.responseEnd - lastResponseEnd);
+	}
+	tempResponseEnd[currR.domain] = currR.responseEnd||0;
 	entry.durationTotal = (entry.durationTotal||0) + currR.duration;
 });
 

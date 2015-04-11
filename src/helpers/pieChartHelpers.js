@@ -59,7 +59,15 @@ var createWedge = function(id, size, startAngle, percentage, labelTxt, colour){
 	return { path: path, endAngle: endAngle};
 };
 
-
+var contentWidth = (window.innerWidth * 0.98 - 64);
+var chartMaxHeight;
+if(contentWidth < 700){
+	chartMaxHeight = 350;
+} else if(contentWidth < 800){
+	chartMaxHeight = (window.innerWidth * 0.98 - 64) / 2 - 72;
+} else {
+	chartMaxHeight = (window.innerWidth * 0.98 - 64) / 3 - 72;
+}
 pieChartHelpers.createPieChart = function(data, size){
 	//inpired by http://jsfiddle.net/da5LN/62/
 
@@ -67,7 +75,7 @@ pieChartHelpers.createPieChart = function(data, size){
 		chart = svg.newEl("svg:svg", {
 			viewBox : "0 0 " + size + " " + size,
 			class : "pie-chart"
-		}, "max-height:"+((window.innerWidth * 0.98 - 64) / 3)+"px;"),
+		}, "max-height:"+chartMaxHeight+"px;"),
 		labelWrap = svg.newEl("g", {}, "pointer-events:none; font-weight:bold;"),
 		wedgeWrap = svg.newEl("g");
 
@@ -112,7 +120,7 @@ pieChartHelpers.createChartTable = function(title, data, columns){
 				var row = dom.newTag("tr", {id : y.id + "-table"});
 				row.appendChild(dom.newTag("td", {text : y.label}));
 				columns.forEach(function(column){				
-					row.appendChild(dom.newTag("td", {text : y[column.field], class: "text-right"}));
+					row.appendChild(dom.newTag("td", {text : y[column.field].toString(), class: "text-right"}));
 				});
 				row.appendChild(dom.newTag("td", {text : y.perc.toPrecision(2) + "%", class: "text-right"}));
 				tbody.appendChild(row);
