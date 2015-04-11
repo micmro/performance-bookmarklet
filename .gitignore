@@ -9,6 +9,8 @@ logs
 
 # temp-files
 dist/style.js
+dist/tempEs5
+dist/tempCollect
 
 # Runtime data
 pids
