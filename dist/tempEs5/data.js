@@ -2,8 +2,6 @@
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-var tableLogger = _interopRequire(require("./helpers/tableLogger"));
-
 var helper = _interopRequire(require("./helpers/helpers"));
 
 var data = {
@@ -20,6 +18,7 @@ data.isValid = function () {
 	return isValid;
 };
 
+//Check if the browser suppots the timing APIs
 if (window.performance && window.performance.getEntriesByType !== undefined) {
 	data.resources = window.performance.getEntriesByType("resource");
 	data.marks = window.performance.getEntriesByType("mark");
@@ -97,10 +96,75 @@ data.allResourcesCalc = data.resources.filter(function (currR) {
 	return currRes;
 });
 
-tableLogger.logTable({
-	name: "All loaded resources",
-	data: data.allResourcesCalc,
-	columns: ["name", "domain", "fileType", "initiatorType", "fileExtension", "loadtime", "isRequestToHost", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
+//filter out non-http[s] and sourcemaps
+data.requestsOnly = data.allResourcesCalc.filter(function (currR) {
+	return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
 });
+
+//get counts
+data.initiatorTypeCounts = helper.getItemCount(data.requestsOnly.map(function (currR, i, arr) {
+	return currR.initiatorType || currR.fileExtension;
+}), "initiatorType");
+
+data.initiatorTypeCountHostExt = helper.getItemCount(data.requestsOnly.map(function (currR, i, arr) {
+	return (currR.initiatorType || currR.fileExtension) + " " + (currR.isRequestToHost ? "(host)" : "(external)");
+}), "initiatorType");
+
+data.requestsByDomain = helper.getItemCount(data.requestsOnly.map(function (currR, i, arr) {
+	return currR.domain;
+}), "domain");
+
+data.fileTypeCountHostExt = helper.getItemCount(data.requestsOnly.map(function (currR, i, arr) {
+	return currR.fileType + " " + (currR.isRequestToHost ? "(host)" : "(external)");
+}), "fileType");
+
+data.fileTypeCounts = helper.getItemCount(data.requestsOnly.map(function (currR, i, arr) {
+	return currR.fileType;
+}), "fileType");
+
+//enhance requestsOnly
+//TODO: make immutable
+data.requestsOnly.forEach(function (currR) {
+	var entry = data.requestsByDomain.filter(function (a) {
+		return a.domain == currR.domain;
+	})[0] || {};
+
+	entry.durationTotal = (entry.durationTotal || 0) + currR.duration;
+});
+
+//Request counts
+data.hostRequests = data.requestsOnly.filter(function (domain) {
+	return domain.domain === location.host;
+}).length;
+
+data.currAndSubdomainRequests = data.requestsOnly.filter(function (domain) {
+	return domain.domain.split(".").slice(-2).join(".") === location.host.split(".").slice(-2).join(".");
+}).length;
+
+data.crossDocDomainRequests = data.requestsOnly.filter(function (domain) {
+	return !helper.endsWith(domain.domain, document.domain);
+}).length;
+
+data.hostSubdomains = data.requestsByDomain.filter(function (domain) {
+	return helper.endsWith(domain.domain, location.host.split(".").slice(-2).join(".")) && domain.domain !== location.host;
+}).length;
+
+data.slowestCalls = [];
+data.average = undefined;
+
+if (data.allResourcesCalc.length > 0) {
+	data.slowestCalls = data.allResourcesCalc.filter(function (a) {
+		return a.name !== location.href;
+	}).sort(function (a, b) {
+		return b.duration - a.duration;
+	});
+
+	data.average = Math.floor(data.slowestCalls.reduceRight(function (a, b) {
+		if (typeof a !== "number") {
+			return a.duration + b.duration;
+		}
+		return a + b.duration;
+	}) / data.slowestCalls.length);
+}
 
 module.exports = data;

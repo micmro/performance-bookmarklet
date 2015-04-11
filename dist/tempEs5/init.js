@@ -16,6 +16,8 @@ var tableComponent = _interopRequire(require("./components/table"));
 
 var resourcesTimelineComponent = _interopRequire(require("./components/resourcesTimeline"));
 
+var logger = _interopRequire(require("./logger"));
+
 //skip browser internal pages or when data is invalid
 if (location.protocol === "about:" || !data.isValid()) {
 	return;

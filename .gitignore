@@ -5,6 +5,8 @@ logs
 
 #Temp files
 dist/style.js
+dist/tempCollect
+dist/tempEs5
 
 # Editor Project Files
 *.sublime-project

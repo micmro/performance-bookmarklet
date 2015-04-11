@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:06/04/2015 */
+   build:10/04/2015 */
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
@@ -280,7 +280,7 @@ navigationTimelineComponent.init = function () {
 };
 
 module.exports = navigationTimelineComponent;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":11,"../helpers/tableLogger":12}],2:[function(require,module,exports){
+},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12,"../helpers/tableLogger":13}],2:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -297,194 +297,41 @@ var svg = _interopRequire(require("../helpers/svg"));
 
 var dom = _interopRequire(require("../helpers/dom"));
 
-var tableLogger = _interopRequire(require("../helpers/tableLogger"));
+var pieChartHelpers = _interopRequire(require("../helpers/pieChartHelpers"));
 
 var pieChartComponent = {};
 
 pieChartComponent.init = function () {
-	function createPieChart(data, size) {
-		//inpired by http://jsfiddle.net/da5LN/62/
-
-		var chart = svg.newEl("svg:svg", {
-			viewBox: "0 0 " + size + " " + size,
-			"class": "pie-chart"
-		}, "max-height:" + (window.innerWidth * 0.98 - 64) / 3 + "px;");
-
-		var unit = Math.PI * 2 / 100,
-		    startAngle = 0; // init startAngle
-
-		var createWedge = function createWedge(id, size, percentage, labelTxt, colour) {
-			var radius = size / 2,
-			    endAngle = startAngle + (percentage * unit - 0.001),
-			    labelAngle = startAngle + (percentage / 2 * unit - 0.001),
-			    x1 = radius + radius * Math.sin(startAngle),
-			    y1 = radius - radius * Math.cos(startAngle),
-			    x2 = radius + radius * Math.sin(endAngle),
-			    y2 = radius - radius * Math.cos(endAngle),
-			    x3 = radius + radius * 0.85 * Math.sin(labelAngle),
-			    y3 = radius - radius * 0.85 * Math.cos(labelAngle),
-			    big = endAngle - startAngle > Math.PI ? 1 : 0;
-
-			var d = "M " + radius + "," + radius + // Start at circle center
-			" L " + x1 + "," + y1 + // Draw line to (x1,y1)
-			" A " + radius + "," + radius + // Draw an arc of radius r
-			" 0 " + big + " 1 " + // Arc details...
-			x2 + "," + y2 + // Arc goes to to (x2,y2)
-			" Z"; // Close path back to (cx,cy)
-
-			var path = svg.newEl("path", {
-				id: id,
-				d: d,
-				fill: colour
-			});
-
-			path.appendChild(svg.newEl("title", {
-				text: labelTxt
-			})); // Add tile to wedge path
-			path.addEventListener("mouseenter", function (evt) {
-				evt.target.style.opacity = "0.5";
-				evt.target.ownerDocument.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
-			});
-			path.addEventListener("mouseleave", function (evt) {
-				evt.target.style.opacity = "1";
-				evt.target.ownerDocument.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "transparent";
-			});
-
-			startAngle = endAngle;
-			if (percentage > 10) {
-				var wedgeLabel = svg.newTextEl(labelTxt, y3);
-
-				//first half or second half
-				if (labelAngle < Math.PI) {
-					wedgeLabel.setAttribute("x", x3 - svg.getNodeTextWidth(wedgeLabel));
-				} else {
-					wedgeLabel.setAttribute("x", x3);
-				}
-
-				return { path: path, wedgeLabel: wedgeLabel };
-			}
-			return { path: path };
-		};
-
-		//setup chart
-		var labelWrap = svg.newEl("g", {}, "pointer-events:none; font-weight:bold;");
-		var wedgeWrap = svg.newEl("g");
-
-		//loop through data and create wedges
-		data.forEach(function (dataObj) {
-			var wedgeAndLabel = createWedge(dataObj.id, size, dataObj.perc, dataObj.label + " (" + dataObj.count + ")", dataObj.colour || helper.getRandomColor());
-			wedgeWrap.appendChild(wedgeAndLabel.path);
-
-			if (wedgeAndLabel.wedgeLabel) {
-				labelWrap.appendChild(wedgeAndLabel.wedgeLabel);
-			}
-		});
-
-		// foreground circle
-		wedgeWrap.appendChild(svg.newEl("circle", {
-			cx: size / 2,
-			cy: size / 2,
-			r: size * 0.05,
-			fill: "#fff"
-		}));
-		chart.appendChild(wedgeWrap);
-		chart.appendChild(labelWrap);
-		return chart;
-	};
-
-	var createChartTable = function createChartTable(title, data, columns) {
-		columns = columns || [{ name: "Requests", field: "count" }];
-
-		//create table
-		return dom.tableFactory("", function (thead) {
-			thead.appendChild(dom.newTag("th", { text: title, "class": "text-left" }));
-			columns.forEach(function (column) {
-				thead.appendChild(dom.newTag("th", { text: column.name, "class": "text-right" }));
-			});
-			thead.appendChild(dom.newTag("th", { text: "Percentage", "class": "text-right" }));
-
-			return thead;
-		}, function (tbody) {
-			data.forEach(function (y) {
-				var row = dom.newTag("tr", { id: y.id + "-table" });
-				row.appendChild(dom.newTag("td", { text: y.label }));
-				columns.forEach(function (column) {
-					row.appendChild(dom.newTag("td", { text: y[column.field], "class": "text-right" }));
-				});
-				row.appendChild(dom.newTag("td", { text: y.perc.toPrecision(2) + "%", "class": "text-right" }));
-				tbody.appendChild(row);
-			});
-			return tbody;
-		});
-	};
-
-	//filter out non-http[s] and sourcemaps
-	var requestsOnly = data.allResourcesCalc.filter(function (currR) {
-		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
-	});
-
-	//get counts
-	var initiatorTypeCounts = helper.getItemCount(requestsOnly.map(function (currR, i, arr) {
-		return currR.initiatorType || currR.fileExtension;
-	}), "initiatorType");
-
-	var initiatorTypeCountHostExt = helper.getItemCount(requestsOnly.map(function (currR, i, arr) {
-		return (currR.initiatorType || currR.fileExtension) + " " + (currR.isRequestToHost ? "(host)" : "(external)");
-	}), "initiatorType");
-
-	var requestsByDomain = helper.getItemCount(requestsOnly.map(function (currR, i, arr) {
-		return currR.domain;
-	}), "domain");
-
-	var fileTypeCountHostExt = helper.getItemCount(requestsOnly.map(function (currR, i, arr) {
-		return currR.fileType + " " + (currR.isRequestToHost ? "(host)" : "(external)");
-	}), "fileType");
-
-	var fileTypeCounts = helper.getItemCount(requestsOnly.map(function (currR, i, arr) {
-		return currR.fileType;
-	}), "fileType");
-
-	requestsOnly.forEach(function (currR) {
-		var entry = requestsByDomain.filter(function (a) {
-			return a.domain == currR.domain;
-		})[0] || {};
-
-		entry.durationTotal = (entry.durationTotal || 0) + currR.duration;
-	});
-
-	var hostRequests = requestsOnly.filter(function (domain) {
-		return domain.domain === location.host;
-	}).length;
 
 	var chartsHolder = dom.newTag("div", {
 		"class": "pie-charts-holder chart-holder"
 	});
 
 	// create a chart and table section
-	var setupChart = function setupChart(title, data, countTexts, columns) {
+	var setupChart = function setupChart(title, chartData, countTexts, columns) {
 		var chartHolder = dom.newTag("div", {
 			"class": "pie-chart-holder"
 		});
 		chartHolder.appendChild(dom.newTag("h1", { text: title }));
-		chartHolder.appendChild(createPieChart(data, 400));
-		chartHolder.appendChild(dom.newTag("p", { text: "Total Requests: " + requestsOnly.length }));
+		chartHolder.appendChild(pieChartHelpers.createPieChart(chartData, 400));
+		chartHolder.appendChild(dom.newTag("p", { text: "Total Requests: " + data.requestsOnly.length }));
 		if (countTexts && countTexts.length) {
 			countTexts.forEach(function (countText) {
 				chartHolder.appendChild(dom.newTag("p", { text: countText }, "margin-top:-1em"));
 			});
 		}
-		chartHolder.appendChild(createChartTable(title, data, columns));
+		chartHolder.appendChild(pieChartHelpers.createChartTable(title, chartData, columns));
 		chartsHolder.appendChild(chartHolder);
 	};
 
 	// init data for charts
 
-	var requestsUnit = requestsOnly.length / 100;
+	var requestsUnit = data.requestsOnly.length / 100;
 	var colourRangeR = "789abcdef";
 	var colourRangeG = "789abcdef";
 	var colourRangeB = "789abcdef";
 
-	var requestsByDomainData = requestsByDomain.map(function (domain) {
+	var requestsByDomainData = data.requestsByDomain.map(function (domain) {
 		domain.perc = domain.count / requestsUnit;
 		domain.label = domain.domain;
 		if (domain.domain === location.host) {
@@ -499,9 +346,9 @@ pieChartComponent.init = function () {
 		return domain;
 	});
 
-	setupChart("Requests by Domain", requestsByDomainData, ["Domains Total: " + requestsByDomain.length], [{ name: "Requests", field: "count" }, { name: "Avg. Duration (ms)", field: "durationAverage" }]);
+	setupChart("Requests by Domain", requestsByDomainData, ["Domains Total: " + data.requestsByDomain.length], [{ name: "Requests", field: "count" }, { name: "Avg. Duration (ms)", field: "durationAverage" }]);
 
-	setupChart("Requests by Initiator Type", initiatorTypeCounts.map(function (initiatorype) {
+	setupChart("Requests by Initiator Type", data.initiatorTypeCounts.map(function (initiatorype) {
 		initiatorype.perc = initiatorype.count / requestsUnit;
 		initiatorype.label = initiatorype.initiatorType;
 		initiatorype.colour = helper.getInitiatorTypeColour(initiatorype.initiatorType, helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
@@ -509,16 +356,16 @@ pieChartComponent.init = function () {
 		return initiatorype;
 	}));
 
-	setupChart("Requests by Initiator Type (host/external domain)", initiatorTypeCountHostExt.map(function (initiatorype) {
+	setupChart("Requests by Initiator Type (host/external domain)", data.initiatorTypeCountHostExt.map(function (initiatorype) {
 		var typeSegments = initiatorype.initiatorType.split(" ");
 		initiatorype.perc = initiatorype.count / requestsUnit;
 		initiatorype.label = initiatorype.initiatorType;
 		initiatorype.colour = helper.getInitiatorTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
 		initiatorype.id = "reqByInitiatorTypeLocEx-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
 		return initiatorype;
-	}), ["Requests to Host: " + hostRequests, "Host: " + location.host]);
+	}), ["Requests to Host: " + data.hostRequests, "Host: " + location.host]);
 
-	setupChart("Requests by File Type", fileTypeCounts.map(function (fileType) {
+	setupChart("Requests by File Type", data.fileTypeCounts.map(function (fileType) {
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
 		fileType.colour = helper.getFileTypeColour(fileType.fileType, helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
@@ -526,37 +373,20 @@ pieChartComponent.init = function () {
 		return fileType;
 	}));
 
-	setupChart("Requests by File Type (host/external domain)", fileTypeCountHostExt.map(function (fileType) {
+	setupChart("Requests by File Type (host/external domain)", data.fileTypeCountHostExt.map(function (fileType) {
 		var typeSegments = fileType.fileType.split(" ");
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
 		fileType.colour = helper.getFileTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
 		fileType.id = "reqByFileType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
-	}), ["Requests to Host: " + hostRequests, "Host: " + location.host]);
-
-	tableLogger.logTables([{
-		name: "Requests by domain",
-		data: requestsByDomain
-	}, {
-		name: "Requests by Initiator Type",
-		data: initiatorTypeCounts,
-		columns: ["initiatorType", "count", "perc"]
-	}, {
-		name: "Requests by Initiator Type (host/external domain)",
-		data: initiatorTypeCountHostExt,
-		columns: ["initiatorType", "count", "perc"]
-	}, {
-		name: "Requests by File Type",
-		data: fileTypeCounts,
-		columns: ["fileType", "count", "perc"]
-	}]);
+	}), ["Requests to Host: " + data.hostRequests, "Host: " + location.host]);
 
 	return chartsHolder;
 };
 
 module.exports = pieChartComponent;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":11,"../helpers/tableLogger":12}],3:[function(require,module,exports){
+},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/pieChartHelpers":10,"../helpers/svg":12}],3:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -918,7 +748,7 @@ resourcesTimelineComponent.init = function () {
 };
 
 module.exports = resourcesTimelineComponent;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":11}],4:[function(require,module,exports){
+},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12}],4:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -936,49 +766,8 @@ var dom = _interopRequire(require("../helpers/dom"));
 var summaryTilesComponent = {};
 
 summaryTilesComponent.init = function () {
-	var requestsOnly, requestsByDomain, currAndSubdomainRequests, crossDocDomainRequests, hostRequests, hostSubdomains, slowestCalls, average, createTile, createAppendixDefValue, tilesHolder, appendix;
 
-	//filter out non-http[s] and sourcemaps
-	requestsOnly = data.allResourcesCalc.filter(function (currR) {
-		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
-	});
-
-	requestsByDomain = helper.getItemCount(requestsOnly.map(function (currR, i, arr) {
-		return currR.domain;
-	}), "domain");
-
-	currAndSubdomainRequests = requestsOnly.filter(function (domain) {
-		return domain.domain.split(".").slice(-2).join(".") === location.host.split(".").slice(-2).join(".");
-	}).length;
-
-	crossDocDomainRequests = requestsOnly.filter(function (domain) {
-		return !helper.endsWith(domain.domain, document.domain);
-	}).length;
-
-	hostRequests = requestsOnly.filter(function (domain) {
-		return domain.domain === location.host;
-	}).length;
-
-	hostSubdomains = requestsByDomain.filter(function (domain) {
-		return helper.endsWith(domain.domain, location.host.split(".").slice(-2).join(".")) && domain.domain !== location.host;
-	}).length;
-
-	if (data.allResourcesCalc.length > 0) {
-		slowestCalls = data.allResourcesCalc.filter(function (a) {
-			return a.name !== location.href;
-		}).sort(function (a, b) {
-			return b.duration - a.duration;
-		});
-
-		average = Math.floor(slowestCalls.reduceRight(function (a, b) {
-			if (typeof a !== "number") {
-				return a.duration + b.duration;
-			}
-			return a + b.duration;
-		}) / slowestCalls.length);
-	}
-
-	createTile = function (title, value, titleFontSize) {
+	var createTile = function createTile(title, value, titleFontSize) {
 		titleFontSize = titleFontSize || 60;
 		var dl = dom.newTag("dl", {
 			"class": "summary-tile"
@@ -988,27 +777,26 @@ summaryTilesComponent.init = function () {
 		return dl;
 	};
 
-	createAppendixDefValue = function (a, definition, value) {
+	var createAppendixDefValue = function createAppendixDefValue(a, definition, value) {
 		a.appendChild(dom.newTag("dt", { childElement: definition }));
 		a.appendChild(dom.newTag("dd", { text: value }));
 	};
 
-	tilesHolder = dom.newTag("section", {
+	var tilesHolder = dom.newTag("section", {
 		"class": "tiles-holder chart-holder"
 	});
+	var appendix = dom.newTag("dl", {
+		"class": "summary-tile-appendix"
+	});
 
-	[createTile("Requests", requestsOnly.length || "0"), createTile("Domains", requestsByDomain.length || "0"), createTile(dom.combineNodes("Subdomains of ", dom.newTag("abbr", { title: "Top Level Domain", text: "TLD" })), hostSubdomains || "0"), createTile(dom.combineNodes("Requests to ", dom.newTag("span", { title: location.host, text: "Host" })), hostRequests || "0"), createTile(dom.combineNodes(dom.newTag("abbr", { title: "Top Level Domain", text: "TLD" }), "& Subdomain Requests"), currAndSubdomainRequests || "0"), createTile("Total", data.perfTiming.loadEventEnd - data.perfTiming.navigationStart + "ms", 40), createTile("Time to First Byte", data.perfTiming.responseStart - data.perfTiming.navigationStart + "ms", 40), createTile(dom.newTag("span", { title: "domLoading to domContentLoadedEventStart", text: "DOM Content Loading" }), data.perfTiming.domContentLoadedEventStart - data.perfTiming.domLoading + "ms", 40), createTile(dom.newTag("span", { title: "domLoading to loadEventStart", text: "DOM Processing" }), data.perfTiming.domComplete - data.perfTiming.domLoading + "ms", 40)].forEach(function (tile) {
+	[createTile("Requests", data.requestsOnly.length || "0"), createTile("Domains", data.requestsByDomain.length || "0"), createTile(dom.combineNodes("Subdomains of ", dom.newTag("abbr", { title: "Top Level Domain", text: "TLD" })), data.hostSubdomains || "0"), createTile(dom.combineNodes("Requests to ", dom.newTag("span", { title: location.host, text: "Host" })), data.hostRequests || "0"), createTile(dom.combineNodes(dom.newTag("abbr", { title: "Top Level Domain", text: "TLD" }), "& Subdomain Requests"), data.currAndSubdomainRequests || "0"), createTile("Total", data.perfTiming.loadEventEnd - data.perfTiming.navigationStart + "ms", 40), createTile("Time to First Byte", data.perfTiming.responseStart - data.perfTiming.navigationStart + "ms", 40), createTile(dom.newTag("span", { title: "domLoading to domContentLoadedEventStart", text: "DOM Content Loading" }), data.perfTiming.domContentLoadedEventStart - data.perfTiming.domLoading + "ms", 40), createTile(dom.newTag("span", { title: "domLoading to loadEventStart", text: "DOM Processing" }), data.perfTiming.domComplete - data.perfTiming.domLoading + "ms", 40)].forEach(function (tile) {
 		tilesHolder.appendChild(tile);
 	});
 
 	if (data.allResourcesCalc.length > 0) {
-		tilesHolder.appendChild(createTile(dom.newTag("span", { title: slowestCalls[0].name, text: "Slowest Call" }), dom.newTag("span", { title: slowestCalls[0].name, text: Math.floor(slowestCalls[0].duration) + "ms" }), 40));
-		tilesHolder.appendChild(createTile("Average Call", average + "ms", 40));
+		tilesHolder.appendChild(createTile(dom.newTag("span", { title: data.slowestCalls[0].name, text: "Slowest Call" }), dom.newTag("span", { title: data.slowestCalls[0].name, text: Math.floor(data.slowestCalls[0].duration) + "ms" }), 40));
+		tilesHolder.appendChild(createTile("Average Call", data.average + "ms", 40));
 	}
-
-	appendix = dom.newTag("dl", {
-		"class": "summary-tile-appendix"
-	});
 
 	createAppendixDefValue(appendix, dom.newTag("abbr", { title: "Top Level Domain", text: "TLD" }, location.host.split(".").slice(-2).join(".")));
 	createAppendixDefValue(appendix, dom.newTextNode("Host:"), location.host);
@@ -1151,8 +939,6 @@ module.exports = tableComponent;
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-var tableLogger = _interopRequire(require("./helpers/tableLogger"));
-
 var helper = _interopRequire(require("./helpers/helpers"));
 
 var data = {
@@ -1169,6 +955,7 @@ data.isValid = function () {
 	return isValid;
 };
 
+//Check if the browser suppots the timing APIs
 if (window.performance && window.performance.getEntriesByType !== undefined) {
 	data.resources = window.performance.getEntriesByType("resource");
 	data.marks = window.performance.getEntriesByType("mark");
@@ -1246,14 +1033,79 @@ data.allResourcesCalc = data.resources.filter(function (currR) {
 	return currRes;
 });
 
-tableLogger.logTable({
-	name: "All loaded resources",
-	data: data.allResourcesCalc,
-	columns: ["name", "domain", "fileType", "initiatorType", "fileExtension", "loadtime", "isRequestToHost", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
+//filter out non-http[s] and sourcemaps
+data.requestsOnly = data.allResourcesCalc.filter(function (currR) {
+	return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
 });
 
+//get counts
+data.initiatorTypeCounts = helper.getItemCount(data.requestsOnly.map(function (currR, i, arr) {
+	return currR.initiatorType || currR.fileExtension;
+}), "initiatorType");
+
+data.initiatorTypeCountHostExt = helper.getItemCount(data.requestsOnly.map(function (currR, i, arr) {
+	return (currR.initiatorType || currR.fileExtension) + " " + (currR.isRequestToHost ? "(host)" : "(external)");
+}), "initiatorType");
+
+data.requestsByDomain = helper.getItemCount(data.requestsOnly.map(function (currR, i, arr) {
+	return currR.domain;
+}), "domain");
+
+data.fileTypeCountHostExt = helper.getItemCount(data.requestsOnly.map(function (currR, i, arr) {
+	return currR.fileType + " " + (currR.isRequestToHost ? "(host)" : "(external)");
+}), "fileType");
+
+data.fileTypeCounts = helper.getItemCount(data.requestsOnly.map(function (currR, i, arr) {
+	return currR.fileType;
+}), "fileType");
+
+//enhance requestsOnly
+//TODO: make immutable
+data.requestsOnly.forEach(function (currR) {
+	var entry = data.requestsByDomain.filter(function (a) {
+		return a.domain == currR.domain;
+	})[0] || {};
+
+	entry.durationTotal = (entry.durationTotal || 0) + currR.duration;
+});
+
+//Request counts
+data.hostRequests = data.requestsOnly.filter(function (domain) {
+	return domain.domain === location.host;
+}).length;
+
+data.currAndSubdomainRequests = data.requestsOnly.filter(function (domain) {
+	return domain.domain.split(".").slice(-2).join(".") === location.host.split(".").slice(-2).join(".");
+}).length;
+
+data.crossDocDomainRequests = data.requestsOnly.filter(function (domain) {
+	return !helper.endsWith(domain.domain, document.domain);
+}).length;
+
+data.hostSubdomains = data.requestsByDomain.filter(function (domain) {
+	return helper.endsWith(domain.domain, location.host.split(".").slice(-2).join(".")) && domain.domain !== location.host;
+}).length;
+
+data.slowestCalls = [];
+data.average = undefined;
+
+if (data.allResourcesCalc.length > 0) {
+	data.slowestCalls = data.allResourcesCalc.filter(function (a) {
+		return a.name !== location.href;
+	}).sort(function (a, b) {
+		return b.duration - a.duration;
+	});
+
+	data.average = Math.floor(data.slowestCalls.reduceRight(function (a, b) {
+		if (typeof a !== "number") {
+			return a.duration + b.duration;
+		}
+		return a + b.duration;
+	}) / data.slowestCalls.length);
+}
+
 module.exports = data;
-},{"./helpers/helpers":8,"./helpers/tableLogger":12}],7:[function(require,module,exports){
+},{"./helpers/helpers":8}],7:[function(require,module,exports){
 /*
 DOM Helpers
 */
@@ -1602,7 +1454,138 @@ iFrameHolder.getOutputIFrame = function () {
 };
 
 module.exports = iFrameHolder;
-},{"../helpers/dom":7,"../helpers/style":10}],10:[function(require,module,exports){
+},{"../helpers/dom":7,"../helpers/style":11}],10:[function(require,module,exports){
+"use strict";
+
+var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+var data = _interopRequire(require("../data"));
+
+var helper = _interopRequire(require("../helpers/helpers"));
+
+var svg = _interopRequire(require("../helpers/svg"));
+
+var dom = _interopRequire(require("../helpers/dom"));
+
+var pieChartHelpers = {};
+
+var unit = Math.PI * 2 / 100;
+
+var createWedge = function createWedge(id, size, startAngle, percentage, labelTxt, colour) {
+	var radius = size / 2,
+	    endAngle = startAngle + (percentage * unit - 0.001),
+	    labelAngle = startAngle + (percentage / 2 * unit - 0.001),
+	    x1 = radius + radius * Math.sin(startAngle),
+	    y1 = radius - radius * Math.cos(startAngle),
+	    x2 = radius + radius * Math.sin(endAngle),
+	    y2 = radius - radius * Math.cos(endAngle),
+	    x3 = radius + radius * 0.85 * Math.sin(labelAngle),
+	    y3 = radius - radius * 0.85 * Math.cos(labelAngle),
+	    big = endAngle - startAngle > Math.PI ? 1 : 0;
+
+	var d = "M " + radius + "," + radius + // Start at circle center
+	" L " + x1 + "," + y1 + // Draw line to (x1,y1)
+	" A " + radius + "," + radius + // Draw an arc of radius r
+	" 0 " + big + " 1 " + // Arc details...
+	x2 + "," + y2 + // Arc goes to to (x2,y2)
+	" Z"; // Close path back to (cx,cy)
+
+	var path = svg.newEl("path", {
+		id: id,
+		d: d,
+		fill: colour
+	});
+
+	path.appendChild(svg.newEl("title", {
+		text: labelTxt
+	})); // Add tile to wedge path
+	path.addEventListener("mouseenter", function (evt) {
+		evt.target.style.opacity = "0.5";
+		evt.target.ownerDocument.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
+	});
+	path.addEventListener("mouseleave", function (evt) {
+		evt.target.style.opacity = "1";
+		evt.target.ownerDocument.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "transparent";
+	});
+
+	if (percentage > 10) {
+		var wedgeLabel = svg.newTextEl(labelTxt, y3);
+
+		//first half or second half
+		if (labelAngle < Math.PI) {
+			wedgeLabel.setAttribute("x", x3 - svg.getNodeTextWidth(wedgeLabel));
+		} else {
+			wedgeLabel.setAttribute("x", x3);
+		}
+
+		return { path: path, wedgeLabel: wedgeLabel, endAngle: endAngle };
+	}
+	return { path: path, endAngle: endAngle };
+};
+
+pieChartHelpers.createPieChart = function (data, size) {
+	//inpired by http://jsfiddle.net/da5LN/62/
+
+	var startAngle = 0,
+	    // init startAngle
+	chart = svg.newEl("svg:svg", {
+		viewBox: "0 0 " + size + " " + size,
+		"class": "pie-chart"
+	}, "max-height:" + (window.innerWidth * 0.98 - 64) / 3 + "px;"),
+	    labelWrap = svg.newEl("g", {}, "pointer-events:none; font-weight:bold;"),
+	    wedgeWrap = svg.newEl("g");
+
+	//loop through data and create wedges
+	data.forEach(function (dataObj) {
+		var wedgeData = createWedge(dataObj.id, size, startAngle, dataObj.perc, dataObj.label + " (" + dataObj.count + ")", dataObj.colour || helper.getRandomColor());
+		wedgeWrap.appendChild(wedgeData.path);
+		startAngle = wedgeData.endAngle;
+
+		if (wedgeData.wedgeLabel) {
+			labelWrap.appendChild(wedgeData.wedgeLabel);
+		}
+	});
+
+	// foreground circle
+	wedgeWrap.appendChild(svg.newEl("circle", {
+		cx: size / 2,
+		cy: size / 2,
+		r: size * 0.05,
+		fill: "#fff"
+	}));
+	chart.appendChild(wedgeWrap);
+	chart.appendChild(labelWrap);
+	return chart;
+};
+
+pieChartHelpers.createChartTable = function (title, data, columns) {
+	columns = columns || [{ name: "Requests", field: "count" }];
+
+	//create table
+	return dom.tableFactory("", function (thead) {
+		thead.appendChild(dom.newTag("th", { text: title, "class": "text-left" }));
+		columns.forEach(function (column) {
+			thead.appendChild(dom.newTag("th", { text: column.name, "class": "text-right" }));
+		});
+		thead.appendChild(dom.newTag("th", { text: "Percentage", "class": "text-right" }));
+
+		return thead;
+	}, function (tbody) {
+		data.forEach(function (y) {
+			var row = dom.newTag("tr", { id: y.id + "-table" });
+			row.appendChild(dom.newTag("td", { text: y.label }));
+			columns.forEach(function (column) {
+				row.appendChild(dom.newTag("td", { text: y[column.field], "class": "text-right" }));
+			});
+			row.appendChild(dom.newTag("td", { text: y.perc.toPrecision(2) + "%", "class": "text-right" }));
+			tbody.appendChild(row);
+		});
+		return tbody;
+	});
+};
+
+module.exports = pieChartHelpers;
+},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1610,7 +1593,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 var style = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #a971c5; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}";
 exports.style = style;
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /*
 SVG Helpers
 */
@@ -1653,7 +1636,7 @@ svg.getNodeTextWidth = function (textNode) {
 };
 
 module.exports = svg;
-},{"../helpers/iFrameHolder":9}],12:[function(require,module,exports){
+},{"../helpers/iFrameHolder":9}],13:[function(require,module,exports){
 /*
 Log tables in console
 */
@@ -1674,7 +1657,7 @@ tableLogger.logTables = function (tableArr) {
 };
 
 module.exports = tableLogger;
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1693,6 +1676,8 @@ var tableComponent = _interopRequire(require("./components/table"));
 
 var resourcesTimelineComponent = _interopRequire(require("./components/resourcesTimeline"));
 
+var logger = _interopRequire(require("./logger"));
+
 //skip browser internal pages or when data is invalid
 if (location.protocol === "about:" || !data.isValid()) {
 	return;
@@ -1705,4 +1690,35 @@ var onIFrameReady = function onIFrameReady(addComponentFn) {
 };
 
 iFrameHolder.setup(onIFrameReady);
-},{"./components/navigationTimeline":1,"./components/pieChart":2,"./components/resourcesTimeline":3,"./components/summaryTiles":4,"./components/table":5,"./data":6,"./helpers/iFrameHolder":9}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13]);
+},{"./components/navigationTimeline":1,"./components/pieChart":2,"./components/resourcesTimeline":3,"./components/summaryTiles":4,"./components/table":5,"./data":6,"./helpers/iFrameHolder":9,"./logger":15}],15:[function(require,module,exports){
+"use strict";
+
+var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+var data = _interopRequire(require("./data"));
+
+var tableLogger = _interopRequire(require("./helpers/tableLogger"));
+
+tableLogger.logTable({
+	name: "All loaded resources",
+	data: data.allResourcesCalc,
+	columns: ["name", "domain", "fileType", "initiatorType", "fileExtension", "loadtime", "isRequestToHost", "requestStartDelay", "dns", "tcp", "ttfb", "requestDuration", "ssl"]
+});
+
+tableLogger.logTables([{
+	name: "Requests by domain",
+	data: data.requestsByDomain
+}, {
+	name: "Requests by Initiator Type",
+	data: data.initiatorTypeCounts,
+	columns: ["initiatorType", "count", "perc"]
+}, {
+	name: "Requests by Initiator Type (host/external domain)",
+	data: data.initiatorTypeCountHostExt,
+	columns: ["initiatorType", "count", "perc"]
+}, {
+	name: "Requests by File Type",
+	data: data.fileTypeCounts,
+	columns: ["fileType", "count", "perc"]
+}]);
+},{"./data":6,"./helpers/tableLogger":13}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);

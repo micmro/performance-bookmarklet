@@ -6,7 +6,7 @@ import navigationTimelineComponent from "./components/navigationTimeline";
 import pieChartComponent from "./components/pieChart";
 import tableComponent from "./components/table";
 import resourcesTimelineComponent from "./components/resourcesTimeline";
-
+import logger from "./logger";
 
 //skip browser internal pages or when data is invalid
 if(location.protocol === "about:" || !data.isValid()){
