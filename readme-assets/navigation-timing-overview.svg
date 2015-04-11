@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="706.981px" height="421.885px" viewBox="0 0 706.981 421.885" enable-background="new 0 0 706.981 421.885"
+	 xml:space="preserve">
+<g id="Layer_35">
+	<rect x="2" y="217.555" fill="#B7DEE8" stroke="#385D8A" stroke-miterlimit="10" width="45.956" height="40.824"/>
+	<rect x="56.184" y="217.555" fill="#FFFD6C" stroke="#385D8A" stroke-miterlimit="10" width="71.958" height="40.824"/>
+	<rect x="61.055" y="249.539" fill="#B7DEE8" stroke="#385D8A" stroke-miterlimit="10" width="45.956" height="40.824"/>
+	<rect x="134.197" y="217.555" fill="#1D831E" stroke="#385D8A" stroke-miterlimit="10" width="38.956" height="40.824"/>
+	<rect x="179.025" y="217.555" fill="#1E7D83" stroke="#385D8A" stroke-miterlimit="10" width="33.159" height="40.824"/>
+	<rect x="217.271" y="217.555" fill="#E58225" stroke="#385D8A" stroke-miterlimit="10" width="37.159" height="40.824"/>
+	<rect x="260.325" y="217.555" fill="#1EE11F" stroke="#385D8A" stroke-miterlimit="10" width="83.161" height="40.824"/>
+	<rect x="343.068" y="217.555" fill="#1877DD" stroke="#385D8A" stroke-miterlimit="10" width="83.161" height="40.824"/>
+	<rect x="433.076" y="217.555" fill="#9ACDCD" stroke="#385D8A" stroke-miterlimit="10" width="136.166" height="40.824"/>
+	<rect x="572.23" y="217.647" fill="#C0C0FF" stroke="#385D8A" stroke-miterlimit="10" width="59.158" height="40.824"/>
+	
+		<rect x="237.543" y="217.555" fill="#C041CD" stroke="#385D8A" stroke-width="0.5" stroke-miterlimit="10" width="16.974" height="36.333"/>
+	
+		<rect x="499.265" y="217.555" fill="#D888DF" stroke="#385D8A" stroke-width="0.5" stroke-miterlimit="10" width="69.978" height="36.333"/>
+</g>
+<g id="Txt">
+	<text transform="matrix(1 0 0 1 182.9365 240.9668)" fill="#FFFFFF" font-family="'ArialMT'" font-size="12">DNS</text>
+	<text transform="matrix(1 0 0 1 475.2334 240.9668)" font-family="'ArialMT'" font-size="12">Processing</text>
+	<text transform="matrix(1 0 0 1 581.7881 240.9668)" font-family="'ArialMT'" font-size="12">onLoad</text>
+	<g id="Prompt_for_unload">
+		<rect y="223.302" fill="none" width="48.956" height="40.077"/>
+		<text transform="matrix(1 0 0 1 5.1392 231.8936)"><tspan x="0" y="0" font-family="'ArialMT'" font-size="12">Prompt </tspan><tspan x="14.671" y="10" font-family="'ArialMT'" font-size="8">for</tspan><tspan x="1.321" y="20" font-family="'ArialMT'" font-size="12">unload</tspan></text>
+	</g>
+	<g id="unload">
+		<rect x="58.555" y="265.418" fill="none" width="48.956" height="40.077"/>
+		<text transform="matrix(1 0 0 1 65.0156 274.0098)" font-family="'ArialMT'" font-size="12">unload</text>
+	</g>
+	<g id="TCP_xA0_Image_1_">
+		<text transform="matrix(1 0 0 1 224.5176 240.5547)" fill="#FFFFFF" font-family="'ArialMT'" font-size="12">TCP</text>
+	</g>
+	<g id="App_Cache_xA0_Image_1_">
+		<rect x="135.829" y="225.581" fill="none" width="34.689" height="24.307"/>
+		<text transform="matrix(1 0 0 1 142.4971 234.1729)"><tspan x="0" y="0" fill="#FFFFFF" font-family="'ArialMT'" font-size="12">App</tspan><tspan x="-6.668" y="14.4" fill="#FFFFFF" font-family="'ArialMT'" font-size="12">Cache</tspan></text>
+	</g>
+	<g id="DNS_xA0_Image_1_">
+	</g>
+	<g id="Request__x28_TTFB_x29__xA0_Image_1_">
+		<text transform="matrix(1 0 0 1 279.5576 237.7344)"><tspan x="0" y="0" font-family="'ArialMT'" font-size="12">Request</tspan><tspan x="9.686" y="9.6" font-family="'ArialMT'" font-size="8">(TTFB)</tspan></text>
+		<text transform="matrix(1 0 0 1 357.6318 237.7344)"><tspan x="0" y="0" fill="#FFFFFF" font-family="'ArialMT'" font-size="12">Response</tspan><tspan x="-10.557" y="9.6" fill="#FFFFFF" font-family="'ArialMT'" font-size="8">(Content Downloads)</tspan></text>
+	</g>
+	<g id="Response__x28_Content_Download_x29__xA0_Image_1_">
+	</g>
+	<g id="Processing_xA0_Image_1_">
+	</g>
+	<g id="onLoad_xA0_Image_1_">
+	</g>
+	<g id="redirect_xA0_Image_1_">
+		<text transform="matrix(1 0 0 1 73.1826 240.5547)" font-family="'ArialMT'" font-size="12">redirect</text>
+	</g>
+</g>
+<g id="Labels_1_">
+	<g id="navigationStart">
+		<text transform="matrix(1 0 0 1 205.7183 13.1387)" font-family="'ArialMT'" font-size="10.0792">navigationStart</text>
+	</g>
+	<g id="redirectStart">
+		<text transform="matrix(1 0 0 1 218.6987 31.377)" font-family="'ArialMT'" font-size="10.0792">redirectStart</text>
+	</g>
+	<g id="redirectEnd">
+		<text transform="matrix(1 0 0 1 223.9785 49.6157)" font-family="'ArialMT'" font-size="10.0792">redirectEnd</text>
+	</g>
+	<g id="fetchStart">
+		<text transform="matrix(1 0 0 1 241.7368 64.9741)" font-family="'ArialMT'" font-size="10.0792">fetchStart</text>
+	</g>
+	<g id="domainLookupEnd">
+		<text transform="matrix(1 0 0 1 286.853 94.252)" font-family="'ArialMT'" font-size="10.0792">domainLookupEnd</text>
+	</g>
+	<g id="domainLookupStart">
+		<text transform="matrix(1 0 0 1 271.4941 79.853)" font-family="'ArialMT'" font-size="10.0792">domainLookupStart</text>
+	</g>
+	<g id="connectStart">
+		<text transform="matrix(1 0 0 1 315.1709 110.5703)" font-family="'ArialMT'" font-size="10.0792">connectStart</text>
+	</g>
+	<g id="_x28_secureConnettionStart_x29_">
+		<text transform="matrix(1 0 0 1 336.769 128.8091)" font-family="'ArialMT'" font-size="10.0792">(secureConnettionStart)</text>
+	</g>
+	<g id="connectEnd">
+		<text transform="matrix(1 0 0 1 347.3281 145.1274)" font-family="'ArialMT'" font-size="10.0792">connectEnd</text>
+	</g>
+	<g id="requestStart">
+		<text transform="matrix(1 0 0 1 366.0459 158.5664)" font-family="'ArialMT'" font-size="10.0792">requestStart</text>
+	</g>
+	<g id="responseStart">
+		<text transform="matrix(1 0 0 1 401.083 175.3652)" font-family="'ArialMT'" font-size="10.0792">responseStart</text>
+	</g>
+	<g id="responseEnd">
+		<text transform="matrix(1 0 0 1 439.4805 191.2036)" font-family="'ArialMT'" font-size="10.0792">responseEnd</text>
+	</g>
+	<g id="unloadStart">
+		<text transform="matrix(1 0 0 1 485.5566 413.4248)" font-family="'ArialMT'" font-size="10.0792">unloadStart</text>
+	</g>
+	<g id="unloadEnd">
+		<text transform="matrix(1 0 0 1 502.835 395.1865)" font-family="'ArialMT'" font-size="10.0792">unloadEnd</text>
+	</g>
+	<g id="domLoading">
+		<text transform="matrix(1 0 0 1 531.6328 378.3877)" font-family="'ArialMT'" font-size="10.0792">domLoading</text>
+	</g>
+	<g id="domInteractive">
+		<text transform="matrix(1 0 0 1 546.0322 361.1104)" font-family="'ArialMT'" font-size="10.0792">domInteractive</text>
+	</g>
+	<g id="domIContentLoaded">
+		<text transform="matrix(1 0 0 1 567.6299 342.3916)" font-family="'ArialMT'" font-size="10.0792">domIContentLoaded</text>
+	</g>
+	<g id="domIComplete">
+		<text transform="matrix(1 0 0 1 586.3486 323.1924)" font-family="'ArialMT'" font-size="10.0792">domIComplete</text>
+	</g>
+	<g id="loadEventStart">
+		<text transform="matrix(1 0 0 1 615.626 306.874)" font-family="'ArialMT'" font-size="10.0792">loadEventStart</text>
+	</g>
+	<g id="loadEventEnd">
+		<text transform="matrix(1 0 0 1 630.0244 289.1162)" font-family="'ArialMT'" font-size="10.0792">loadEventEnd</text>
+	</g>
+</g>
+<g id="Lines">
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M200.517,8.825h-24.374h-12.187h-6.093h-3.144h-0.854h-0.427c-0.033,0.004-0.077-0.009-0.102,0.009
+					l-0.047,0.095l-0.095,0.191l-0.761,1.528l-21.733,43.665L55.367,205.667l-2.589-1.289l0.406,6.565l5.482-3.634l-2.589-1.289
+					l75.333-151.354l21.71-43.617l0.597-1.199l0.075-0.15l0.037-0.075c0.02-0.013,0.054-0.003,0.08-0.006h0.335h0.67h2.949h6.093
+					h12.187h24.374V8.825z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M209.838,26.552h-21.55h-10.775h-5.388h-2.79h-0.754h-0.377c-0.03,0.003-0.067-0.007-0.09,0.007
+					l-0.047,0.082l-0.096,0.163l-0.764,1.301l-21.844,37.193L61.098,208.775l-2.494-1.465l-0.049,6.577l5.72-3.246l-2.494-1.465
+					l84.266-143.478l21.81-37.136l0.6-1.021l0.075-0.127c0.02-0.052,0.05-0.085,0.108-0.07h0.296h0.592h2.598h5.388h10.775h21.55
+					V26.552z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M479.485,408.825h-21.55h-10.774h-5.388h-2.693h-0.665c-0.198,0.002-0.397,0.015-0.583-0.065
+					l-1.266-0.378l-41.297-12.333L68.755,298.54l0.828-2.771l-6.399,1.521l4.517,4.781l0.827-2.771l326.515,97.51l41.297,12.332
+					l1.316,0.394c0.236,0.102,0.49,0.086,0.742,0.083h0.682h2.693h5.388h10.774h21.55V408.825z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M495.759,390.158h-17.914h-8.957h-4.479h-2.239c-0.388-0.022-0.722,0.051-1.032-0.051l-1.052-0.293
+					l-34.519-9.597l-308.789-85.853l0.775-2.786l-6.369,1.643l4.607,4.694l0.775-2.786l308.789,85.852l34.519,9.598l1.106,0.308
+					c0.198,0.079,0.408,0.066,0.618,0.064h0.572h2.239h4.479h8.957h17.914V390.158z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M525.221,375.158h-19.472h-9.736h-4.868h-2.298h-0.535h-0.268c-0.054,0.015-0.078-0.017-0.091-0.066
+					l-0.056-0.122l-0.443-0.974l-16.122-35.362l-32.091-70.394l2.632-1.2l-5.355-3.818l-0.63,6.547l2.632-1.199l32.091,70.393
+					l16.188,35.509l0.565,1.241l0.07,0.155l0.035,0.077c0.02,0.014,0.055,0.004,0.081,0.007h0.341h0.683h2.57h4.868h9.736h19.472
+					V375.158z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M538.343,356.236h-19.472h-9.736h-4.868H502h-0.535h-0.268c-0.056,0.016-0.076-0.018-0.083-0.069
+					l-0.043-0.127l-0.337-1.016l-12.231-36.856l-16.481-49.665l2.744-0.911l-4.915-4.37l-1.327,6.442l2.745-0.911l16.481,49.665
+					l12.302,37.067l0.43,1.294l0.054,0.162l0.026,0.081c0.019,0.015,0.055,0.004,0.08,0.007h0.341h0.683h2.602h4.868h9.736h19.472
+					V356.236z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M560.049,339.53h-22.069h-11.034h-5.518h-2.562h-0.606h-0.303c-0.022-0.003-0.057,0.007-0.07-0.007
+					l-0.014-0.074l-0.026-0.149l-0.216-1.193l-7.823-43.305l-4.309-23.849l2.847-0.515l-4.249-5.021l-2.224,6.19l2.846-0.515
+					l4.309,23.85l7.87,43.565l0.274,1.521l0.034,0.19l0.018,0.095c0.018,0.018,0.061,0.005,0.09,0.009h0.386h0.773h2.955h5.518
+					h11.034h22.069V339.53z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M579.208,319.412h-5.969h-2.907h-1.312h-0.656h-0.164c-0.057,0.002-0.122,0.014-0.103-0.063
+					l-0.012-0.328l-0.407-11.601l-1.351-38.52l2.891-0.102l-3.486-5.577l-3.087,5.808l2.89-0.101l1.352,38.52l0.43,12.259
+					l0.015,0.418c-0.025,0.098,0.06,0.082,0.131,0.08h0.209h0.836h1.673h3.061h5.969V319.412z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M607.825,303.276h-9.604h-4.802h-2.34h-1.056h-0.265c-0.089,0.003-0.189,0.021-0.201-0.094l-0.203-0.487
+					l-7.322-17.565l-7.005-16.803l2.67-1.113l-5.228-3.992l-0.844,6.523l2.669-1.113l7.005,16.803l7.46,17.895l0.259,0.62
+					c0.015,0.146,0.143,0.124,0.257,0.12h0.336h1.346h2.462h4.802h9.604V303.276z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M623.304,285.247h-4.154h-1.939h-0.97h-0.485h-0.121c-0.042,0.001-0.097,0.009-0.048-0.039l0.136-0.2
+					l4.556-6.713l6.877-10.137l2.394,1.623l0.477-6.56l-5.92,2.867l2.394,1.624l-6.878,10.136l-5.351,7.887l-0.173,0.256
+					c-0.062,0.06,0.007,0.051,0.061,0.049h0.155h0.617h1.236h2.471h4.667V285.247z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M215.184,45.485h-17.118h-8.559h-4.28h-2.326h-0.6h-0.3c-0.022,0.003-0.054-0.006-0.07,0.006
+					l-0.023,0.072l-0.045,0.143l-0.361,1.144l-10.348,32.778l-40.634,128.709l-2.758-0.871l1.421,6.422l4.851-4.442l-2.758-0.871
+					l40.634-128.709l10.266-32.517l0.283-0.897l0.036-0.112c0.006-0.045,0.023-0.075,0.073-0.062h0.235h0.47h1.953h4.28h8.559
+					h17.118V45.485z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M233.851,61.485h-24.909h-12.454h-6.227h-3.249h-0.872h-0.436c-0.034,0.004-0.08-0.009-0.103,0.009
+					l-0.034,0.104l-0.068,0.207l-0.545,1.657l-15.597,47.378l-32.101,97.512l-2.747-0.904l1.342,6.439l4.905-4.382l-2.747-0.904
+					l32.101-97.512l15.558-47.259l0.428-1.3l0.053-0.163l0.027-0.081c0.018-0.015,0.054-0.004,0.08-0.008h0.342h0.685h2.978h6.227
+					h12.454h24.909V61.485z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M263.184,75.825h-29.057h-14.528h-7.264h-3.779h-1.018h-0.509c-0.038,0.005-0.094-0.011-0.118,0.011
+					l-0.026,0.125l-0.051,0.249l-0.411,1.993l-11.749,56.977l-15.062,73.049l-2.833-0.584l2.07,6.243l4.371-4.915l-2.832-0.584
+					l15.062-73.049l11.724-56.856l0.322-1.564l0.041-0.195l0.02-0.098c0.019-0.018,0.062-0.005,0.093-0.009h0.399h0.798h3.486h7.264
+					h14.528h29.057V75.825z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M278.904,90.336h-26.46h-13.23h-6.615h-3.501h-0.927h-0.463c-0.035,0.004-0.087-0.01-0.107,0.01
+					l-0.013,0.115l-0.026,0.23l-0.206,1.841l-5.895,52.708l-7.039,62.941l-2.875-0.321l2.635,6.026l3.901-5.295l-2.874-0.321
+					l7.039-62.941l5.869-52.476l0.162-1.445l0.02-0.181l0.01-0.09c0.016-0.016,0.057-0.004,0.083-0.008h0.364h0.727h3.113h6.615
+					h13.23h26.46V90.336z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M307.457,106.829h-26.979h-13.49h-6.745h-3.5h-0.945h-0.472c-0.036,0.004-0.086-0.01-0.111,0.01
+					l-0.035,0.113l-0.071,0.225l-0.566,1.803l-16.172,51.529l-15.027,47.879l-2.759-0.866l1.432,6.419l4.843-4.45l-2.759-0.866
+					l15.027-47.88l16.143-51.436l0.444-1.415l0.056-0.177l0.027-0.088c0.02-0.016,0.059-0.004,0.087-0.008h0.371h0.742h3.245h6.745
+					h13.49h26.979V106.829z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M329.184,124.708h-31.2h-15.601h-7.8h-3.993h-1.093h-0.546c-0.042,0.005-0.1-0.012-0.128,0.012
+					l-0.045,0.129l-0.089,0.258l-0.716,2.064l-20.449,58.957l-6.695,19.303l-2.732-0.948l1.24,6.459l4.974-4.304l-2.732-0.947
+					l6.695-19.303l20.448-58.954l0.562-1.62l0.07-0.202l0.035-0.102c0.022-0.018,0.068-0.005,0.101-0.009h0.429h0.857h3.808h7.8
+					h15.601h31.2V124.708z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M341.851,141.828h-27.29h-13.645h-6.822h-3.489h-0.956h-0.478c-0.038,0.004-0.086-0.01-0.114,0.01
+					l-0.054,0.106l-0.107,0.213l-0.863,1.704l-24.652,48.695l-6.645,13.125l-2.581-1.306l0.361,6.567l5.507-3.597l-2.58-1.306
+					l6.645-13.125l24.652-48.696l0.678-1.339l0.085-0.167l0.042-0.083c0.022-0.015,0.06-0.004,0.089-0.007h0.375h0.75h3.333h6.822
+					h13.645h27.29V141.828z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M358.838,155.448h-27.29h-13.645h-6.822h-3.449h-0.956h-0.478c-0.038,0.004-0.084-0.009-0.115,0.009
+					l-0.07,0.097l-0.139,0.194l-1.088,1.52l-31.773,44.379l-5.282,7.378l-2.352-1.684l-0.642,6.546l5.99-2.717l-2.351-1.683
+					l5.282-7.378l31.772-44.378l0.897-1.253l0.109-0.152l0.055-0.076c0.024-0.014,0.06-0.004,0.09-0.007h0.375h0.75h3.374h6.822
+					h13.645h27.29V155.448z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M393.851,170.941h-18.96h-9.48h-4.74h-2.56h-0.664h-0.332c-0.025,0.003-0.061-0.007-0.077,0.007
+					l-0.021,0.08l-0.043,0.161l-0.34,1.283l-9.469,35.724l-0.037,0.138l-2.795-0.741l1.719,6.349l4.638-4.664l-2.795-0.741
+					l0.037-0.138l9.399-35.464l0.268-1.007l0.033-0.126c0.004-0.051,0.022-0.084,0.077-0.069h0.261h0.521h2.18h4.74h9.48h18.96
+					V170.941z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<g>
+				<path fill="#202020" d="M436.466,188.811l-1.802,0.236l-0.97,0.127l-0.485,0.063c-0.138,0.049-0.393-0.036-0.378,0.186
+					l-0.959,3.618l-4.054,15.294l-2.796-0.741l1.72,6.349l4.639-4.664l-2.796-0.741l4.054-15.294l0.831-3.134
+					c-0.012-0.174,0.188-0.107,0.296-0.146l0.381-0.05l0.762-0.1l1.661-0.217L436.466,188.811z"/>
+			</g>
+		</g>
+	</g>
+</g>
+</svg>
