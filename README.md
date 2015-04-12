@@ -27,6 +27,7 @@ Bookmarklet Output in Detail
 
 <figure>
   <a href="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/navigation-timing-overview.svg"><img src="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/navigation-timing-overview.png" alt="Diagram of the Navigation Timing API as seen on W3C site" /></a>
+  <br/>
   <figcaption>Diagram Timing API Details</figcaption>
 </figure>
 
@@ -50,6 +51,7 @@ Bookmarklet Output in Detail
 
 <figure>
   <a href="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resource-timing-overview.svg"><img src="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resource-timing-overview.png" alt="Diagram of the Resource Timing API as seen on W3C site" /></a>
+  <br/>
   <figcaption>Resource Timing API Details</figcaption>
 </figure>
 
