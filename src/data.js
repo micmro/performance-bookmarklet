@@ -49,7 +49,7 @@ data.allResourcesCalc = data.resources
 	.filter((currR) => !currR.name.match(/http[s]?\:\/\/(micmro|nurun).github.io\/performance-bookmarklet\/.*/)) 
 	.map((currR, i, arr) => {
 		//crunch the resources data into something easier to work with
-		let isRequest = currR.name.indexOf("http") === 0;
+		const isRequest = currR.name.indexOf("http") === 0;
 		var urlFragments, maybeFileName, fileExtension;
 
 		if(isRequest){

@@ -5,10 +5,10 @@ import dom from "../helpers/dom";
 
 var pieChartHelpers = {};
 
-let unit = (Math.PI * 2) / 100;
+const unit = (Math.PI * 2) / 100;
 
 var createWedge = function(id, size, startAngle, percentage, labelTxt, colour){
-	let radius = size/2,
+	const radius = size/2,
 		endAngle = startAngle + (percentage * unit - 0.001),
 		labelAngle = startAngle + (percentage/2 * unit - 0.001),
 		x1 = radius + radius * Math.sin(startAngle),
@@ -60,8 +60,8 @@ var createWedge = function(id, size, startAngle, percentage, labelTxt, colour){
 };
 
 
-let chartMaxHeight = (() => {
-	let contentWidth = (window.innerWidth * 0.98 - 64);
+const chartMaxHeight = (() => {
+	const contentWidth = (window.innerWidth * 0.98 - 64);
 	if(contentWidth < 700){
 		return 350;
 	} else if(contentWidth < 800){

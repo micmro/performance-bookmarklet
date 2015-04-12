@@ -133,7 +133,7 @@ resourcesTimelineComponent.init = function(){
 	calc.loadDuration = Math.round(calc.lastResponseEnd);
 
 	var setupTimeLine = function(durationMs, blocks){
-		let unit = durationMs / 100,
+		const unit = durationMs / 100,
 			barsToShow = blocks
 				.filter((block) => (typeof block.start == "number" && typeof block.total == "number"))
 				.sort((a, b) => (a.start||0) - (b.start||0)),
@@ -172,8 +172,8 @@ resourcesTimelineComponent.init = function(){
 			var targetRect = evt.target;
 			dom.addClass(targetRect, "active");
 
-			let xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
-			let xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
+			const xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
+			const xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
 
 			endline.x1.baseVal.valueAsString = xPosEnd;
 			endline.x2.baseVal.valueAsString = xPosEnd;

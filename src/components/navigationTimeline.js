@@ -12,7 +12,7 @@ var navigationTimelineComponent = {};
 
 navigationTimelineComponent.init = function(){
 
-	let startTime = data.perfTiming.navigationStart;
+	const startTime = data.perfTiming.navigationStart;
 	var perfTimingCalc = {
 			"pageLoadTime" : data.perfTiming.loadEventEnd - data.perfTiming.navigationStart,
 			"output" : []
@@ -76,7 +76,7 @@ navigationTimelineComponent.init = function(){
 	});	
 
 	var setupTimeLine = function(){
-		let unit = perfTimingCalc.pageLoadTime / 100,
+		const unit = perfTimingCalc.pageLoadTime / 100,
 			barsToShow = perfTimingCalc.blocks
 				.filter((block)  => (typeof block.start == "number" && typeof block.total == "number"))
 				.sort((a, b) => (a.start||0) - (b.start||0)),
@@ -243,7 +243,7 @@ navigationTimelineComponent.init = function(){
 		timeLineHolder.appendChild(renderMarks());
 
 		barsToShow.forEach(function(block, i){
-			let blockWidth = block.total||1,
+			const blockWidth = block.total||1,
 				y = 25 * i;
 			
 			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)"));

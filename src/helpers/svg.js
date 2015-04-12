@@ -33,7 +33,7 @@ svg.getNodeTextWidth = function(textNode){
 	tmp.appendChild(textNode);
 	getOutputIFrame().body.appendChild(tmp);
 
-	let nodeWidth = textNode.getBBox().width;
+	const nodeWidth = textNode.getBBox().width;
 	tmp.parentNode.removeChild(tmp);
 	return nodeWidth;
 };

@@ -53,7 +53,7 @@ helper.getFileType = function(fileExtension, initiatorType){
 };
 
 helper.getRandomColor = function(baseRangeRed, baseRangeGreen, baseRangeBlue){
-	let range = [
+	const range = [
 		baseRangeRed||"0123456789ABCDEF",
 		baseRangeGreen||"0123456789ABCDEF",
 		baseRangeBlue||"0123456789ABCDEF"
@@ -73,7 +73,7 @@ helper.endsWith = function(str, suffix){
 };
 
 var getColourVariation = function(hexColour, variation){
-	let r = ((parseInt(hexColour.substr(1,2), 16)) + variation).toString(16),
+	const r = ((parseInt(hexColour.substr(1,2), 16)) + variation).toString(16),
 		g = ((parseInt(hexColour.substr(3,2), 16)) + variation).toString(16),
 		b = ((parseInt(hexColour.substr(5,2), 16)) + variation).toString(16);
 	return "#" + r + g + b;
