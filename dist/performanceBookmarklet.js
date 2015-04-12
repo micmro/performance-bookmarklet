@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:11/04/2015 */
+   build:12/04/2015 */
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
@@ -987,15 +987,14 @@ if (data.perfTiming.loadEventEnd - data.perfTiming.navigationStart < 0) {
 	return;
 }
 
-data.allResourcesCalc = data.resources.filter(function (currR) {
-	//remove this bookmarklet from the result
+data.allResourcesCalc = data.resources
+//remove this bookmarklet from the result
+.filter(function (currR) {
 	return !currR.name.match(/http[s]?\:\/\/(micmro|nurun).github.io\/performance-bookmarklet\/.*/);
 }).map(function (currR, i, arr) {
 	//crunch the resources data into something easier to work with
-	var isRequest = currR.name.indexOf("http") === 0,
-	    urlFragments,
-	    maybeFileName,
-	    fileExtension;
+	var isRequest = currR.name.indexOf("http") === 0;
+	var urlFragments, maybeFileName, fileExtension;
 
 	if (isRequest) {
 		urlFragments = currR.name.match(/:\/\/(.[^/]+)([^?]*)\??(.*)/);
