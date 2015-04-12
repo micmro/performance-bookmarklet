@@ -25,7 +25,10 @@ Bookmarklet Output in Detail
 - It also displays markers and measures if you're setting marks with the [User Timing API](http://www.w3.org/TR/user-timing) (`performance.mark` and `performance.measure`)
 - Hover over the bars to see a tooltip with the excact Milliseconds/duration
 
-![alt text](https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/navigation-timing-overview.png "Diagram of the Navigation Timing API as seen on W3C site")
+<figure>
+  <a href="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/navigation-timing-overview.svg"><img src="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/navigation-timing-overview.png" alt="Diagram of the Navigation Timing API as seen on W3C site" /></a>
+  <figcaption>Diagram Timing API Details</figcaption>
+</figure>
 
 
 ### Resource analysis
@@ -45,7 +48,10 @@ Bookmarklet Output in Detail
 - The small bars inside the resource bar represent the different stages of the request (redirect, domainLookup, connect, secureConnect, requestToResponseStart, response), but are mostly not available for cross domain requests.
 - The resource bar colours visualize the initiatorType
 
-![alt text](https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resource-timing-overview.png "Diagram of the Resource Timing API as seen on W3C site")
+<figure>
+  <a href="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resource-timing-overview.svg"><img src="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resource-timing-overview.png" alt="Diagram of the Resource Timing API as seen on W3C site" /></a>
+  <figcaption>Resource Timing API Details</figcaption>
+</figure>
 
 
 Console Output
