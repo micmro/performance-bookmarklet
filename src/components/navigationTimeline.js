@@ -12,14 +12,14 @@ var navigationTimelineComponent = {};
 
 navigationTimelineComponent.init = function(){
 
+	let startTime = data.perfTiming.navigationStart;
 	var perfTimingCalc = {
-		"pageLoadTime" : data.perfTiming.loadEventEnd - data.perfTiming.navigationStart,
-		"output" : []
-	};
-	var startTime = data.perfTiming.navigationStart;
-	var propBaseName;
+			"pageLoadTime" : data.perfTiming.loadEventEnd - data.perfTiming.navigationStart,
+			"output" : []
+		},
+		propBaseName;
 
-	for(var perfProp in data.perfTiming) {
+	for(let perfProp in data.perfTiming) {
 		if(data.perfTiming[perfProp] && typeof data.perfTiming[perfProp] === "number"){
 			perfTimingCalc[perfProp] = data.perfTiming[perfProp] - startTime;
 			perfTimingCalc.output.push({
@@ -29,9 +29,7 @@ navigationTimelineComponent.init = function(){
 		}
 	}
 
-	perfTimingCalc.output.sort(function(a, b){
-		return (a["time (ms)"]||0) - (b["time (ms)"]||0);
-	});
+	perfTimingCalc.output.sort((a, b) => (a["time (ms)"]||0) - (b["time (ms)"]||0));
 
 	var timeBlock = function(name, start, end, colour){
 		return {
@@ -73,24 +71,20 @@ navigationTimelineComponent.init = function(){
 	perfTimingCalc.blocks.push(timeBlock("Network/Server", perfTimingCalc.navigationStart, perfTimingCalc.responseStart, "#8cd18c"));
 
 	//add measures to be added as bars
-	data.measures.forEach(function(measure){
+	data.measures.forEach((measure) => {
 		perfTimingCalc.blocks.push(timeBlock("measure:" + measure.name, Math.round(measure.startTime), Math.round(measure.startTime + measure.duration), "#f00"));
 	});	
 
 	var setupTimeLine = function(){
-		var unit = perfTimingCalc.pageLoadTime / 100;
-		var barsToShow = perfTimingCalc.blocks.filter(function(block){
-			return (typeof block.start == "number" && typeof block.total == "number");
-		}).sort(function(a, b){
-			return (a.start||0) - (b.start||0);
-		});
-		var maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce(function(currMax, currValue) {
-			return Math.max((typeof currMax == "number" ? currMax : 0), svg.getNodeTextWidth(svg.newTextEl(currValue.name, "0")));
-		}) : 0;
-
-
-		var diagramHeight = (barsToShow.length + 1) * 25;
-		var chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
+		let unit = perfTimingCalc.pageLoadTime / 100,
+			barsToShow = perfTimingCalc.blocks
+				.filter((block)  => (typeof block.start == "number" && typeof block.total == "number"))
+				.sort((a, b) => (a.start||0) - (b.start||0)),
+			maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce((currMax, currValue) => {
+				return Math.max((typeof currMax == "number" ? currMax : 0), svg.getNodeTextWidth(svg.newTextEl(currValue.name, "0")));
+			}) : 0,
+			diagramHeight = (barsToShow.length + 1) * 25,
+			chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
 
 		var chartHolder = dom.newTag("section", {
 			class : "navigation-timing water-fall-holder chart-holder"
@@ -249,8 +243,9 @@ navigationTimelineComponent.init = function(){
 		timeLineHolder.appendChild(renderMarks());
 
 		barsToShow.forEach(function(block, i){
-			var blockWidth = block.total||1;
-			var y = 25 * i;
+			let blockWidth = block.total||1,
+				y = 25 * i;
+			
 			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)"));
 
 			var blockLabel = svg.newTextEl(block.name + " (" + block.total + "ms)", (y + 18));

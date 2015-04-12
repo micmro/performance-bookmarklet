@@ -9,7 +9,7 @@ var svg = {};
 svg.newEl = function(tagName, settings, css){
 	var el = document.createElementNS("http://www.w3.org/2000/svg", tagName);
 	settings = settings || {};
-	for(var attr in settings){
+	for(let attr in settings){
 		if(attr != "text"){
 			el.setAttributeNS(null, attr, settings[attr]);
 		}
@@ -32,7 +32,8 @@ svg.getNodeTextWidth = function(textNode){
 	var tmp = svg.newEl("svg:svg", {}, "visibility:hidden;");
 	tmp.appendChild(textNode);
 	getOutputIFrame().body.appendChild(tmp);
-	var nodeWidth = textNode.getBBox().width;
+
+	let nodeWidth = textNode.getBBox().width;
 	tmp.parentNode.removeChild(tmp);
 	return nodeWidth;
 };

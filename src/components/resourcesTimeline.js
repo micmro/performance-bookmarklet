@@ -16,7 +16,7 @@ resourcesTimelineComponent.init = function(){
 		"lastResponseEnd" : data.perfTiming.loadEventEnd - data.perfTiming.responseStart,
 	};
 
-	for (var perfProp in data.perfTiming) {
+	for (let perfProp in data.perfTiming) {
 		if(data.perfTiming[perfProp] && typeof data.perfTiming[perfProp] === "number"){
 			calc[perfProp] = data.perfTiming[perfProp] - data.perfTiming.navigationStart;
 		}
@@ -58,7 +58,7 @@ resourcesTimelineComponent.init = function(){
 			class : "legend " + className
 		});
 
-		dlArray.forEach(function(definition){
+		dlArray.forEach((definition) => {
 			dl.appendChild(dom.newTag("dt", {
 				class : "colorBoxHolder",
 				childElement :  dom.newTag("span", {}, "background:"+definition[1])
@@ -102,7 +102,7 @@ resourcesTimelineComponent.init = function(){
 		resourceSection("Navigation API total", 0, calc.loadEventEnd, "#ccc", navigationApiTotal),
 	];
 
-	data.allResourcesCalc.forEach(function(resource, i){
+	data.allResourcesCalc.forEach((resource, i) => {
 		var segments = [
 			resourceSectionSegment("Redirect", resource.redirectStart, resource.redirectEnd, "#ffff60"),
 			resourceSectionSegment("DNS Lookup", resource.domainLookupStart, resource.domainLookupEnd, "#1f7c83"),
@@ -114,7 +114,7 @@ resourcesTimelineComponent.init = function(){
 
 		var resourceTimings = [0, resource.redirectStart, resource.domainLookupStart, resource.connectStart, resource.secureConnectionStart, resource.requestStart, resource.responseStart];
 
-		var firstTiming = resourceTimings.reduce(function(currMinTiming, currentValue) {
+		var firstTiming = resourceTimings.reduce((currMinTiming, currentValue) => {
 			if(currentValue > 0 && (currentValue < currMinTiming || currMinTiming <= 0) && currentValue != resource.startTime){
 				return currentValue;
 			} else {
@@ -126,25 +126,22 @@ resourcesTimelineComponent.init = function(){
 			segments.unshift(resourceSectionSegment("Stalled/Blocking", resource.startTime, firstTiming, "#cdcdcd"));
 		}
 
-		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), helper.getInitiatorTypeColour(resource.initiatorType), segments, resource));
+		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), helper.getInitiatorOrFileTypeColour(resource.initiatorType), segments, resource));
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
 	});
 
 	calc.loadDuration = Math.round(calc.lastResponseEnd);
 
 	var setupTimeLine = function(durationMs, blocks){
-		var unit = durationMs / 100;
-		var barsToShow = blocks.filter(function(block){
-			return (typeof block.start == "number" && typeof block.total == "number");
-		}).sort(function(a, b){
-			return (a.start||0) - (b.start||0);
-		});
-		var maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce(function(currMax, currValue) {
-			return Math.max((typeof currMax == "number" ? currMax : 0), svg.getNodeTextWidth( svg.newTextEl(currValue.name, "0")));
-		}) : 0;
-
-		var diagramHeight = (barsToShow.length + 1) * 25;
-		var chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
+		let unit = durationMs / 100,
+			barsToShow = blocks
+				.filter((block) => (typeof block.start == "number" && typeof block.total == "number"))
+				.sort((a, b) => (a.start||0) - (b.start||0)),
+			maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce((currMax, currValue) => {
+				return Math.max((typeof currMax == "number" ? currMax : 0), svg.getNodeTextWidth( svg.newTextEl(currValue.name, "0")));
+			}) : 0,
+			diagramHeight = (barsToShow.length + 1) * 25,
+			chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
 
 		var chartHolder = dom.newTag("section", {
 			class : "resource-timing water-fall-holder chart-holder"
@@ -174,8 +171,10 @@ resourcesTimelineComponent.init = function(){
 		var onRectMouseEnter = function(evt){
 			var targetRect = evt.target;
 			dom.addClass(targetRect, "active");
-			var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
-			var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
+
+			let xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
+			let xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
+
 			endline.x1.baseVal.valueAsString = xPosEnd;
 			endline.x2.baseVal.valueAsString = xPosEnd;
 			startline.x1.baseVal.valueAsString = xPosStart;
@@ -215,7 +214,7 @@ resourcesTimelineComponent.init = function(){
 			if(segments && segments.length > 0){
 				rectHolder = svg.newEl("g");
 				rectHolder.appendChild(rect);
-				segments.forEach(function(segment){
+				segments.forEach((segment) => {
 					if(segment.total > 0 && typeof segment.start === "number"){
 						rectHolder.appendChild(createRect(segment.total, 8, segment.start||0.001, y,  segment.colour, segment.name + " (" + Math.round(segment.start) + "ms - " +  Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
 					}
@@ -228,7 +227,7 @@ resourcesTimelineComponent.init = function(){
 
 		var createTimeWrapper = function(){
 			var timeHolder = svg.newEl("g", { class : "time-scale full-width" });
-			for(var i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++){
+			for(let i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++){
 				var lineLabel = svg.newTextEl(i + "sec",  diagramHeight);
 				if(i > secs - 0.2){
 					lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
@@ -256,7 +255,7 @@ resourcesTimelineComponent.init = function(){
 				class : "marker-holder"
 			});
 
-			data.marks.forEach(function(mark, i){
+			data.marks.forEach((mark, i) => {
 				//mark.duration
 				var markHolder = svg.newEl("g", {
 					class : "mark-holder"
@@ -291,11 +290,11 @@ resourcesTimelineComponent.init = function(){
 					y2 : diagramHeight + 23
 				}));
 
-				lineLabel.addEventListener("mouseenter", function(evt){
+				lineLabel.addEventListener("mouseenter", (evt) => {
 					dom.addClass(lineHolder, "active");
 					markHolder.parentNode.appendChild(markHolder);
 				});
-				lineLabel.addEventListener("mouseleave", function(evt){
+				lineLabel.addEventListener("mouseleave", (evt) => {
 					dom.removeClass(lineHolder, "active");
 				});
 
@@ -313,7 +312,7 @@ resourcesTimelineComponent.init = function(){
 		timeLineHolder.appendChild(createTimeWrapper());
 		timeLineHolder.appendChild(renderMarks());
 
-		barsToShow.forEach(function(block, i){
+		barsToShow.forEach((block, i) => {
 			var blockWidth = block.total||1;
 
 			var y = 25 * i;

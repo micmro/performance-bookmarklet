@@ -23,7 +23,7 @@ dom.newTag = function(tagName, settings, css){
 			//if childNodes NodeList is passed in
 			if(settings.childElement instanceof NodeList){
 				//NodeList is does not inherit from array
-				Array.prototype.slice.call(settings.childElement,0).forEach(function(childNode){
+				Array.prototype.slice.call(settings.childElement,0).forEach((childNode) => {
 					tag.appendChild(childNode);
 				});
 			}else{

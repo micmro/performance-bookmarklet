@@ -53,9 +53,14 @@ helper.getFileType = function(fileExtension, initiatorType){
 };
 
 helper.getRandomColor = function(baseRangeRed, baseRangeGreen, baseRangeBlue){
-	var range = [baseRangeRed||"0123456789ABCDEF", baseRangeGreen||"0123456789ABCDEF", baseRangeBlue||"0123456789ABCDEF"];
-	var color = "#";
-	var r = 0;
+	let range = [
+		baseRangeRed||"0123456789ABCDEF",
+		baseRangeGreen||"0123456789ABCDEF",
+		baseRangeBlue||"0123456789ABCDEF"
+	];
+	var color = "#",
+		r = 0;
+
 	for (var i = 0; i < 6; i++){
 		r = Math.floor(i/2);
 		color += range[r].split("")[Math.floor(Math.random() * range[r].length)];
@@ -68,44 +73,28 @@ helper.endsWith = function(str, suffix){
 };
 
 var getColourVariation = function(hexColour, variation){
-	var r = ((parseInt(hexColour.substr(1,2), 16)) + variation).toString(16);
-	var g = ((parseInt(hexColour.substr(3,2), 16)) + variation).toString(16);
-	var b = ((parseInt(hexColour.substr(5,2), 16)) + variation).toString(16);
+	let r = ((parseInt(hexColour.substr(1,2), 16)) + variation).toString(16),
+		g = ((parseInt(hexColour.substr(3,2), 16)) + variation).toString(16),
+		b = ((parseInt(hexColour.substr(5,2), 16)) + variation).toString(16);
 	return "#" + r + g + b;
 }
 
-helper.getInitiatorTypeColour = function(initiatorType, fallbackColour, variation){
+helper.getInitiatorOrFileTypeColour = function(initiatorOrFileType, fallbackColour, variation){
 	var colour = fallbackColour||"#bebebe"; //default
 
-	//colour the resources by initiator type
-	switch(initiatorType) {
+	//colour the resources by initiator or file type
+	switch(initiatorOrFileType) {
 		case "css" : colour = "#afd899"; break;
-		case "iframe" : colour = "#85b3f2"; break;
-		case "img" : colour = "#bc9dd6"; break;
-		case "script" : colour = "#e7bd8c"; break; 
-		case "link" : colour = "#89afe6"; break;
-		case "swf" : colour = "#4db3ba"; break; 
-		case "font" : colour = "#e96859"; break; //TODO check if this works
-		case "xmlhttprequest" : colour = "#e7d98c"; break;
-	}
-	if(variation === true){
-		return getColourVariation(colour, -5);
-	}
-	return colour;
-};
-
-helper.getFileTypeColour = function(initiatorType, fallbackColour, variation){
-	var colour = fallbackColour||"#bebebe"; //default
-
-	//colour the resources by initiator type
-	switch(initiatorType) {
-		case "css" : colour = "#afd899"; break;
+		case "iframe" :
 		case "html" : colour = "#85b3f2"; break;
+		case "img" :
 		case "image" : colour = "#bc9dd6"; break;
+		case "script" : 
 		case "js" : colour = "#e7bd8c"; break; 
 		case "link" : colour = "#89afe6"; break;
 		case "swf" : colour = "#4db3ba"; break; 
 		case "font" : colour = "#e96859"; break; //TODO check if this works
+		case "xmlhttprequest" :
 		case "ajax" : colour = "#e7d98c"; break;
 	}
 	if(variation === true){
@@ -121,7 +110,7 @@ helper.getItemCount = function(arr, keyName){
 		resultArr = [],
 		obj;
 
-	arr.forEach(function(key){
+	arr.forEach((key) => {
 		counts[key] = counts[key] ? counts[key]+1 : 1;
 	});
 
@@ -133,7 +122,7 @@ helper.getItemCount = function(arr, keyName){
 
 		resultArr.push(obj);
 	}
-	return resultArr.sort(function(a, b) {
+	return resultArr.sort((a, b) => {
 		return a.count < b.count ? 1 : -1;
 	});
 };
@@ -170,6 +159,6 @@ helper.clone = function(obj) {
 	}
 
 	throw new Error("Unable to helper.clone obj");
-}
+};
 	
 export default helper;

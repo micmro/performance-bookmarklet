@@ -24,12 +24,12 @@ var navigationTimelineComponent = {};
 
 navigationTimelineComponent.init = function () {
 
+	var startTime = data.perfTiming.navigationStart;
 	var perfTimingCalc = {
 		pageLoadTime: data.perfTiming.loadEventEnd - data.perfTiming.navigationStart,
 		output: []
-	};
-	var startTime = data.perfTiming.navigationStart;
-	var propBaseName;
+	},
+	    propBaseName;
 
 	for (var perfProp in data.perfTiming) {
 		if (data.perfTiming[perfProp] && typeof data.perfTiming[perfProp] === "number") {
@@ -78,18 +78,17 @@ navigationTimelineComponent.init = function () {
 	});
 
 	var setupTimeLine = function setupTimeLine() {
-		var unit = perfTimingCalc.pageLoadTime / 100;
-		var barsToShow = perfTimingCalc.blocks.filter(function (block) {
+		var unit = perfTimingCalc.pageLoadTime / 100,
+		    barsToShow = perfTimingCalc.blocks.filter(function (block) {
 			return typeof block.start == "number" && typeof block.total == "number";
 		}).sort(function (a, b) {
 			return (a.start || 0) - (b.start || 0);
-		});
-		var maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce(function (currMax, currValue) {
+		}),
+		    maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce(function (currMax, currValue) {
 			return Math.max(typeof currMax == "number" ? currMax : 0, svg.getNodeTextWidth(svg.newTextEl(currValue.name, "0")));
-		}) : 0;
-
-		var diagramHeight = (barsToShow.length + 1) * 25;
-		var chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
+		}) : 0,
+		    diagramHeight = (barsToShow.length + 1) * 25,
+		    chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
 
 		var chartHolder = dom.newTag("section", {
 			"class": "navigation-timing water-fall-holder chart-holder"
@@ -246,8 +245,9 @@ navigationTimelineComponent.init = function () {
 		timeLineHolder.appendChild(renderMarks());
 
 		barsToShow.forEach(function (block, i) {
-			var blockWidth = block.total || 1;
-			var y = 25 * i;
+			var blockWidth = block.total || 1,
+			    y = 25 * i;
+
 			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start || 0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)"));
 
 			var blockLabel = svg.newTextEl(block.name + " (" + block.total + "ms)", y + 18);
@@ -308,7 +308,7 @@ pieChartComponent.init = function () {
 	});
 
 	// create a chart and table section
-	var setupChart = function setupChart(title, chartData, countTexts, columns, id) {
+	var setupChart = function (title, chartData, countTexts, columns, id) {
 		var chartHolder = dom.newTag("div", {
 			"class": "pie-chart-holder",
 			id: id || ""
@@ -356,7 +356,7 @@ pieChartComponent.init = function () {
 	setupChart("Requests by Initiator Type", data.initiatorTypeCounts.map(function (initiatorype) {
 		initiatorype.perc = initiatorype.count / requestsUnit;
 		initiatorype.label = initiatorype.initiatorType;
-		initiatorype.colour = helper.getInitiatorTypeColour(initiatorype.initiatorType, helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		initiatorype.colour = helper.getInitiatorOrFileTypeColour(initiatorype.initiatorType, helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
 		initiatorype.id = "reqByInitiatorType-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
 		return initiatorype;
 	}));
@@ -365,7 +365,7 @@ pieChartComponent.init = function () {
 		var typeSegments = initiatorype.initiatorType.split(" ");
 		initiatorype.perc = initiatorype.count / requestsUnit;
 		initiatorype.label = initiatorype.initiatorType;
-		initiatorype.colour = helper.getInitiatorTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
+		initiatorype.colour = helper.getInitiatorOrFileTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
 		initiatorype.id = "reqByInitiatorTypeLocEx-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
 		return initiatorype;
 	}), ["Requests to Host: " + data.hostRequests, "Host: " + location.host]);
@@ -373,7 +373,7 @@ pieChartComponent.init = function () {
 	setupChart("Requests by File Type", data.fileTypeCounts.map(function (fileType) {
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
-		fileType.colour = helper.getFileTypeColour(fileType.fileType, helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		fileType.colour = helper.getInitiatorOrFileTypeColour(fileType.fileType, helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
 		fileType.id = "reqByFileType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}));
@@ -382,7 +382,7 @@ pieChartComponent.init = function () {
 		var typeSegments = fileType.fileType.split(" ");
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
-		fileType.colour = helper.getFileTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
+		fileType.colour = helper.getInitiatorOrFileTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
 		fileType.id = "reqByFileType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}), ["Requests to Host: " + data.hostRequests, "Host: " + location.host]);
@@ -505,25 +505,24 @@ resourcesTimelineComponent.init = function () {
 			segments.unshift(resourceSectionSegment("Stalled/Blocking", resource.startTime, firstTiming, "#cdcdcd"));
 		}
 
-		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), helper.getInitiatorTypeColour(resource.initiatorType), segments, resource));
+		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), helper.getInitiatorOrFileTypeColour(resource.initiatorType), segments, resource));
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd, resource.responseEnd);
 	});
 
 	calc.loadDuration = Math.round(calc.lastResponseEnd);
 
 	var setupTimeLine = function setupTimeLine(durationMs, blocks) {
-		var unit = durationMs / 100;
-		var barsToShow = blocks.filter(function (block) {
+		var unit = durationMs / 100,
+		    barsToShow = blocks.filter(function (block) {
 			return typeof block.start == "number" && typeof block.total == "number";
 		}).sort(function (a, b) {
 			return (a.start || 0) - (b.start || 0);
-		});
-		var maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce(function (currMax, currValue) {
+		}),
+		    maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce(function (currMax, currValue) {
 			return Math.max(typeof currMax == "number" ? currMax : 0, svg.getNodeTextWidth(svg.newTextEl(currValue.name, "0")));
-		}) : 0;
-
-		var diagramHeight = (barsToShow.length + 1) * 25;
-		var chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
+		}) : 0,
+		    diagramHeight = (barsToShow.length + 1) * 25,
+		    chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
 
 		var chartHolder = dom.newTag("section", {
 			"class": "resource-timing water-fall-holder chart-holder"
@@ -553,8 +552,10 @@ resourcesTimelineComponent.init = function () {
 		var onRectMouseEnter = function onRectMouseEnter(evt) {
 			var targetRect = evt.target;
 			dom.addClass(targetRect, "active");
+
 			var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
 			var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
+
 			endline.x1.baseVal.valueAsString = xPosEnd;
 			endline.x2.baseVal.valueAsString = xPosEnd;
 			startline.x1.baseVal.valueAsString = xPosStart;
@@ -830,11 +831,8 @@ var dom = _interopRequire(require("../helpers/dom"));
 var tableComponent = {};
 
 tableComponent.init = function () {
-	var requestsOnly = data.allResourcesCalc.filter(function (currR) {
-		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
-	});
 
-	var output = requestsOnly.reduce(function (collectObj, currR) {
+	var output = data.requestsOnly.reduce(function (collectObj, currR) {
 		var fileTypeData = collectObj[currR.fileType],
 		    initiatorTypeData;
 
@@ -1275,8 +1273,9 @@ helper.getFileType = function (fileExtension, initiatorType) {
 
 helper.getRandomColor = function (baseRangeRed, baseRangeGreen, baseRangeBlue) {
 	var range = [baseRangeRed || "0123456789ABCDEF", baseRangeGreen || "0123456789ABCDEF", baseRangeBlue || "0123456789ABCDEF"];
-	var color = "#";
-	var r = 0;
+	var color = "#",
+	    r = 0;
+
 	for (var i = 0; i < 6; i++) {
 		r = Math.floor(i / 2);
 		color += range[r].split("")[Math.floor(Math.random() * range[r].length)];
@@ -1289,51 +1288,26 @@ helper.endsWith = function (str, suffix) {
 };
 
 var getColourVariation = function getColourVariation(hexColour, variation) {
-	var r = (parseInt(hexColour.substr(1, 2), 16) + variation).toString(16);
-	var g = (parseInt(hexColour.substr(3, 2), 16) + variation).toString(16);
-	var b = (parseInt(hexColour.substr(5, 2), 16) + variation).toString(16);
+	var r = (parseInt(hexColour.substr(1, 2), 16) + variation).toString(16),
+	    g = (parseInt(hexColour.substr(3, 2), 16) + variation).toString(16),
+	    b = (parseInt(hexColour.substr(5, 2), 16) + variation).toString(16);
 	return "#" + r + g + b;
 };
 
-helper.getInitiatorTypeColour = function (initiatorType, fallbackColour, variation) {
+helper.getInitiatorOrFileTypeColour = function (initiatorOrFileType, fallbackColour, variation) {
 	var colour = fallbackColour || "#bebebe"; //default
 
-	//colour the resources by initiator type
-	switch (initiatorType) {
+	//colour the resources by initiator or file type
+	switch (initiatorOrFileType) {
 		case "css":
 			colour = "#afd899";break;
 		case "iframe":
-			colour = "#85b3f2";break;
-		case "img":
-			colour = "#bc9dd6";break;
-		case "script":
-			colour = "#e7bd8c";break;
-		case "link":
-			colour = "#89afe6";break;
-		case "swf":
-			colour = "#4db3ba";break;
-		case "font":
-			colour = "#e96859";break; //TODO check if this works
-		case "xmlhttprequest":
-			colour = "#e7d98c";break;
-	}
-	if (variation === true) {
-		return getColourVariation(colour, -5);
-	}
-	return colour;
-};
-
-helper.getFileTypeColour = function (initiatorType, fallbackColour, variation) {
-	var colour = fallbackColour || "#bebebe"; //default
-
-	//colour the resources by initiator type
-	switch (initiatorType) {
-		case "css":
-			colour = "#afd899";break;
 		case "html":
 			colour = "#85b3f2";break;
+		case "img":
 		case "image":
 			colour = "#bc9dd6";break;
+		case "script":
 		case "js":
 			colour = "#e7bd8c";break;
 		case "link":
@@ -1342,6 +1316,7 @@ helper.getFileTypeColour = function (initiatorType, fallbackColour, variation) {
 			colour = "#4db3ba";break;
 		case "font":
 			colour = "#e96859";break; //TODO check if this works
+		case "xmlhttprequest":
 		case "ajax":
 			colour = "#e7d98c";break;
 	}
@@ -1572,15 +1547,17 @@ var createWedge = function createWedge(id, size, startAngle, percentage, labelTx
 	return { path: path, endAngle: endAngle };
 };
 
-var contentWidth = window.innerWidth * 0.98 - 64;
-var chartMaxHeight;
-if (contentWidth < 700) {
-	chartMaxHeight = 350;
-} else if (contentWidth < 800) {
-	chartMaxHeight = (window.innerWidth * 0.98 - 64) / 2 - 72;
-} else {
-	chartMaxHeight = (window.innerWidth * 0.98 - 64) / 3 - 72;
-}
+var chartMaxHeight = (function () {
+	var contentWidth = window.innerWidth * 0.98 - 64;
+	if (contentWidth < 700) {
+		return 350;
+	} else if (contentWidth < 800) {
+		return contentWidth / 2 - 72;
+	} else {
+		return contentWidth / 3 - 72;
+	}
+})();
+
 pieChartHelpers.createPieChart = function (data, size) {
 	//inpired by http://jsfiddle.net/da5LN/62/
 
@@ -1688,6 +1665,7 @@ svg.getNodeTextWidth = function (textNode) {
 	var tmp = svg.newEl("svg:svg", {}, "visibility:hidden;");
 	tmp.appendChild(textNode);
 	getOutputIFrame().body.appendChild(tmp);
+
 	var nodeWidth = textNode.getBBox().width;
 	tmp.parentNode.removeChild(tmp);
 	return nodeWidth;

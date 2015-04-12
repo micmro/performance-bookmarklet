@@ -9,11 +9,8 @@ import dom from "../helpers/dom";
 var tableComponent = {};
 
 tableComponent.init = function(){
-		var requestsOnly = data.allResourcesCalc.filter(function(currR) {
-		return currR.name.indexOf("http") === 0 && !currR.name.match(/js.map$/);
-	});
 
-	var output = requestsOnly.reduce(function(collectObj, currR){
+	var output = data.requestsOnly.reduce((collectObj, currR) => {
 		var fileTypeData = collectObj[currR.fileType],
 			initiatorTypeData;
 
@@ -57,7 +54,7 @@ tableComponent.init = function(){
 	sectionHolder.appendChild(dom.newTag("h1", {text : "Request FileTypes & Initiators"}));
 
 	
-	sectionHolder.appendChild(dom.tableFactory("filetypes-and-intiators-table", function(theadTr){
+	sectionHolder.appendChild(dom.tableFactory("filetypes-and-intiators-table", (theadTr) => {
 			[
 				"FileType",
 				"Count",
@@ -67,7 +64,7 @@ tableComponent.init = function(){
 				"Count by Initiator Type",
 				"Initiator Type Internal",
 				"Initiator Type External"
-			].forEach(function(x){
+			].forEach((x) => {
 				theadTr.appendChild(dom.newTag("th", {
 					text : x,
 					width : (x.indexOf("ternal") > 0) ? "12%" : ""
@@ -75,8 +72,8 @@ tableComponent.init = function(){
 			});
 			return theadTr;
 
-		}, function(tbody){
-			Object.keys(output).forEach(function(key, i){
+		}, (tbody) => {
+			Object.keys(output).forEach((key, i) => {
 				var fileTypeData = output[key],
 					initiatorTypeKeys = Object.keys(fileTypeData.initiatorType),
 					firstinitiatorTypeKey = fileTypeData.initiatorType[initiatorTypeKeys[0]],
@@ -96,7 +93,7 @@ tableComponent.init = function(){
 					firstinitiatorTypeKey.requestsToHost,
 					firstinitiatorTypeKey.requestsToExternal,
 
-				].forEach(function(val, i){
+				].forEach((val, i) => {
 					var settings = {
 						text : val
 					};
@@ -111,7 +108,7 @@ tableComponent.init = function(){
 
 				tbody.appendChild(tr);
 
-				initiatorTypeKeys.slice(1).forEach(function(initiatorTypeKey){
+				initiatorTypeKeys.slice(1).forEach((initiatorTypeKey) => {
 					var initiatorTypeData = fileTypeData.initiatorType[initiatorTypeKey];
 					var tr2 = dom.newTag("tr", {
 						class : "initiator-type-more " + (initiatorTypeKey||"other") + "-light"

@@ -8,7 +8,7 @@ var pieChartHelpers = {};
 let unit = (Math.PI * 2) / 100;
 
 var createWedge = function(id, size, startAngle, percentage, labelTxt, colour){
-	var radius = size/2,
+	let radius = size/2,
 		endAngle = startAngle + (percentage * unit - 0.001),
 		labelAngle = startAngle + (percentage/2 * unit - 0.001),
 		x1 = radius + radius * Math.sin(startAngle),
@@ -35,11 +35,11 @@ var createWedge = function(id, size, startAngle, percentage, labelTxt, colour){
 	path.appendChild(svg.newEl("title", {
 		text : labelTxt
 	})); // Add tile to wedge path
-	path.addEventListener("mouseenter", function(evt){
+	path.addEventListener("mouseenter", (evt) => {
 		evt.target.style.opacity = "0.5";
 		evt.target.ownerDocument.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "#ccc";
 	});
-	path.addEventListener("mouseleave", function(evt){
+	path.addEventListener("mouseleave", (evt) => {
 		evt.target.style.opacity = "1";
 		evt.target.ownerDocument.getElementById(evt.target.getAttribute("id") + "-table").style.backgroundColor = "transparent";
 	});
@@ -60,8 +60,8 @@ var createWedge = function(id, size, startAngle, percentage, labelTxt, colour){
 };
 
 
-var chartMaxHeight = (function(){
-	var contentWidth = (window.innerWidth * 0.98 - 64);
+let chartMaxHeight = (() => {
+	let contentWidth = (window.innerWidth * 0.98 - 64);
 	if(contentWidth < 700){
 		return 350;
 	} else if(contentWidth < 800){
@@ -83,7 +83,7 @@ pieChartHelpers.createPieChart = function(data, size){
 		wedgeWrap = svg.newEl("g");
 
 	//loop through data and create wedges
-	data.forEach(function(dataObj){
+	data.forEach((dataObj) => {
 		var wedgeData = createWedge(dataObj.id, size, startAngle, dataObj.perc, dataObj.label + " (" + dataObj.count + ")", dataObj.colour || helper.getRandomColor());
 		wedgeWrap.appendChild(wedgeData.path);
 		startAngle = wedgeData.endAngle;
@@ -110,19 +110,19 @@ pieChartHelpers.createChartTable = function(title, data, columns){
 	columns = columns||[{name: "Requests", field: "count"}];
 
 	//create table
-	return dom.tableFactory("", function(thead){
+	return dom.tableFactory("", (thead) => {
 			thead.appendChild(dom.newTag("th", {text : title, class: "text-left"}));
-			columns.forEach(function(column){
+			columns.forEach((column) => {
 				thead.appendChild(dom.newTag("th", {text : column.name, class: "text-right"}));
 			});
 			thead.appendChild(dom.newTag("th", {text : "Percentage", class: "text-right"}));
 
 			return thead;
-		}, function(tbody){
-			data.forEach(function(y){
+		}, (tbody) => {
+			data.forEach((y) => {
 				var row = dom.newTag("tr", {id : y.id + "-table"});
 				row.appendChild(dom.newTag("td", {text : y.label}));
-				columns.forEach(function(column){				
+				columns.forEach((column) => {				
 					row.appendChild(dom.newTag("td", {text : y[column.field].toString(), class: "text-right"}));
 				});
 				row.appendChild(dom.newTag("td", {text : y.perc.toPrecision(2) + "%", class: "text-right"}));

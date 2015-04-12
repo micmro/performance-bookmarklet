@@ -52,7 +52,6 @@ summaryTilesComponent.init = function(){
 		tilesHolder.appendChild(createTile("Average Call", data.average + "ms", 40));
 	}
 
-
 	createAppendixDefValue(appendix, dom.newTag("abbr", {title : "Top Level Domain", text : "TLD"}, location.host.split(".").slice(-2).join(".")));
 	createAppendixDefValue(appendix, dom.newTextNode("Host:"), location.host);
 	createAppendixDefValue(appendix, dom.newTextNode("document.domain:"), document.domain);

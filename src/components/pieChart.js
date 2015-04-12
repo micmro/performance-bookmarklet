@@ -17,7 +17,7 @@ pieChartComponent.init = function(){
 	});
 
 	// create a chart and table section
-	var setupChart = function(title, chartData, countTexts, columns, id){
+	var setupChart = (title, chartData, countTexts, columns, id) => {
 		var chartHolder = dom.newTag("div", {
 			class : "pie-chart-holder",
 			id : id||""
@@ -26,7 +26,7 @@ pieChartComponent.init = function(){
 		chartHolder.appendChild(pieChartHelpers.createPieChart(chartData, 400));
 		chartHolder.appendChild(dom.newTag("p", {text : "Total Requests: " + data.requestsOnly.length}));
 		if(countTexts && countTexts.length){
-			countTexts.forEach(function(countText){
+			countTexts.forEach((countText) => {
 				chartHolder.appendChild(dom.newTag("p", {text : countText}, "margin-top:-1em"));
 			})
 		}
@@ -44,7 +44,7 @@ pieChartComponent.init = function(){
 
 
 	//augment data
-	var requestsByDomainData = data.requestsByDomain.map(function(sourceDomain){
+	var requestsByDomainData = data.requestsByDomain.map((sourceDomain) => {
 		var domain = helper.clone(sourceDomain);
 		domain.perc = domain.count / requestsUnit;
 		domain.label = domain.domain;
@@ -71,19 +71,19 @@ pieChartComponent.init = function(){
 		{name: "Duration Sum (ms)", field: "durationTotal"}
 	], "pie-request-by-domain");
 
-	setupChart("Requests by Initiator Type", data.initiatorTypeCounts.map(function(initiatorype){
+	setupChart("Requests by Initiator Type", data.initiatorTypeCounts.map((initiatorype) => {
 		initiatorype.perc = initiatorype.count / requestsUnit;
 		initiatorype.label = initiatorype.initiatorType;
-		initiatorype.colour = helper.getInitiatorTypeColour((initiatorype.initiatorType), helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		initiatorype.colour = helper.getInitiatorOrFileTypeColour((initiatorype.initiatorType), helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
 		initiatorype.id = "reqByInitiatorType-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
 		return initiatorype;
 	}));
 
-	setupChart("Requests by Initiator Type (host/external domain)", data.initiatorTypeCountHostExt.map(function(initiatorype){
+	setupChart("Requests by Initiator Type (host/external domain)", data.initiatorTypeCountHostExt.map((initiatorype) => {
 		var typeSegments = initiatorype.initiatorType.split(" ");
 		initiatorype.perc = initiatorype.count / requestsUnit;
 		initiatorype.label = initiatorype.initiatorType;
-		initiatorype.colour = helper.getInitiatorTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
+		initiatorype.colour = helper.getInitiatorOrFileTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
 		initiatorype.id = "reqByInitiatorTypeLocEx-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
 		return initiatorype;
 	}),[
@@ -91,19 +91,19 @@ pieChartComponent.init = function(){
 		"Host: " + location.host,
 	]);
 
-	setupChart("Requests by File Type", data.fileTypeCounts.map(function(fileType){
+	setupChart("Requests by File Type", data.fileTypeCounts.map((fileType) => {
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
-		fileType.colour = helper.getFileTypeColour((fileType.fileType), helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		fileType.colour = helper.getInitiatorOrFileTypeColour((fileType.fileType), helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
 		fileType.id = "reqByFileType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}));
 
-	setupChart("Requests by File Type (host/external domain)", data.fileTypeCountHostExt.map(function(fileType){
+	setupChart("Requests by File Type (host/external domain)", data.fileTypeCountHostExt.map((fileType) => {
 		var typeSegments = fileType.fileType.split(" ");
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
-		fileType.colour = helper.getFileTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
+		fileType.colour = helper.getInitiatorOrFileTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
 		fileType.id = "reqByFileType-" + fileType.label.replace(/[^a-zA-Z]/g, "-");
 		return fileType;
 	}),[
