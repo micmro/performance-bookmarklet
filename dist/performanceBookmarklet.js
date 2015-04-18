@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:12/04/2015 */
+   build:18/04/2015 */
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
@@ -19,6 +19,8 @@ var svg = _interopRequire(require("../helpers/svg"));
 var dom = _interopRequire(require("../helpers/dom"));
 
 var tableLogger = _interopRequire(require("../helpers/tableLogger"));
+
+var waterfall = _interopRequire(require("../helpers/waterfall"));
 
 var navigationTimelineComponent = {};
 
@@ -77,210 +79,13 @@ navigationTimelineComponent.init = function () {
 		perfTimingCalc.blocks.push(timeBlock("measure:" + measure.name, Math.round(measure.startTime), Math.round(measure.startTime + measure.duration), "#f00"));
 	});
 
-	var setupTimeLine = function setupTimeLine() {
-		var unit = perfTimingCalc.pageLoadTime / 100,
-		    barsToShow = perfTimingCalc.blocks.filter(function (block) {
-			return typeof block.start == "number" && typeof block.total == "number";
-		}).sort(function (a, b) {
-			return (a.start || 0) - (b.start || 0);
-		}),
-		    maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce(function (currMax, currValue) {
-			return Math.max(typeof currMax == "number" ? currMax : 0, svg.getNodeTextWidth(svg.newTextEl(currValue.name, "0")));
-		}) : 0,
-		    diagramHeight = (barsToShow.length + 1) * 25,
-		    chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
-
-		var chartHolder = dom.newTag("section", {
-			"class": "navigation-timing water-fall-holder chart-holder"
-		});
-		var timeLineHolder = svg.newEl("svg:svg", {
-			height: Math.floor(chartHolderHeight),
-			"class": "water-fall-chart"
-		});
-		var timeLineLabelHolder = svg.newEl("g", { "class": "labels" });
-
-		var endline = svg.newEl("line", {
-			x1: "0",
-			y1: "0",
-			x2: "0",
-			y2: diagramHeight,
-			"class": "line-end"
-		});
-
-		var startline = svg.newEl("line", {
-			x1: "0",
-			y1: "0",
-			x2: "0",
-			y2: diagramHeight,
-			"class": "line-start"
-		});
-
-		var onRectMouseEnter = function onRectMouseEnter(evt) {
-			var targetRect = evt.target;
-			dom.addClass(targetRect, "active");
-
-			var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
-			var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
-			endline.x1.baseVal.valueAsString = xPosEnd;
-			endline.x2.baseVal.valueAsString = xPosEnd;
-			startline.x1.baseVal.valueAsString = xPosStart;
-			startline.x2.baseVal.valueAsString = xPosStart;
-			dom.addClass(endline, "active");
-			dom.addClass(startline, "active");
-
-			targetRect.parentNode.appendChild(endline);
-			targetRect.parentNode.appendChild(startline);
-		};
-
-		var onRectMouseLeave = function onRectMouseLeave(evt) {
-			dom.removeClass(evt.target, "active");
-			dom.removeClass(endline, "active");
-			dom.removeClass(startline, "active");
-		};
-
-		var createRect = function createRect(width, height, x, y, fill, label) {
-			var rect = svg.newEl("rect", {
-				width: width / unit + "%",
-				height: height,
-				x: x / unit + "%",
-				y: y,
-				fill: fill,
-				"class": "time-block"
-			});
-			if (label) {
-				rect.appendChild(svg.newEl("title", {
-					text: label
-				})); // Add tile to wedge path
-			}
-
-			rect.addEventListener("mouseenter", onRectMouseEnter);
-			rect.addEventListener("mouseleave", onRectMouseLeave);
-
-			return rect;
-		};
-
-		var createTimeWrapper = function createTimeWrapper() {
-			var timeHolder = svg.newEl("g", { "class": "time-scale full-width" });
-			for (var i = 0, secs = perfTimingCalc.pageLoadTime / 1000, secPerc = 100 / secs; i <= secs; i++) {
-				var lineLabel = svg.newTextEl(i + "sec", diagramHeight);
-				if (i > secs - 0.2) {
-					lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
-					lineLabel.setAttribute("text-anchor", "end");
-				} else {
-					lineLabel.setAttribute("x", secPerc * i + 0.5 + "%");
-				}
-
-				var lineEl = svg.newEl("line", {
-					x1: secPerc * i + "%",
-					y1: "0",
-					x2: secPerc * i + "%",
-					y2: diagramHeight
-				});
-				timeHolder.appendChild(lineEl);
-				timeHolder.appendChild(lineLabel);
-			}
-			return timeHolder;
-		};
-
-		var renderMarks = function renderMarks() {
-			var marksHolder = svg.newEl("g", {
-				transform: "scale(1, 1)",
-				"class": "marker-holder"
-			});
-
-			data.marks.forEach(function (mark, i) {
-				//mark.duration
-				var markHolder = svg.newEl("g", {
-					"class": "mark-holder"
-				});
-				var lineHolder = svg.newEl("g", {
-					"class": "line-holder"
-				});
-				var x = mark.startTime / unit;
-				mark.x = x;
-				var lineLabel = svg.newTextEl(mark.name, diagramHeight + 25);
-				lineLabel.setAttribute("writing-mode", "tb");
-				lineLabel.setAttribute("x", x + "%");
-				lineLabel.setAttribute("stroke", "");
-
-				lineHolder.appendChild(svg.newEl("line", {
-					x1: x + "%",
-					y1: "0px",
-					x2: x + "%",
-					y2: diagramHeight
-				}));
-
-				if (data.marks[i - 1] && mark.x - data.marks[i - 1].x < 1) {
-					lineLabel.setAttribute("x", data.marks[i - 1].x + 1 + "%");
-					mark.x = data.marks[i - 1].x + 1;
-				}
-
-				//would use polyline but can't use percentage for points
-				lineHolder.appendChild(svg.newEl("line", {
-					x1: x + "%",
-					y1: diagramHeight,
-					x2: mark.x + "%",
-					y2: diagramHeight + 23
-				}));
-
-				markHolder.addEventListener("mouseenter", function (evt) {
-					dom.addClass(lineHolder, "active");
-					markHolder.parentNode.appendChild(markHolder);
-				});
-				markHolder.addEventListener("mouseleave", function (evt) {
-					dom.removeClass(lineHolder, "active");
-				});
-
-				markHolder.appendChild(svg.newEl("title", {
-					text: mark.name + " (" + Math.round(mark.startTime) + "ms)" }));
-				markHolder.appendChild(lineHolder);
-				markHolder.appendChild(lineLabel);
-				marksHolder.appendChild(markHolder);
-			});
-
-			return marksHolder;
-		};
-
-		timeLineHolder.appendChild(createTimeWrapper());
-		timeLineHolder.appendChild(renderMarks());
-
-		barsToShow.forEach(function (block, i) {
-			var blockWidth = block.total || 1,
-			    y = 25 * i;
-
-			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start || 0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)"));
-
-			var blockLabel = svg.newTextEl(block.name + " (" + block.total + "ms)", y + 18);
-
-			if ((block.total || 1) / unit > 10) {
-				blockLabel.setAttribute("class", "inner-label");
-				blockLabel.setAttribute("x", (block.start || 0.001) / unit + 0.5 + "%");
-				blockLabel.setAttribute("width", blockWidth / unit + "%");
-			} else if ((block.start || 0.001) / unit + blockWidth / unit < 80) {
-				blockLabel.setAttribute("x", (block.start || 0.001) / unit + blockWidth / unit + 0.5 + "%");
-			} else {
-				blockLabel.setAttribute("x", (block.start || 0.001) / unit - 0.5 + "%");
-				blockLabel.setAttribute("text-anchor", "end");
-			}
-			timeLineLabelHolder.appendChild(blockLabel);
-		});
-
-		timeLineHolder.appendChild(timeLineLabelHolder);
-
-		chartHolder.appendChild(dom.newTag("h1", {
-			text: "Navigation Timing"
-		}));
-		chartHolder.appendChild(timeLineHolder);
-		return chartHolder;
-	};
-
 	tableLogger.logTables([{ name: "Navigation Timeline", data: perfTimingCalc.blocks, columns: ["name", "start", "end", "total"] }, { name: "Navigation Events", data: perfTimingCalc.output }, { name: "Marks", data: data.marks, columns: ["name", "startTime", "duration"] }]);
 
-	return setupTimeLine();
+	return waterfall.setupTimeLine(Math.round(perfTimingCalc.pageLoadTime), perfTimingCalc.blocks, "Navigation Timing");
 };
 
 module.exports = navigationTimelineComponent;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12,"../helpers/tableLogger":13}],2:[function(require,module,exports){
+},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12,"../helpers/tableLogger":13,"../helpers/waterfall":15}],2:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -404,9 +209,9 @@ var data = _interopRequire(require("../data"));
 
 var helper = _interopRequire(require("../helpers/helpers"));
 
-var svg = _interopRequire(require("../helpers/svg"));
-
 var dom = _interopRequire(require("../helpers/dom"));
+
+var waterfall = _interopRequire(require("../helpers/waterfall"));
 
 var resourcesTimelineComponent = {};
 
@@ -511,250 +316,31 @@ resourcesTimelineComponent.init = function () {
 
 	calc.loadDuration = Math.round(calc.lastResponseEnd);
 
-	var setupTimeLine = function setupTimeLine(durationMs, blocks) {
-		var unit = durationMs / 100,
-		    barsToShow = blocks.filter(function (block) {
-			return typeof block.start == "number" && typeof block.total == "number";
-		}).sort(function (a, b) {
-			return (a.start || 0) - (b.start || 0);
-		}),
-		    maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce(function (currMax, currValue) {
-			return Math.max(typeof currMax == "number" ? currMax : 0, svg.getNodeTextWidth(svg.newTextEl(currValue.name, "0")));
-		}) : 0,
-		    diagramHeight = (barsToShow.length + 1) * 25,
-		    chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
+	var chartHolder = waterfall.setupTimeLine(calc.loadDuration, calc.blocks, "Resource Timing");
 
-		var chartHolder = dom.newTag("section", {
-			"class": "resource-timing water-fall-holder chart-holder"
-		});
-		var timeLineHolder = svg.newEl("svg:svg", {
-			height: Math.floor(chartHolderHeight),
-			"class": "water-fall-chart"
-		});
-		var timeLineLabelHolder = svg.newEl("g", { "class": "labels" });
+	chartHolder.appendChild(dom.newTag("h3", {
+		text: "Legend"
+	}));
 
-		var endline = svg.newEl("line", {
-			x1: "0",
-			y1: "0",
-			x2: "0",
-			y2: diagramHeight,
-			"class": "line-end"
-		});
+	var legendsHolder = dom.newTag("div", {
+		"class": "legends-group "
+	});
 
-		var startline = svg.newEl("line", {
-			x1: "0",
-			y1: "0",
-			x2: "0",
-			y2: diagramHeight,
-			"class": "line-start"
-		});
+	legendsHolder.appendChild(createLegend("initiator-type-legend", "Block color: Initiator Type", [["css", "#afd899"], ["iframe", "#85b3f2"], ["img", "#bc9dd6"], ["script", "#e7bd8c"], ["link", "#89afe6"], ["swf", "#4db3ba"],
+	//["font", "#e96859"],
+	["xmlhttprequest", "#e7d98c"]]));
 
-		var onRectMouseEnter = function onRectMouseEnter(evt) {
-			var targetRect = evt.target;
-			dom.addClass(targetRect, "active");
+	legendsHolder.appendChild(createLegend("navigation-legend", "Navigation Timing", [["Redirect", "#ffff60"], ["App Cache", "#1f831f"], ["DNS Lookup", "#1f7c83"], ["TCP", "#e58226"], ["SSL Negotiation", "#c141cd"], ["Time to First Byte", "#1fe11f"], ["Content Download", "#1977dd"], ["DOM Processing", "#9cc"], ["DOM Content Loaded", "#d888df"], ["On Load", "#c0c0ff"]]));
 
-			var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
-			var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
+	legendsHolder.appendChild(createLegend("resource-legend", "Resource Timing", [["Stalled/Blocking", "#cdcdcd"], ["Redirect", "#ffff60"], ["App Cache", "#1f831f"], ["DNS Lookup", "#1f7c83"], ["TCP", "#e58226"], ["SSL Negotiation", "#c141cd"], ["Initial Connection (TCP)", "#e58226"], ["Time to First Byte", "#1fe11f"], ["Content Download", "#1977dd"]]));
 
-			endline.x1.baseVal.valueAsString = xPosEnd;
-			endline.x2.baseVal.valueAsString = xPosEnd;
-			startline.x1.baseVal.valueAsString = xPosStart;
-			startline.x2.baseVal.valueAsString = xPosStart;
-			dom.addClass(endline, "active");
-			dom.addClass(startline, "active");
+	chartHolder.appendChild(legendsHolder);
 
-			targetRect.parentNode.appendChild(endline);
-			targetRect.parentNode.appendChild(startline);
-		};
-
-		var onRectMouseLeave = function onRectMouseLeave(evt) {
-			dom.removeClass(evt.target, "active");
-			dom.removeClass(endline, "active");
-			dom.removeClass(startline, "active");
-		};
-
-		var createRect = (function (_createRect) {
-			var _createRectWrapper = function createRect(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
-				return _createRect.apply(this, arguments);
-			};
-
-			_createRectWrapper.toString = function () {
-				return _createRect.toString();
-			};
-
-			return _createRectWrapper;
-		})(function (width, height, x, y, fill, label, segments) {
-			var rectHolder;
-			var rect = svg.newEl("rect", {
-				width: width / unit + "%",
-				height: height - 1,
-				x: x / unit + "%",
-				y: y,
-				fill: fill,
-				"class": segments && segments.length > 0 ? "time-block" : "segment"
-			});
-			if (label) {
-				rect.appendChild(svg.newEl("title", {
-					text: label
-				})); // Add tile to wedge path
-			}
-
-			rect.addEventListener("mouseenter", onRectMouseEnter);
-			rect.addEventListener("mouseleave", onRectMouseLeave);
-
-			if (segments && segments.length > 0) {
-				rectHolder = svg.newEl("g");
-				rectHolder.appendChild(rect);
-				segments.forEach(function (segment) {
-					if (segment.total > 0 && typeof segment.start === "number") {
-						rectHolder.appendChild(createRect(segment.total, 8, segment.start || 0.001, y, segment.colour, segment.name + " (" + Math.round(segment.start) + "ms - " + Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
-					}
-				});
-				return rectHolder;
-			} else {
-				return rect;
-			}
-		});
-
-		var createTimeWrapper = function createTimeWrapper() {
-			var timeHolder = svg.newEl("g", { "class": "time-scale full-width" });
-			for (var i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++) {
-				var lineLabel = svg.newTextEl(i + "sec", diagramHeight);
-				if (i > secs - 0.2) {
-					lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
-					lineLabel.setAttribute("text-anchor", "end");
-				} else {
-					lineLabel.setAttribute("x", secPerc * i + 0.5 + "%");
-				}
-
-				var lineEl = svg.newEl("line", {
-					x1: secPerc * i + "%",
-					y1: "0",
-					x2: secPerc * i + "%",
-					y2: diagramHeight
-				});
-				timeHolder.appendChild(lineEl);
-				timeHolder.appendChild(lineLabel);
-			}
-			return timeHolder;
-		};
-
-		var renderMarks = function renderMarks() {
-			var marksHolder = svg.newEl("g", {
-				transform: "scale(1, 1)",
-				"class": "marker-holder"
-			});
-
-			data.marks.forEach(function (mark, i) {
-				//mark.duration
-				var markHolder = svg.newEl("g", {
-					"class": "mark-holder"
-				});
-				var lineHolder = svg.newEl("g", {
-					"class": "line-holder"
-				});
-				var x = mark.startTime / unit;
-				mark.x = x;
-				var lineLabel = svg.newTextEl(mark.name, diagramHeight + 25);
-				lineLabel.setAttribute("writing-mode", "tb");
-				lineLabel.setAttribute("x", x + "%");
-				lineLabel.setAttribute("stroke", "");
-
-				lineHolder.appendChild(svg.newEl("line", {
-					x1: x + "%",
-					y1: 0,
-					x2: x + "%",
-					y2: diagramHeight
-				}));
-
-				if (data.marks[i - 1] && mark.x - data.marks[i - 1].x < 1) {
-					lineLabel.setAttribute("x", data.marks[i - 1].x + 1 + "%");
-					mark.x = data.marks[i - 1].x + 1;
-				}
-
-				//would use polyline but can't use percentage for points
-				lineHolder.appendChild(svg.newEl("line", {
-					x1: x + "%",
-					y1: diagramHeight,
-					x2: mark.x + "%",
-					y2: diagramHeight + 23
-				}));
-
-				lineLabel.addEventListener("mouseenter", function (evt) {
-					dom.addClass(lineHolder, "active");
-					markHolder.parentNode.appendChild(markHolder);
-				});
-				lineLabel.addEventListener("mouseleave", function (evt) {
-					dom.removeClass(lineHolder, "active");
-				});
-
-				markHolder.appendChild(svg.newEl("title", {
-					text: mark.name + " (" + Math.round(mark.startTime) + "ms)" }));
-				markHolder.appendChild(lineHolder);
-				markHolder.appendChild(lineLabel);
-				marksHolder.appendChild(markHolder);
-			});
-
-			return marksHolder;
-		};
-
-		timeLineHolder.appendChild(createTimeWrapper());
-		timeLineHolder.appendChild(renderMarks());
-
-		barsToShow.forEach(function (block, i) {
-			var blockWidth = block.total || 1;
-
-			var y = 25 * i;
-			timeLineHolder.appendChild(createRect(blockWidth, 25, block.start || 0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
-
-			var blockLabel = svg.newTextEl(block.name + " (" + block.total + "ms)", y + 20);
-
-			if ((block.total || 1) / unit > 10 && svg.getNodeTextWidth(blockLabel) < 200) {
-				blockLabel.setAttribute("class", "inner-label");
-				blockLabel.setAttribute("x", (block.start || 0.001) / unit + 0.5 + "%");
-				blockLabel.setAttribute("width", blockWidth / unit + "%");
-			} else if ((block.start || 0.001) / unit + blockWidth / unit < 80) {
-				blockLabel.setAttribute("x", (block.start || 0.001) / unit + blockWidth / unit + 0.5 + "%");
-			} else {
-				blockLabel.setAttribute("x", (block.start || 0.001) / unit - 0.5 + "%");
-				blockLabel.setAttribute("text-anchor", "end");
-			}
-			blockLabel.style.opacity = block.name.match(/js.map$/) ? "0.5" : "1";
-			timeLineLabelHolder.appendChild(blockLabel);
-		});
-
-		timeLineHolder.appendChild(timeLineLabelHolder);
-
-		chartHolder.appendChild(dom.newTag("h1", {
-			text: "Resource Timing"
-		}));
-		chartHolder.appendChild(timeLineHolder);
-
-		chartHolder.appendChild(dom.newTag("h3", {
-			text: "Legend"
-		}));
-
-		var legendsHolder = dom.newTag("div", {
-			"class": "legends-group "
-		});
-
-		legendsHolder.appendChild(createLegend("initiator-type-legend", "Block color: Initiator Type", [["css", "#afd899"], ["iframe", "#85b3f2"], ["img", "#bc9dd6"], ["script", "#e7bd8c"], ["link", "#89afe6"], ["swf", "#4db3ba"],
-		//["font", "#e96859"],
-		["xmlhttprequest", "#e7d98c"]]));
-
-		legendsHolder.appendChild(createLegend("navigation-legend", "Navigation Timing", [["Redirect", "#ffff60"], ["App Cache", "#1f831f"], ["DNS Lookup", "#1f7c83"], ["TCP", "#e58226"], ["SSL Negotiation", "#c141cd"], ["Time to First Byte", "#1fe11f"], ["Content Download", "#1977dd"], ["DOM Processing", "#9cc"], ["DOM Content Loaded", "#d888df"], ["On Load", "#c0c0ff"]]));
-
-		legendsHolder.appendChild(createLegend("resource-legend", "Resource Timing", [["Stalled/Blocking", "#cdcdcd"], ["Redirect", "#ffff60"], ["App Cache", "#1f831f"], ["DNS Lookup", "#1f7c83"], ["TCP", "#e58226"], ["SSL Negotiation", "#c141cd"], ["Initial Connection (TCP)", "#e58226"], ["Time to First Byte", "#1fe11f"], ["Content Download", "#1977dd"]]));
-
-		chartHolder.appendChild(legendsHolder);
-		return chartHolder;
-	};
-
-	return setupTimeLine(calc.loadDuration, calc.blocks);
+	return chartHolder;
 };
 
 module.exports = resourcesTimelineComponent;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12}],4:[function(require,module,exports){
+},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/waterfall":15}],4:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1697,6 +1283,503 @@ module.exports = tableLogger;
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
+/*
+Helper to create waterfall timelines 
+*/
+
+var data = _interopRequire(require("../data"));
+
+var helper = _interopRequire(require("../helpers/helpers"));
+
+var svg = _interopRequire(require("../helpers/svg"));
+
+var dom = _interopRequire(require("../helpers/dom"));
+
+var setupTimeLine = function setupTimeLine(durationMs, blocks) {
+	var unit = durationMs / 100,
+	    barsToShow = blocks.filter(function (block) {
+		return typeof block.start == "number" && typeof block.total == "number";
+	}).sort(function (a, b) {
+		return (a.start || 0) - (b.start || 0);
+	}),
+	    maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce(function (currMax, currValue) {
+		return Math.max(typeof currMax == "number" ? currMax : 0, svg.getNodeTextWidth(svg.newTextEl(currValue.name, "0")));
+	}) : 0,
+	    diagramHeight = (barsToShow.length + 1) * 25,
+	    chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
+
+	var chartHolder = dom.newTag("section", {
+		"class": "resource-timing water-fall-holder chart-holder"
+	});
+	var timeLineHolder = svg.newEl("svg:svg", {
+		height: Math.floor(chartHolderHeight),
+		"class": "water-fall-chart"
+	});
+	var timeLineLabelHolder = svg.newEl("g", { "class": "labels" });
+
+	var endline = svg.newEl("line", {
+		x1: "0",
+		y1: "0",
+		x2: "0",
+		y2: diagramHeight,
+		"class": "line-end"
+	});
+
+	var startline = svg.newEl("line", {
+		x1: "0",
+		y1: "0",
+		x2: "0",
+		y2: diagramHeight,
+		"class": "line-start"
+	});
+
+	var onRectMouseEnter = function onRectMouseEnter(evt) {
+		var targetRect = evt.target;
+		dom.addClass(targetRect, "active");
+
+		var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
+		var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
+
+		endline.x1.baseVal.valueAsString = xPosEnd;
+		endline.x2.baseVal.valueAsString = xPosEnd;
+		startline.x1.baseVal.valueAsString = xPosStart;
+		startline.x2.baseVal.valueAsString = xPosStart;
+		dom.addClass(endline, "active");
+		dom.addClass(startline, "active");
+
+		targetRect.parentNode.appendChild(endline);
+		targetRect.parentNode.appendChild(startline);
+	};
+
+	var onRectMouseLeave = function onRectMouseLeave(evt) {
+		dom.removeClass(evt.target, "active");
+		dom.removeClass(endline, "active");
+		dom.removeClass(startline, "active");
+	};
+
+	var createRect = (function (_createRect) {
+		var _createRectWrapper = function createRect(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
+			return _createRect.apply(this, arguments);
+		};
+
+		_createRectWrapper.toString = function () {
+			return _createRect.toString();
+		};
+
+		return _createRectWrapper;
+	})(function (width, height, x, y, fill, label, segments) {
+		var rectHolder;
+		var rect = svg.newEl("rect", {
+			width: width / unit + "%",
+			height: height - 1,
+			x: x / unit + "%",
+			y: y,
+			fill: fill,
+			"class": segments && segments.length > 0 ? "time-block" : "segment"
+		});
+		if (label) {
+			rect.appendChild(svg.newEl("title", {
+				text: label
+			})); // Add tile to wedge path
+		}
+
+		rect.addEventListener("mouseenter", onRectMouseEnter);
+		rect.addEventListener("mouseleave", onRectMouseLeave);
+
+		if (segments && segments.length > 0) {
+			rectHolder = svg.newEl("g");
+			rectHolder.appendChild(rect);
+			segments.forEach(function (segment) {
+				if (segment.total > 0 && typeof segment.start === "number") {
+					rectHolder.appendChild(createRect(segment.total, 8, segment.start || 0.001, y, segment.colour, segment.name + " (" + Math.round(segment.start) + "ms - " + Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
+				}
+			});
+			return rectHolder;
+		} else {
+			return rect;
+		}
+	});
+
+	var createTimeWrapper = function createTimeWrapper() {
+		var timeHolder = svg.newEl("g", { "class": "time-scale full-width" });
+		for (var i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++) {
+			var lineLabel = svg.newTextEl(i + "sec", diagramHeight);
+			if (i > secs - 0.2) {
+				lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
+				lineLabel.setAttribute("text-anchor", "end");
+			} else {
+				lineLabel.setAttribute("x", secPerc * i + 0.5 + "%");
+			}
+
+			var lineEl = svg.newEl("line", {
+				x1: secPerc * i + "%",
+				y1: "0",
+				x2: secPerc * i + "%",
+				y2: diagramHeight
+			});
+			timeHolder.appendChild(lineEl);
+			timeHolder.appendChild(lineLabel);
+		}
+		return timeHolder;
+	};
+
+	var renderMarks = function renderMarks() {
+		var marksHolder = svg.newEl("g", {
+			transform: "scale(1, 1)",
+			"class": "marker-holder"
+		});
+
+		data.marks.forEach(function (mark, i) {
+			//mark.duration
+			var markHolder = svg.newEl("g", {
+				"class": "mark-holder"
+			});
+			var lineHolder = svg.newEl("g", {
+				"class": "line-holder"
+			});
+			var x = mark.startTime / unit;
+			mark.x = x;
+			var lineLabel = svg.newTextEl(mark.name, diagramHeight + 25);
+			lineLabel.setAttribute("writing-mode", "tb");
+			lineLabel.setAttribute("x", x + "%");
+			lineLabel.setAttribute("stroke", "");
+
+			lineHolder.appendChild(svg.newEl("line", {
+				x1: x + "%",
+				y1: 0,
+				x2: x + "%",
+				y2: diagramHeight
+			}));
+
+			if (data.marks[i - 1] && mark.x - data.marks[i - 1].x < 1) {
+				lineLabel.setAttribute("x", data.marks[i - 1].x + 1 + "%");
+				mark.x = data.marks[i - 1].x + 1;
+			}
+
+			//would use polyline but can't use percentage for points
+			lineHolder.appendChild(svg.newEl("line", {
+				x1: x + "%",
+				y1: diagramHeight,
+				x2: mark.x + "%",
+				y2: diagramHeight + 23
+			}));
+
+			lineLabel.addEventListener("mouseenter", function (evt) {
+				dom.addClass(lineHolder, "active");
+				markHolder.parentNode.appendChild(markHolder);
+			});
+			lineLabel.addEventListener("mouseleave", function (evt) {
+				dom.removeClass(lineHolder, "active");
+			});
+
+			markHolder.appendChild(svg.newEl("title", {
+				text: mark.name + " (" + Math.round(mark.startTime) + "ms)" }));
+			markHolder.appendChild(lineHolder);
+			markHolder.appendChild(lineLabel);
+			marksHolder.appendChild(markHolder);
+		});
+
+		return marksHolder;
+	};
+
+	timeLineHolder.appendChild(createTimeWrapper());
+	timeLineHolder.appendChild(renderMarks());
+
+	barsToShow.forEach(function (block, i) {
+		var blockWidth = block.total || 1;
+
+		var y = 25 * i;
+		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start || 0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
+
+		var blockLabel = svg.newTextEl(block.name + " (" + block.total + "ms)", y + 20);
+
+		if ((block.total || 1) / unit > 10 && svg.getNodeTextWidth(blockLabel) < 200) {
+			blockLabel.setAttribute("class", "inner-label");
+			blockLabel.setAttribute("x", (block.start || 0.001) / unit + 0.5 + "%");
+			blockLabel.setAttribute("width", blockWidth / unit + "%");
+		} else if ((block.start || 0.001) / unit + blockWidth / unit < 80) {
+			blockLabel.setAttribute("x", (block.start || 0.001) / unit + blockWidth / unit + 0.5 + "%");
+		} else {
+			blockLabel.setAttribute("x", (block.start || 0.001) / unit - 0.5 + "%");
+			blockLabel.setAttribute("text-anchor", "end");
+		}
+		blockLabel.style.opacity = block.name.match(/js.map$/) ? "0.5" : "1";
+		timeLineLabelHolder.appendChild(blockLabel);
+	});
+
+	timeLineHolder.appendChild(timeLineLabelHolder);
+
+	chartHolder.appendChild(dom.newTag("h1", {
+		text: "Resource Timing"
+	}));
+	chartHolder.appendChild(timeLineHolder);
+
+	chartHolder.appendChild(dom.newTag("h3", {
+		text: "Legend"
+	}));
+
+	var legendsHolder = dom.newTag("div", {
+		"class": "legends-group "
+	});
+
+	legendsHolder.appendChild(createLegend("initiator-type-legend", "Block color: Initiator Type", [["css", "#afd899"], ["iframe", "#85b3f2"], ["img", "#bc9dd6"], ["script", "#e7bd8c"], ["link", "#89afe6"], ["swf", "#4db3ba"],
+	//["font", "#e96859"],
+	["xmlhttprequest", "#e7d98c"]]));
+
+	legendsHolder.appendChild(createLegend("navigation-legend", "Navigation Timing", [["Redirect", "#ffff60"], ["App Cache", "#1f831f"], ["DNS Lookup", "#1f7c83"], ["TCP", "#e58226"], ["SSL Negotiation", "#c141cd"], ["Time to First Byte", "#1fe11f"], ["Content Download", "#1977dd"], ["DOM Processing", "#9cc"], ["DOM Content Loaded", "#d888df"], ["On Load", "#c0c0ff"]]));
+
+	legendsHolder.appendChild(createLegend("resource-legend", "Resource Timing", [["Stalled/Blocking", "#cdcdcd"], ["Redirect", "#ffff60"], ["App Cache", "#1f831f"], ["DNS Lookup", "#1f7c83"], ["TCP", "#e58226"], ["SSL Negotiation", "#c141cd"], ["Initial Connection (TCP)", "#e58226"], ["Time to First Byte", "#1fe11f"], ["Content Download", "#1977dd"]]));
+
+	chartHolder.appendChild(legendsHolder);
+	return chartHolder;
+};
+},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12}],15:[function(require,module,exports){
+"use strict";
+
+var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+/*
+Helper to create waterfall timelines 
+*/
+
+var data = _interopRequire(require("../data"));
+
+var helper = _interopRequire(require("../helpers/helpers"));
+
+var svg = _interopRequire(require("../helpers/svg"));
+
+var dom = _interopRequire(require("../helpers/dom"));
+
+var waterfall = {};
+
+waterfall.setupTimeLine = function (durationMs, blocks, title) {
+	var unit = durationMs / 100,
+	    barsToShow = blocks.filter(function (block) {
+		return typeof block.start == "number" && typeof block.total == "number";
+	}).sort(function (a, b) {
+		return (a.start || 0) - (b.start || 0);
+	}),
+	    maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce(function (currMax, currValue) {
+		return Math.max(typeof currMax == "number" ? currMax : 0, svg.getNodeTextWidth(svg.newTextEl(currValue.name, "0")));
+	}) : 0,
+	    diagramHeight = (barsToShow.length + 1) * 25,
+	    chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
+
+	var chartHolder = dom.newTag("section", {
+		"class": "resource-timing water-fall-holder chart-holder"
+	});
+	var timeLineHolder = svg.newEl("svg:svg", {
+		height: Math.floor(chartHolderHeight),
+		"class": "water-fall-chart"
+	});
+	var timeLineLabelHolder = svg.newEl("g", { "class": "labels" });
+
+	var endline = svg.newEl("line", {
+		x1: "0",
+		y1: "0",
+		x2: "0",
+		y2: diagramHeight,
+		"class": "line-end"
+	});
+
+	var startline = svg.newEl("line", {
+		x1: "0",
+		y1: "0",
+		x2: "0",
+		y2: diagramHeight,
+		"class": "line-start"
+	});
+
+	var onRectMouseEnter = function onRectMouseEnter(evt) {
+		var targetRect = evt.target;
+		dom.addClass(targetRect, "active");
+
+		var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
+		var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
+
+		endline.x1.baseVal.valueAsString = xPosEnd;
+		endline.x2.baseVal.valueAsString = xPosEnd;
+		startline.x1.baseVal.valueAsString = xPosStart;
+		startline.x2.baseVal.valueAsString = xPosStart;
+		dom.addClass(endline, "active");
+		dom.addClass(startline, "active");
+
+		targetRect.parentNode.appendChild(endline);
+		targetRect.parentNode.appendChild(startline);
+	};
+
+	var onRectMouseLeave = function onRectMouseLeave(evt) {
+		dom.removeClass(evt.target, "active");
+		dom.removeClass(endline, "active");
+		dom.removeClass(startline, "active");
+	};
+
+	var createRect = (function (_createRect) {
+		var _createRectWrapper = function createRect(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
+			return _createRect.apply(this, arguments);
+		};
+
+		_createRectWrapper.toString = function () {
+			return _createRect.toString();
+		};
+
+		return _createRectWrapper;
+	})(function (width, height, x, y, fill, label, segments) {
+		var rectHolder;
+		var rect = svg.newEl("rect", {
+			width: width / unit + "%",
+			height: height - 1,
+			x: x / unit + "%",
+			y: y,
+			fill: fill,
+			"class": segments && segments.length > 0 ? "time-block" : "segment"
+		});
+		if (label) {
+			rect.appendChild(svg.newEl("title", {
+				text: label
+			})); // Add tile to wedge path
+		}
+
+		rect.addEventListener("mouseenter", onRectMouseEnter);
+		rect.addEventListener("mouseleave", onRectMouseLeave);
+
+		if (segments && segments.length > 0) {
+			rectHolder = svg.newEl("g");
+			rectHolder.appendChild(rect);
+			segments.forEach(function (segment) {
+				if (segment.total > 0 && typeof segment.start === "number") {
+					rectHolder.appendChild(createRect(segment.total, 8, segment.start || 0.001, y, segment.colour, segment.name + " (" + Math.round(segment.start) + "ms - " + Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
+				}
+			});
+			return rectHolder;
+		} else {
+			return rect;
+		}
+	});
+
+	var createTimeWrapper = function createTimeWrapper() {
+		var timeHolder = svg.newEl("g", { "class": "time-scale full-width" });
+		for (var i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++) {
+			var lineLabel = svg.newTextEl(i + "sec", diagramHeight);
+			if (i > secs - 0.2) {
+				lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
+				lineLabel.setAttribute("text-anchor", "end");
+			} else {
+				lineLabel.setAttribute("x", secPerc * i + 0.5 + "%");
+			}
+
+			var lineEl = svg.newEl("line", {
+				x1: secPerc * i + "%",
+				y1: "0",
+				x2: secPerc * i + "%",
+				y2: diagramHeight
+			});
+			timeHolder.appendChild(lineEl);
+			timeHolder.appendChild(lineLabel);
+		}
+		return timeHolder;
+	};
+
+	var renderMarks = function renderMarks() {
+		var marksHolder = svg.newEl("g", {
+			transform: "scale(1, 1)",
+			"class": "marker-holder"
+		});
+
+		data.marks.forEach(function (mark, i) {
+			//mark.duration
+			var markHolder = svg.newEl("g", {
+				"class": "mark-holder"
+			});
+			var lineHolder = svg.newEl("g", {
+				"class": "line-holder"
+			});
+			var x = mark.startTime / unit;
+			mark.x = x;
+			var lineLabel = svg.newTextEl(mark.name, diagramHeight + 25);
+			lineLabel.setAttribute("writing-mode", "tb");
+			lineLabel.setAttribute("x", x + "%");
+			lineLabel.setAttribute("stroke", "");
+
+			lineHolder.appendChild(svg.newEl("line", {
+				x1: x + "%",
+				y1: 0,
+				x2: x + "%",
+				y2: diagramHeight
+			}));
+
+			if (data.marks[i - 1] && mark.x - data.marks[i - 1].x < 1) {
+				lineLabel.setAttribute("x", data.marks[i - 1].x + 1 + "%");
+				mark.x = data.marks[i - 1].x + 1;
+			}
+
+			//would use polyline but can't use percentage for points
+			lineHolder.appendChild(svg.newEl("line", {
+				x1: x + "%",
+				y1: diagramHeight,
+				x2: mark.x + "%",
+				y2: diagramHeight + 23
+			}));
+
+			lineLabel.addEventListener("mouseenter", function (evt) {
+				dom.addClass(lineHolder, "active");
+				markHolder.parentNode.appendChild(markHolder);
+			});
+			lineLabel.addEventListener("mouseleave", function (evt) {
+				dom.removeClass(lineHolder, "active");
+			});
+
+			markHolder.appendChild(svg.newEl("title", {
+				text: mark.name + " (" + Math.round(mark.startTime) + "ms)" }));
+			markHolder.appendChild(lineHolder);
+			markHolder.appendChild(lineLabel);
+			marksHolder.appendChild(markHolder);
+		});
+
+		return marksHolder;
+	};
+
+	timeLineHolder.appendChild(createTimeWrapper());
+	timeLineHolder.appendChild(renderMarks());
+
+	barsToShow.forEach(function (block, i) {
+		var blockWidth = block.total || 1;
+
+		var y = 25 * i;
+		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start || 0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
+
+		var blockLabel = svg.newTextEl(block.name + " (" + block.total + "ms)", y + (block.segments ? 20 : 17));
+
+		if ((block.total || 1) / unit > 10 && svg.getNodeTextWidth(blockLabel) < 200) {
+			blockLabel.setAttribute("class", "inner-label");
+			blockLabel.setAttribute("x", (block.start || 0.001) / unit + 0.5 + "%");
+			blockLabel.setAttribute("width", blockWidth / unit + "%");
+		} else if ((block.start || 0.001) / unit + blockWidth / unit < 80) {
+			blockLabel.setAttribute("x", (block.start || 0.001) / unit + blockWidth / unit + 0.5 + "%");
+		} else {
+			blockLabel.setAttribute("x", (block.start || 0.001) / unit - 0.5 + "%");
+			blockLabel.setAttribute("text-anchor", "end");
+		}
+		blockLabel.style.opacity = block.name.match(/js.map$/) ? "0.5" : "1";
+		timeLineLabelHolder.appendChild(blockLabel);
+	});
+
+	timeLineHolder.appendChild(timeLineLabelHolder);
+
+	chartHolder.appendChild(dom.newTag("h1", {
+		text: title
+	}));
+	chartHolder.appendChild(timeLineHolder);
+
+	return chartHolder;
+};
+
+module.exports = waterfall;
+},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12}],16:[function(require,module,exports){
+"use strict";
+
+var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
 var data = _interopRequire(require("./data"));
 
 var iFrameHolder = _interopRequire(require("./helpers/iFrameHolder"));
@@ -1725,7 +1808,7 @@ var onIFrameReady = function onIFrameReady(addComponentFn) {
 };
 
 iFrameHolder.setup(onIFrameReady);
-},{"./components/navigationTimeline":1,"./components/pieChart":2,"./components/resourcesTimeline":3,"./components/summaryTiles":4,"./components/table":5,"./data":6,"./helpers/iFrameHolder":9,"./logger":15}],15:[function(require,module,exports){
+},{"./components/navigationTimeline":1,"./components/pieChart":2,"./components/resourcesTimeline":3,"./components/summaryTiles":4,"./components/table":5,"./data":6,"./helpers/iFrameHolder":9,"./logger":17}],17:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1756,4 +1839,4 @@ tableLogger.logTables([{
 	data: data.fileTypeCounts,
 	columns: ["fileType", "count", "perc"]
 }]);
-},{"./data":6,"./helpers/tableLogger":13}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
+},{"./data":6,"./helpers/tableLogger":13}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]);
