@@ -104,33 +104,36 @@ resourcesTimelineComponent.init = function(){
 		resourceSection("Navigation API total", 0, calc.loadEventEnd, "block-navigation-api-total", navigationApiTotal),
 	];
 
-	data.allResourcesCalc.forEach((resource, i) => {
-		var segments = [
-			resourceSectionSegment("Redirect", resource.redirectStart, resource.redirectEnd, "block-redirect"),
-			resourceSectionSegment("DNS Lookup", resource.domainLookupStart, resource.domainLookupEnd, "block-dns"),
-			resourceSectionSegment("Initial Connection (TCP)", resource.connectStart, resource.connectEnd, "block-dns"),
-			resourceSectionSegment("secureConnect", resource.secureConnectionStart||undefined, resource.connectEnd, "block-ssl"),
-			resourceSectionSegment("Timer to First Byte", resource.requestStart, resource.responseStart, "block-ttfb"),
-			resourceSectionSegment("Content Download", resource.responseStart||undefined, resource.responseEnd, "block-response")
-		];
+	data.allResourcesCalc.filter((resource) => {
+			//do not show items up to 15 seconds after onload - else beacon ping etc make diagram useless
+			return resource.startTime < (calc.loadEventEnd + 15000)
+		}).forEach((resource, i) => {
+			var segments = [
+				resourceSectionSegment("Redirect", resource.redirectStart, resource.redirectEnd, "block-redirect"),
+				resourceSectionSegment("DNS Lookup", resource.domainLookupStart, resource.domainLookupEnd, "block-dns"),
+				resourceSectionSegment("Initial Connection (TCP)", resource.connectStart, resource.connectEnd, "block-dns"),
+				resourceSectionSegment("secureConnect", resource.secureConnectionStart||undefined, resource.connectEnd, "block-ssl"),
+				resourceSectionSegment("Timer to First Byte", resource.requestStart, resource.responseStart, "block-ttfb"),
+				resourceSectionSegment("Content Download", resource.responseStart||undefined, resource.responseEnd, "block-response")
+			];
 
-		var resourceTimings = [0, resource.redirectStart, resource.domainLookupStart, resource.connectStart, resource.secureConnectionStart, resource.requestStart, resource.responseStart];
+			var resourceTimings = [0, resource.redirectStart, resource.domainLookupStart, resource.connectStart, resource.secureConnectionStart, resource.requestStart, resource.responseStart];
 
-		var firstTiming = resourceTimings.reduce((currMinTiming, currentValue) => {
-			if(currentValue > 0 && (currentValue < currMinTiming || currMinTiming <= 0) && currentValue != resource.startTime){
-				return currentValue;
-			} else {
-				return currMinTiming;
+			var firstTiming = resourceTimings.reduce((currMinTiming, currentValue) => {
+				if(currentValue > 0 && (currentValue < currMinTiming || currMinTiming <= 0) && currentValue != resource.startTime){
+					return currentValue;
+				} else {
+					return currMinTiming;
+				}
+			});
+
+			if(resource.startTime < firstTiming){
+				segments.unshift(resourceSectionSegment("Stalled/Blocking", resource.startTime, firstTiming, "block-blocking"));
 			}
+
+			calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), "block-" + resource.initiatorType, segments, resource));
+			calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
 		});
-
-		if(resource.startTime < firstTiming){
-			segments.unshift(resourceSectionSegment("Stalled/Blocking", resource.startTime, firstTiming, "block-blocking"));
-		}
-
-		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), "block-" + resource.initiatorType, segments, resource));
-		calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
-	});
 
 	calc.loadDuration = Math.round(calc.lastResponseEnd);
 
