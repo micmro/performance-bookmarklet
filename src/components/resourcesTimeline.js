@@ -72,6 +72,8 @@ resourcesTimelineComponent.init = function(){
 		return legendHolder;
 	};
 
+	var onDomLoad = resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "block-dom-content-loaded");
+	var onLoadEvt = resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "block-onload");
 	var navigationApiTotal = [
 		resourceSectionSegment("Unload", calc.unloadEventStart, calc.unloadEventEnd, "block-unload"),
 		resourceSectionSegment("Redirect", calc.redirectStart, calc.redirectEnd, "block-redirect"),
@@ -81,8 +83,8 @@ resourcesTimelineComponent.init = function(){
 		resourceSectionSegment("Timer to First Byte", calc.requestStart, calc.responseStart, "block-ttfb"),
 		resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "block-response"),
 		resourceSectionSegment("DOM Processing", calc.domLoading, calc.domComplete, "block-dom"),
-		resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "block-dom-content-loaded"),
-		resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "block-onload")
+		onDomLoad,
+		onLoadEvt
 	];
 
 	if(calc.secureConnectionStart){
@@ -133,7 +135,10 @@ resourcesTimelineComponent.init = function(){
 	calc.loadDuration = Math.round(calc.lastResponseEnd);
 
 
-	var chartHolder = waterfall.setupTimeLine(calc.loadDuration, calc.blocks, data.marks, undefined, "Resource Timing");
+	var chartHolder = waterfall.setupTimeLine(calc.loadDuration, calc.blocks, data.marks, [
+			onDomLoad,
+			onLoadEvt
+		], "Resource Timing");
 
 	chartHolder.appendChild(dom.newTag("h3", {
 		text : "Legend"

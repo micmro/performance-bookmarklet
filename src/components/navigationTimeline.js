@@ -82,7 +82,7 @@ navigationTimelineComponent.init = function(){
 		{name: "Marks", data : data.marks, columns : ["name", "startTime", "duration"]}
 	]);
 
-	return waterfall.setupTimeLine(Math.round(perfTimingCalc.pageLoadTime), perfTimingCalc.blocks, data.marks, undefined, "Navigation Timing");
+	return waterfall.setupTimeLine(Math.round(perfTimingCalc.pageLoadTime), perfTimingCalc.blocks, data.marks, [], "Navigation Timing");
 };
 
 export default navigationTimelineComponent;

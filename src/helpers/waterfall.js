@@ -98,6 +98,21 @@ waterfall.setupTimeLine = function(durationMs, blocks, marks, lines, title){
 		}
 	};
 
+	var createBgRect = function(block){
+		var rect = svg.newEl("rect", {
+			width : ((block.total||1) / unit) + "%",
+			height : diagramHeight,
+			x :  ((block.start||0.001) / unit) + "%",
+			y : 0,
+			class : block.cssClass || "block-undefined"
+		});
+
+		rect.appendChild(svg.newEl("title", {
+			text : block.name
+		})); // Add tile to wedge path
+		return rect;
+	};
+
 	var createTimeWrapper = function(){
 		var timeHolder = svg.newEl("g", { class : "time-scale full-width" });
 		for(let i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++){
@@ -184,6 +199,10 @@ waterfall.setupTimeLine = function(durationMs, blocks, marks, lines, title){
 	
 	timeLineHolder.appendChild(createTimeWrapper());
 	timeLineHolder.appendChild(renderMarks());
+
+	lines.forEach((block, i) => {
+		timeLineHolder.appendChild(createBgRect(block));
+	});
 
 	barsToShow.forEach((block, i) => {
 		var blockWidth = block.total||1;
