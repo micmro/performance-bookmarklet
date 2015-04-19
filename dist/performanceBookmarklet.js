@@ -85,7 +85,7 @@ navigationTimelineComponent.init = function () {
 };
 
 module.exports = navigationTimelineComponent;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12,"../helpers/tableLogger":13,"../helpers/waterfall":15}],2:[function(require,module,exports){
+},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12,"../helpers/tableLogger":13,"../helpers/waterfall":14}],2:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -345,7 +345,7 @@ resourcesTimelineComponent.init = function () {
 };
 
 module.exports = resourcesTimelineComponent;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/waterfall":15}],4:[function(require,module,exports){
+},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/waterfall":14}],4:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1216,7 +1216,7 @@ module.exports = pieChartHelpers;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var style = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} text[writing-mode=tb] { -webkit-writing-mode: tb; writing-mode:vertical-lr; writing-mode: tb; } #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .block-css {fill: #afd899;} .block-iframe, .block-html, .block-internal {fill: #85b3f2;} .block-img, .block-image {fill: #bc9dd6;} .block-script, .block-js {fill: #e7bd8c;} .block-link {fill: #89afe6;} .block-swf, .block-flash {fill: #4db3ba;} .block-font {fill: #e96859;} .block-xmlhttprequest, .block-ajax {fill: #e7d98c;} .block-other {fill: #bebebe;} .block-total {fill: #ccc;} .block-unload {fill: #909;} .block-redirect {fill: #ffff60;} .block-appcache {fill: #1f831f;} .block-dns {fill: #1f7c83;} .block-tcp {fill: #e58226;} .block-ttfb {fill: #1fe11f;} .block-response {fill: #1977dd;} .block-dom {fill: #9cc;} .block-dom-content-loaded {fill: #d888df;} .block-onload {fill: #c0c0ff;} .block-ssl {fill: #c141cd; } .block-ms-first-paint-event {fill: #8fbc83; } .block-dom-interactive-event {fill: #d888df; } .block-network-server {fill: #8cd18c; } .block-custom-measure {fill: #f00; } .block-navigation-api-total {fill: #ccc;} .block-blocking {fill: #cdcdcd;} .block-undefined {fill: #0f0;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #pie-request-by-domain {flex-grow: 2; width:772px; max-width: 1272px;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #ccc; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}";
+var style = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .block-css {fill: #afd899;} .block-iframe, .block-html, .block-internal {fill: #85b3f2;} .block-img, .block-image {fill: #bc9dd6;} .block-script, .block-js {fill: #e7bd8c;} .block-link {fill: #89afe6;} .block-swf, .block-flash {fill: #4db3ba;} .block-font {fill: #e96859;} .block-xmlhttprequest, .block-ajax {fill: #e7d98c;} .block-other {fill: #bebebe;} .block-total {fill: #ccc;} .block-unload {fill: #909;} .block-redirect {fill: #ffff60;} .block-appcache {fill: #1f831f;} .block-dns {fill: #1f7c83;} .block-tcp {fill: #e58226;} .block-ttfb {fill: #1fe11f;} .block-response {fill: #1977dd;} .block-dom {fill: #9cc;} .block-dom-content-loaded {fill: #d888df;} .block-onload {fill: #c0c0ff;} .block-ssl {fill: #c141cd; } .block-ms-first-paint-event {fill: #8fbc83; } .block-dom-interactive-event {fill: #d888df; } .block-network-server {fill: #8cd18c; } .block-custom-measure {fill: #f00; } .block-navigation-api-total {fill: #ccc;} .block-blocking {fill: #cdcdcd;} .block-undefined {fill: #0f0;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #pie-request-by-domain {flex-grow: 2; width:772px; max-width: 1272px;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #ccc; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .water-fall-chart .mark-holder text {-webkit-writing-mode: tb; writing-mode:vertical-lr; writing-mode: tb;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}";
 exports.style = style;
 },{}],12:[function(require,module,exports){
 /*
@@ -1284,261 +1284,6 @@ tableLogger.logTables = function (tableArr) {
 
 module.exports = tableLogger;
 },{}],14:[function(require,module,exports){
-"use strict";
-
-var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-
-/*
-Helper to create waterfall timelines 
-*/
-
-var data = _interopRequire(require("../data"));
-
-var helper = _interopRequire(require("../helpers/helpers"));
-
-var svg = _interopRequire(require("../helpers/svg"));
-
-var dom = _interopRequire(require("../helpers/dom"));
-
-var setupTimeLine = function setupTimeLine(durationMs, blocks) {
-	var unit = durationMs / 100,
-	    barsToShow = blocks.filter(function (block) {
-		return typeof block.start == "number" && typeof block.total == "number";
-	}).sort(function (a, b) {
-		return (a.start || 0) - (b.start || 0);
-	}),
-	    maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce(function (currMax, currValue) {
-		return Math.max(typeof currMax == "number" ? currMax : 0, svg.getNodeTextWidth(svg.newTextEl(currValue.name, "0")));
-	}) : 0,
-	    diagramHeight = (barsToShow.length + 1) * 25,
-	    chartHolderHeight = diagramHeight + maxMarkTextLength + 35;
-
-	var chartHolder = dom.newTag("section", {
-		"class": "resource-timing water-fall-holder chart-holder"
-	});
-	var timeLineHolder = svg.newEl("svg:svg", {
-		height: Math.floor(chartHolderHeight),
-		"class": "water-fall-chart"
-	});
-	var timeLineLabelHolder = svg.newEl("g", { "class": "labels" });
-
-	var endline = svg.newEl("line", {
-		x1: "0",
-		y1: "0",
-		x2: "0",
-		y2: diagramHeight,
-		"class": "line-end"
-	});
-
-	var startline = svg.newEl("line", {
-		x1: "0",
-		y1: "0",
-		x2: "0",
-		y2: diagramHeight,
-		"class": "line-start"
-	});
-
-	var onRectMouseEnter = function onRectMouseEnter(evt) {
-		var targetRect = evt.target;
-		dom.addClass(targetRect, "active");
-
-		var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
-		var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
-
-		endline.x1.baseVal.valueAsString = xPosEnd;
-		endline.x2.baseVal.valueAsString = xPosEnd;
-		startline.x1.baseVal.valueAsString = xPosStart;
-		startline.x2.baseVal.valueAsString = xPosStart;
-		dom.addClass(endline, "active");
-		dom.addClass(startline, "active");
-
-		targetRect.parentNode.appendChild(endline);
-		targetRect.parentNode.appendChild(startline);
-	};
-
-	var onRectMouseLeave = function onRectMouseLeave(evt) {
-		dom.removeClass(evt.target, "active");
-		dom.removeClass(endline, "active");
-		dom.removeClass(startline, "active");
-	};
-
-	var createRect = (function (_createRect) {
-		var _createRectWrapper = function createRect(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
-			return _createRect.apply(this, arguments);
-		};
-
-		_createRectWrapper.toString = function () {
-			return _createRect.toString();
-		};
-
-		return _createRectWrapper;
-	})(function (width, height, x, y, fill, label, segments) {
-		var rectHolder;
-		var rect = svg.newEl("rect", {
-			width: width / unit + "%",
-			height: height - 1,
-			x: x / unit + "%",
-			y: y,
-			fill: fill,
-			"class": segments && segments.length > 0 ? "time-block" : "segment"
-		});
-		if (label) {
-			rect.appendChild(svg.newEl("title", {
-				text: label
-			})); // Add tile to wedge path
-		}
-
-		rect.addEventListener("mouseenter", onRectMouseEnter);
-		rect.addEventListener("mouseleave", onRectMouseLeave);
-
-		if (segments && segments.length > 0) {
-			rectHolder = svg.newEl("g");
-			rectHolder.appendChild(rect);
-			segments.forEach(function (segment) {
-				if (segment.total > 0 && typeof segment.start === "number") {
-					rectHolder.appendChild(createRect(segment.total, 8, segment.start || 0.001, y, segment.colour, segment.name + " (" + Math.round(segment.start) + "ms - " + Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
-				}
-			});
-			return rectHolder;
-		} else {
-			return rect;
-		}
-	});
-
-	var createTimeWrapper = function createTimeWrapper() {
-		var timeHolder = svg.newEl("g", { "class": "time-scale full-width" });
-		for (var i = 0, secs = durationMs / 1000, secPerc = 100 / secs; i <= secs; i++) {
-			var lineLabel = svg.newTextEl(i + "sec", diagramHeight);
-			if (i > secs - 0.2) {
-				lineLabel.setAttribute("x", secPerc * i - 0.5 + "%");
-				lineLabel.setAttribute("text-anchor", "end");
-			} else {
-				lineLabel.setAttribute("x", secPerc * i + 0.5 + "%");
-			}
-
-			var lineEl = svg.newEl("line", {
-				x1: secPerc * i + "%",
-				y1: "0",
-				x2: secPerc * i + "%",
-				y2: diagramHeight
-			});
-			timeHolder.appendChild(lineEl);
-			timeHolder.appendChild(lineLabel);
-		}
-		return timeHolder;
-	};
-
-	var renderMarks = function renderMarks() {
-		var marksHolder = svg.newEl("g", {
-			transform: "scale(1, 1)",
-			"class": "marker-holder"
-		});
-
-		data.marks.forEach(function (mark, i) {
-			//mark.duration
-			var markHolder = svg.newEl("g", {
-				"class": "mark-holder"
-			});
-			var lineHolder = svg.newEl("g", {
-				"class": "line-holder"
-			});
-			var x = mark.startTime / unit;
-			mark.x = x;
-			var lineLabel = svg.newTextEl(mark.name, diagramHeight + 25);
-			lineLabel.setAttribute("writing-mode", "tb");
-			lineLabel.setAttribute("x", x + "%");
-			lineLabel.setAttribute("stroke", "");
-
-			lineHolder.appendChild(svg.newEl("line", {
-				x1: x + "%",
-				y1: 0,
-				x2: x + "%",
-				y2: diagramHeight
-			}));
-
-			if (data.marks[i - 1] && mark.x - data.marks[i - 1].x < 1) {
-				lineLabel.setAttribute("x", data.marks[i - 1].x + 1 + "%");
-				mark.x = data.marks[i - 1].x + 1;
-			}
-
-			//would use polyline but can't use percentage for points
-			lineHolder.appendChild(svg.newEl("line", {
-				x1: x + "%",
-				y1: diagramHeight,
-				x2: mark.x + "%",
-				y2: diagramHeight + 23
-			}));
-
-			lineLabel.addEventListener("mouseenter", function (evt) {
-				dom.addClass(lineHolder, "active");
-				markHolder.parentNode.appendChild(markHolder);
-			});
-			lineLabel.addEventListener("mouseleave", function (evt) {
-				dom.removeClass(lineHolder, "active");
-			});
-
-			markHolder.appendChild(svg.newEl("title", {
-				text: mark.name + " (" + Math.round(mark.startTime) + "ms)" }));
-			markHolder.appendChild(lineHolder);
-			markHolder.appendChild(lineLabel);
-			marksHolder.appendChild(markHolder);
-		});
-
-		return marksHolder;
-	};
-
-	timeLineHolder.appendChild(createTimeWrapper());
-	timeLineHolder.appendChild(renderMarks());
-
-	barsToShow.forEach(function (block, i) {
-		var blockWidth = block.total || 1;
-
-		var y = 25 * i;
-		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start || 0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
-
-		var blockLabel = svg.newTextEl(block.name + " (" + block.total + "ms)", y + 20);
-
-		if ((block.total || 1) / unit > 10 && svg.getNodeTextWidth(blockLabel) < 200) {
-			blockLabel.setAttribute("class", "inner-label");
-			blockLabel.setAttribute("x", (block.start || 0.001) / unit + 0.5 + "%");
-			blockLabel.setAttribute("width", blockWidth / unit + "%");
-		} else if ((block.start || 0.001) / unit + blockWidth / unit < 80) {
-			blockLabel.setAttribute("x", (block.start || 0.001) / unit + blockWidth / unit + 0.5 + "%");
-		} else {
-			blockLabel.setAttribute("x", (block.start || 0.001) / unit - 0.5 + "%");
-			blockLabel.setAttribute("text-anchor", "end");
-		}
-		blockLabel.style.opacity = block.name.match(/js.map$/) ? "0.5" : "1";
-		timeLineLabelHolder.appendChild(blockLabel);
-	});
-
-	timeLineHolder.appendChild(timeLineLabelHolder);
-
-	chartHolder.appendChild(dom.newTag("h1", {
-		text: "Resource Timing"
-	}));
-	chartHolder.appendChild(timeLineHolder);
-
-	chartHolder.appendChild(dom.newTag("h3", {
-		text: "Legend"
-	}));
-
-	var legendsHolder = dom.newTag("div", {
-		"class": "legends-group "
-	});
-
-	legendsHolder.appendChild(createLegend("initiator-type-legend", "Block color: Initiator Type", [["css", "#afd899"], ["iframe", "#85b3f2"], ["img", "#bc9dd6"], ["script", "#e7bd8c"], ["link", "#89afe6"], ["swf", "#4db3ba"],
-	//["font", "#e96859"],
-	["xmlhttprequest", "#e7d98c"]]));
-
-	legendsHolder.appendChild(createLegend("navigation-legend", "Navigation Timing", [["Redirect", "#ffff60"], ["App Cache", "#1f831f"], ["DNS Lookup", "#1f7c83"], ["TCP", "#e58226"], ["SSL Negotiation", "#c141cd"], ["Time to First Byte", "#1fe11f"], ["Content Download", "#1977dd"], ["DOM Processing", "#9cc"], ["DOM Content Loaded", "#d888df"], ["On Load", "#c0c0ff"]]));
-
-	legendsHolder.appendChild(createLegend("resource-legend", "Resource Timing", [["Stalled/Blocking", "#cdcdcd"], ["Redirect", "#ffff60"], ["App Cache", "#1f831f"], ["DNS Lookup", "#1f7c83"], ["TCP", "#e58226"], ["SSL Negotiation", "#c141cd"], ["Initial Connection (TCP)", "#e58226"], ["Time to First Byte", "#1fe11f"], ["Content Download", "#1977dd"]]));
-
-	chartHolder.appendChild(legendsHolder);
-	return chartHolder;
-};
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12}],15:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1702,17 +1447,20 @@ waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 		});
 
 		marks.forEach(function (mark, i) {
-			//mark.duration
+			var x = mark.startTime / unit;
 			var markHolder = svg.newEl("g", {
 				"class": "mark-holder"
 			});
 			var lineHolder = svg.newEl("g", {
 				"class": "line-holder"
 			});
-			var x = mark.startTime / unit;
+			var lineLableHolder = svg.newEl("g", {
+				"class": "line-lable-holder",
+				x: x + "%"
+			});
 			mark.x = x;
 			var lineLabel = svg.newTextEl(mark.name, diagramHeight + 25);
-			lineLabel.setAttribute("writing-mode", "tb");
+			//lineLabel.setAttribute("writing-mode", "tb");
 			lineLabel.setAttribute("x", x + "%");
 			lineLabel.setAttribute("stroke", "");
 
@@ -1736,19 +1484,30 @@ waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 				y2: diagramHeight + 23
 			}));
 
-			lineLabel.addEventListener("mouseenter", function (evt) {
-				dom.addClass(lineHolder, "active");
-				markHolder.parentNode.appendChild(markHolder);
-			});
-			lineLabel.addEventListener("mouseleave", function (evt) {
+			var isActive = false;
+			var onLableMouseEnter = function onLableMouseEnter(evt) {
+				if (!isActive) {
+					isActive = true;
+					dom.addClass(lineHolder, "active");
+					//firefox has issues with this
+					markHolder.parentNode.appendChild(markHolder);
+				}
+			};
+
+			var onLableMouseLeave = function onLableMouseLeave(evt) {
+				isActive = false;
 				dom.removeClass(lineHolder, "active");
-			});
+			};
+
+			lineLabel.addEventListener("mouseenter", onLableMouseEnter);
+			lineLabel.addEventListener("mouseleave", onLableMouseLeave);
+			lineLableHolder.appendChild(lineLabel);
 
 			markHolder.appendChild(svg.newEl("title", {
 				text: mark.name + " (" + Math.round(mark.startTime) + "ms)" }));
 			markHolder.appendChild(lineHolder);
-			markHolder.appendChild(lineLabel);
 			marksHolder.appendChild(markHolder);
+			markHolder.appendChild(lineLableHolder);
 		});
 
 		return marksHolder;
@@ -1796,7 +1555,7 @@ waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 };
 
 module.exports = waterfall;
-},{"../helpers/dom":7,"../helpers/svg":12}],16:[function(require,module,exports){
+},{"../helpers/dom":7,"../helpers/svg":12}],15:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1829,7 +1588,7 @@ var onIFrameReady = function onIFrameReady(addComponentFn) {
 };
 
 iFrameHolder.setup(onIFrameReady);
-},{"./components/navigationTimeline":1,"./components/pieChart":2,"./components/resourcesTimeline":3,"./components/summaryTiles":4,"./components/table":5,"./data":6,"./helpers/iFrameHolder":9,"./logger":17}],17:[function(require,module,exports){
+},{"./components/navigationTimeline":1,"./components/pieChart":2,"./components/resourcesTimeline":3,"./components/summaryTiles":4,"./components/table":5,"./data":6,"./helpers/iFrameHolder":9,"./logger":16}],16:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1860,4 +1619,4 @@ tableLogger.logTables([{
 	data: data.fileTypeCounts,
 	columns: ["fileType", "count", "perc"]
 }]);
-},{"./data":6,"./helpers/tableLogger":13}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]);
+},{"./data":6,"./helpers/tableLogger":13}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);

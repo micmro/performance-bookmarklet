@@ -144,19 +144,23 @@ waterfall.setupTimeLine = function(durationMs, blocks, marks, lines, title){
 		});
 
 		marks.forEach((mark, i) => {
-			//mark.duration
+			var x = mark.startTime / unit;
 			var markHolder = svg.newEl("g", {
 				class : "mark-holder"
 			});
 			var lineHolder = svg.newEl("g", {
 				class : "line-holder"
 			});
-			var x = mark.startTime / unit;
+			var lineLableHolder = svg.newEl("g", {
+				class : "line-lable-holder",
+				x : x + "%"
+			});
 			mark.x = x;
 			var lineLabel = svg.newTextEl(mark.name,  diagramHeight + 25 );
-			lineLabel.setAttribute("writing-mode", "tb");
+			//lineLabel.setAttribute("writing-mode", "tb");
 			lineLabel.setAttribute("x", x + "%");
 			lineLabel.setAttribute("stroke", "");
+
 
 			lineHolder.appendChild(svg.newEl("line", {
 				x1 : x + "%",
@@ -178,20 +182,31 @@ waterfall.setupTimeLine = function(durationMs, blocks, marks, lines, title){
 				y2 : diagramHeight + 23
 			}));
 
-			lineLabel.addEventListener("mouseenter", (evt) => {
-				dom.addClass(lineHolder, "active");
-				markHolder.parentNode.appendChild(markHolder);
-			});
-			lineLabel.addEventListener("mouseleave", (evt) => {
+			var isActive = false;
+			var onLableMouseEnter = function(evt){
+				if(!isActive){
+					isActive = true;
+					dom.addClass(lineHolder, "active");
+					//firefox has issues with this
+					markHolder.parentNode.appendChild(markHolder);
+				}
+			};
+
+			var onLableMouseLeave = function(evt){
+				isActive = false;
 				dom.removeClass(lineHolder, "active");
-			});
+			};
+
+			lineLabel.addEventListener("mouseenter", onLableMouseEnter);
+			lineLabel.addEventListener("mouseleave", onLableMouseLeave);
+			lineLableHolder.appendChild(lineLabel);
 
 			markHolder.appendChild(svg.newEl("title", {
 				text : mark.name + " (" + Math.round(mark.startTime) + "ms)",
 			}));
 			markHolder.appendChild(lineHolder);
-			markHolder.appendChild(lineLabel);
 			marksHolder.appendChild(markHolder);
+			markHolder.appendChild(lineLableHolder);
 		});
 
 		return marksHolder;
