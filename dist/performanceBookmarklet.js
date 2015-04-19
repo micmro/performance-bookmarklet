@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:18/04/2015 */
+   build:19/04/2015 */
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
@@ -47,41 +47,41 @@ navigationTimelineComponent.init = function () {
 		return (a["time (ms)"] || 0) - (b["time (ms)"] || 0);
 	});
 
-	var timeBlock = function timeBlock(name, start, end, colour) {
+	var timeBlock = function timeBlock(name, start, end, cssClass) {
 		return {
 			name: name,
 			start: start,
 			end: end,
 			total: typeof start !== "number" || typeof end !== "number" ? undefined : end - start,
-			colour: colour
+			cssClass: cssClass
 		};
 	};
 
-	perfTimingCalc.blocks = [timeBlock("Total", 0, perfTimingCalc.pageLoadTime, "#ccc"), timeBlock("Unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd, "#909"), timeBlock("Redirect (" + performance.navigation.redirectCount + "x)", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd, "#ffff60"), timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart, "#1f831f"), timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd, "#1f7c83"), timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd, "#e58226"), timeBlock("Timer to First Byte", perfTimingCalc.requestStart, perfTimingCalc.responseStart, "#1fe11f"), timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd, "#1977dd"), timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete, "#9cc"), timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd, "#d888df"), timeBlock("onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd, "#c0c0ff")];
+	perfTimingCalc.blocks = [timeBlock("Total", 0, perfTimingCalc.pageLoadTime, "block-total"), timeBlock("Unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd, "block-unload"), timeBlock("Redirect (" + performance.navigation.redirectCount + "x)", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd, "block-redirect"), timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart, "block-appcache"), timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd, "block-dns"), timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd, "block-tcp"), timeBlock("Time to First Byte", perfTimingCalc.requestStart, perfTimingCalc.responseStart, "block-ttfb"), timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd, "block-response"), timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete, "block-dom"), timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd, "block-dom-content-loaded"), timeBlock("onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd, "block-onload")];
 
 	if (perfTimingCalc.secureConnectionStart) {
-		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "#c141cd"));
+		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "block-ssl"));
 	}
 	if (perfTimingCalc.msFirstPaint) {
-		perfTimingCalc.blocks.push(timeBlock("msFirstPaint Event", perfTimingCalc.msFirstPaint, perfTimingCalc.msFirstPaint, "#8FBC83"));
+		perfTimingCalc.blocks.push(timeBlock("msFirstPaint Event", perfTimingCalc.msFirstPaint, perfTimingCalc.msFirstPaint, "block-ms-first-paint-event"));
 	}
 	if (perfTimingCalc.domInteractive) {
-		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive, "#d888df"));
+		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive, "block-dom-interactive-event"));
 	}
 	if (!perfTimingCalc.redirectEnd && !perfTimingCalc.redirectStart && perfTimingCalc.fetchStart > perfTimingCalc.navigationStart) {
-		perfTimingCalc.blocks.push(timeBlock("Cross-Domain Redirect (and/or other Delay)", perfTimingCalc.navigationStart, perfTimingCalc.fetchStart, "#ffff60"));
+		perfTimingCalc.blocks.push(timeBlock("Cross-Domain Redirect (and/or other Delay)", perfTimingCalc.navigationStart, perfTimingCalc.fetchStart, "block-redirect"));
 	}
 
-	perfTimingCalc.blocks.push(timeBlock("Network/Server", perfTimingCalc.navigationStart, perfTimingCalc.responseStart, "#8cd18c"));
+	perfTimingCalc.blocks.push(timeBlock("Network/Server", perfTimingCalc.navigationStart, perfTimingCalc.responseStart, "block-network-server"));
 
 	//add measures to be added as bars
 	data.measures.forEach(function (measure) {
-		perfTimingCalc.blocks.push(timeBlock("measure:" + measure.name, Math.round(measure.startTime), Math.round(measure.startTime + measure.duration), "#f00"));
+		perfTimingCalc.blocks.push(timeBlock("measure:" + measure.name, Math.round(measure.startTime), Math.round(measure.startTime + measure.duration), "block-custom-measure"));
 	});
 
 	tableLogger.logTables([{ name: "Navigation Timeline", data: perfTimingCalc.blocks, columns: ["name", "start", "end", "total"] }, { name: "Navigation Events", data: perfTimingCalc.output }, { name: "Marks", data: data.marks, columns: ["name", "startTime", "duration"] }]);
 
-	return waterfall.setupTimeLine(Math.round(perfTimingCalc.pageLoadTime), perfTimingCalc.blocks, "Navigation Timing");
+	return waterfall.setupTimeLine(Math.round(perfTimingCalc.pageLoadTime), perfTimingCalc.blocks, data.marks, undefined, "Navigation Timing");
 };
 
 module.exports = navigationTimelineComponent;
@@ -227,23 +227,23 @@ resourcesTimelineComponent.init = function () {
 		}
 	}
 
-	var resourceSectionSegment = function resourceSectionSegment(name, start, end, colour) {
+	var resourceSectionSegment = function resourceSectionSegment(name, start, end, cssClass) {
 		return {
 			name: name,
 			start: start,
 			end: end,
 			total: typeof start !== "number" || typeof end !== "number" ? undefined : end - start,
-			colour: colour
+			cssClass: cssClass
 		};
 	};
 
-	var resourceSection = function resourceSection(name, start, end, colour, segments, rawResource) {
+	var resourceSection = function resourceSection(name, start, end, cssClass, segments, rawResource) {
 		return {
 			name: name,
 			start: start,
 			end: end,
 			total: typeof start !== "number" || typeof end !== "number" ? undefined : end - start,
-			colour: colour,
+			cssClass: cssClass,
 			segments: segments,
 			rawResource: rawResource
 		};
@@ -276,25 +276,25 @@ resourcesTimelineComponent.init = function () {
 		return legendHolder;
 	};
 
-	var navigationApiTotal = [resourceSectionSegment("Unload", calc.unloadEventStart, calc.unloadEventEnd, "#909"), resourceSectionSegment("Redirect", calc.redirectStart, calc.redirectEnd, "#ffff60"), resourceSectionSegment("App cache", calc.fetchStart, calc.domainLookupStart, "#1f831f"), resourceSectionSegment("DNS", calc.domainLookupStart, calc.domainLookupEnd, "#1f7c83"), resourceSectionSegment("TCP", calc.connectStart, calc.connectEnd, "#e58226"), resourceSectionSegment("Timer to First Byte", calc.requestStart, calc.responseStart, "#1fe11f"), resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "#1977dd"), resourceSectionSegment("DOM Processing", calc.domLoading, calc.domComplete, "#9cc"), resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "#d888df"), resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "#c0c0ff")];
+	var navigationApiTotal = [resourceSectionSegment("Unload", calc.unloadEventStart, calc.unloadEventEnd, "block-unload"), resourceSectionSegment("Redirect", calc.redirectStart, calc.redirectEnd, "block-redirect"), resourceSectionSegment("App cache", calc.fetchStart, calc.domainLookupStart, "block-appcache"), resourceSectionSegment("DNS", calc.domainLookupStart, calc.domainLookupEnd, "block-dns"), resourceSectionSegment("TCP", calc.connectStart, calc.connectEnd, "block-tcp"), resourceSectionSegment("Timer to First Byte", calc.requestStart, calc.responseStart, "block-ttfb"), resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "block-response"), resourceSectionSegment("DOM Processing", calc.domLoading, calc.domComplete, "block-dom"), resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "block-dom-content-loaded"), resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "block-onload")];
 
 	if (calc.secureConnectionStart) {
-		navigationApiTotal.push(resourceSectionSegment("SSL", calc.connectStart, calc.secureConnectionStart, "#c141cd"));
+		navigationApiTotal.push(resourceSectionSegment("SSL", calc.connectStart, calc.secureConnectionStart, "block-ssl"));
 	}
 	if (calc.msFirstPaint) {
-		navigationApiTotal.push(resourceSectionSegment("msFirstPaint Event", calc.msFirstPaint, calc.msFirstPaint, "#8FBC83"));
+		navigationApiTotal.push(resourceSectionSegment("msFirstPaint Event", calc.msFirstPaint, calc.msFirstPaint, "block-ms-first-paint-event"));
 	}
 	if (calc.domInteractive) {
-		navigationApiTotal.push(resourceSectionSegment("domInteractive Event", calc.domInteractive, calc.domInteractive, "#d888df"));
+		navigationApiTotal.push(resourceSectionSegment("domInteractive Event", calc.domInteractive, calc.domInteractive, "block-dom-interactive-event"));
 	}
 	if (!calc.redirectEnd && !calc.redirectStart && calc.fetchStart > calc.navigationStart) {
-		navigationApiTotal.push(resourceSectionSegment("Cross-Domain Redirect", calc.navigationStart, calc.fetchStart, "#ffff60"));
+		navigationApiTotal.push(resourceSectionSegment("Cross-Domain Redirect", calc.navigationStart, calc.fetchStart, "block-redirect"));
 	}
 
-	calc.blocks = [resourceSection("Navigation API total", 0, calc.loadEventEnd, "#ccc", navigationApiTotal)];
+	calc.blocks = [resourceSection("Navigation API total", 0, calc.loadEventEnd, "block-navigation-api-total", navigationApiTotal)];
 
 	data.allResourcesCalc.forEach(function (resource, i) {
-		var segments = [resourceSectionSegment("Redirect", resource.redirectStart, resource.redirectEnd, "#ffff60"), resourceSectionSegment("DNS Lookup", resource.domainLookupStart, resource.domainLookupEnd, "#1f7c83"), resourceSectionSegment("Initial Connection (TCP)", resource.connectStart, resource.connectEnd, "#e58226"), resourceSectionSegment("secureConnect", resource.secureConnectionStart || undefined, resource.connectEnd, "#c141cd"), resourceSectionSegment("Timer to First Byte", resource.requestStart, resource.responseStart, "#1fe11f"), resourceSectionSegment("Content Download", resource.responseStart || undefined, resource.responseEnd, "#1977dd")];
+		var segments = [resourceSectionSegment("Redirect", resource.redirectStart, resource.redirectEnd, "block-redirect"), resourceSectionSegment("DNS Lookup", resource.domainLookupStart, resource.domainLookupEnd, "block-dns"), resourceSectionSegment("Initial Connection (TCP)", resource.connectStart, resource.connectEnd, "block-dns"), resourceSectionSegment("secureConnect", resource.secureConnectionStart || undefined, resource.connectEnd, "block-ssl"), resourceSectionSegment("Timer to First Byte", resource.requestStart, resource.responseStart, "block-ttfb"), resourceSectionSegment("Content Download", resource.responseStart || undefined, resource.responseEnd, "block-response")];
 
 		var resourceTimings = [0, resource.redirectStart, resource.domainLookupStart, resource.connectStart, resource.secureConnectionStart, resource.requestStart, resource.responseStart];
 
@@ -307,16 +307,16 @@ resourcesTimelineComponent.init = function () {
 		});
 
 		if (resource.startTime < firstTiming) {
-			segments.unshift(resourceSectionSegment("Stalled/Blocking", resource.startTime, firstTiming, "#cdcdcd"));
+			segments.unshift(resourceSectionSegment("Stalled/Blocking", resource.startTime, firstTiming, "block-blocking"));
 		}
 
-		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), helper.getInitiatorOrFileTypeColour(resource.initiatorType), segments, resource));
+		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), "block-" + resource.initiatorType, segments, resource));
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd, resource.responseEnd);
 	});
 
 	calc.loadDuration = Math.round(calc.lastResponseEnd);
 
-	var chartHolder = waterfall.setupTimeLine(calc.loadDuration, calc.blocks, "Resource Timing");
+	var chartHolder = waterfall.setupTimeLine(calc.loadDuration, calc.blocks, data.marks, undefined, "Resource Timing");
 
 	chartHolder.appendChild(dom.newTag("h3", {
 		text: "Legend"
@@ -1211,7 +1211,7 @@ module.exports = pieChartHelpers;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var style = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #pie-request-by-domain {flex-grow: 2; width:772px; max-width: 1272px;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #a971c5; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}";
+var style = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .block-css {fill: #afd899;} .block-iframe, .block-html, .block-internal {fill: #85b3f2;} .block-img, .block-image {fill: #bc9dd6;} .block-script, .block-js {fill: #e7bd8c;} .block-link {fill: #89afe6;} .block-swf, .block-flash {fill: #4db3ba;} .block-font {fill: #e96859;} .block-xmlhttprequest, .block-ajax {fill: #e7d98c;} .block-other {fill: #bebebe;} .block-total {fill: #ccc;} .block-unload {fill: #909;} .block-redirect {fill: #ffff60;} .block-appcache {fill: #1f831f;} .block-dns {fill: #1f7c83;} .block-tcp {fill: #e58226;} .block-ttfb {fill: #1fe11f;} .block-response {fill: #1977dd;} .block-dom {fill: #9cc;} .block-dom-content-loaded {fill: #d888df;} .block-onload {fill: #c0c0ff;} .block-ssl {fill: #c141cd; } .block-ms-first-paint-event {fill: #8fbc83; } .block-dom-interactive-event {fill: #d888df; } .block-network-server {fill: #8cd18c; } .block-custom-measure {fill: #f00; } .block-navigation-api-total {fill: #ccc;} .block-blocking {fill: #cdcdcd;} .block-undefined {fill: #0f0;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #pie-request-by-domain {flex-grow: 2; width:772px; max-width: 1272px;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #a971c5; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}";
 exports.style = style;
 },{}],12:[function(require,module,exports){
 /*
@@ -1542,24 +1542,20 @@ var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["defau
 Helper to create waterfall timelines 
 */
 
-var data = _interopRequire(require("../data"));
-
-var helper = _interopRequire(require("../helpers/helpers"));
-
 var svg = _interopRequire(require("../helpers/svg"));
 
 var dom = _interopRequire(require("../helpers/dom"));
 
 var waterfall = {};
 
-waterfall.setupTimeLine = function (durationMs, blocks, title) {
+waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 	var unit = durationMs / 100,
 	    barsToShow = blocks.filter(function (block) {
 		return typeof block.start == "number" && typeof block.total == "number";
 	}).sort(function (a, b) {
 		return (a.start || 0) - (b.start || 0);
 	}),
-	    maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce(function (currMax, currValue) {
+	    maxMarkTextLength = marks.length > 0 ? marks.reduce(function (currMax, currValue) {
 		return Math.max(typeof currMax == "number" ? currMax : 0, svg.getNodeTextWidth(svg.newTextEl(currValue.name, "0")));
 	}) : 0,
 	    diagramHeight = (barsToShow.length + 1) * 25,
@@ -1624,15 +1620,14 @@ waterfall.setupTimeLine = function (durationMs, blocks, title) {
 		};
 
 		return _createRectWrapper;
-	})(function (width, height, x, y, fill, label, segments) {
+	})(function (width, height, x, y, cssClass, label, segments) {
 		var rectHolder;
 		var rect = svg.newEl("rect", {
 			width: width / unit + "%",
 			height: height - 1,
-			x: x / unit + "%",
+			x: Math.round(x / unit * 100) / 100 + "%",
 			y: y,
-			fill: fill,
-			"class": segments && segments.length > 0 ? "time-block" : "segment"
+			"class": (segments && segments.length > 0 ? "time-block" : "segment") + " " + (cssClass || "block-undefined")
 		});
 		if (label) {
 			rect.appendChild(svg.newEl("title", {
@@ -1648,7 +1643,7 @@ waterfall.setupTimeLine = function (durationMs, blocks, title) {
 			rectHolder.appendChild(rect);
 			segments.forEach(function (segment) {
 				if (segment.total > 0 && typeof segment.start === "number") {
-					rectHolder.appendChild(createRect(segment.total, 8, segment.start || 0.001, y, segment.colour, segment.name + " (" + Math.round(segment.start) + "ms - " + Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
+					rectHolder.appendChild(createRect(segment.total, 8, segment.start || 0.001, y, segment.cssClass, segment.name + " (" + Math.round(segment.start) + "ms - " + Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
 				}
 			});
 			return rectHolder;
@@ -1686,7 +1681,7 @@ waterfall.setupTimeLine = function (durationMs, blocks, title) {
 			"class": "marker-holder"
 		});
 
-		data.marks.forEach(function (mark, i) {
+		marks.forEach(function (mark, i) {
 			//mark.duration
 			var markHolder = svg.newEl("g", {
 				"class": "mark-holder"
@@ -1708,9 +1703,9 @@ waterfall.setupTimeLine = function (durationMs, blocks, title) {
 				y2: diagramHeight
 			}));
 
-			if (data.marks[i - 1] && mark.x - data.marks[i - 1].x < 1) {
-				lineLabel.setAttribute("x", data.marks[i - 1].x + 1 + "%");
-				mark.x = data.marks[i - 1].x + 1;
+			if (marks[i - 1] && mark.x - marks[i - 1].x < 1) {
+				lineLabel.setAttribute("x", marks[i - 1].x + 1 + "%");
+				mark.x = marks[i - 1].x + 1;
 			}
 
 			//would use polyline but can't use percentage for points
@@ -1746,7 +1741,7 @@ waterfall.setupTimeLine = function (durationMs, blocks, title) {
 		var blockWidth = block.total || 1;
 
 		var y = 25 * i;
-		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start || 0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
+		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start || 0.001, y, block.cssClass, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
 
 		var blockLabel = svg.newTextEl(block.name + " (" + block.total + "ms)", y + (block.segments ? 20 : 17));
 
@@ -1766,16 +1761,18 @@ waterfall.setupTimeLine = function (durationMs, blocks, title) {
 
 	timeLineHolder.appendChild(timeLineLabelHolder);
 
-	chartHolder.appendChild(dom.newTag("h1", {
-		text: title
-	}));
+	if (title) {
+		chartHolder.appendChild(dom.newTag("h1", {
+			text: title
+		}));
+	}
 	chartHolder.appendChild(timeLineHolder);
 
 	return chartHolder;
 };
 
 module.exports = waterfall;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12}],16:[function(require,module,exports){
+},{"../helpers/dom":7,"../helpers/svg":12}],16:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };

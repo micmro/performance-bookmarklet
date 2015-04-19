@@ -1,21 +1,17 @@
 /*
 Helper to create waterfall timelines 
 */
-
-import data from "../data";
-import helper from "../helpers/helpers";
 import svg from "../helpers/svg";
 import dom from "../helpers/dom";
 
-
 var waterfall = {};
 
-waterfall.setupTimeLine = function(durationMs, blocks, title){
+waterfall.setupTimeLine = function(durationMs, blocks, marks, lines, title){
 	const unit = durationMs / 100,
 		barsToShow = blocks
 			.filter((block) => (typeof block.start == "number" && typeof block.total == "number"))
 			.sort((a, b) => (a.start||0) - (b.start||0)),
-		maxMarkTextLength = data.marks.length > 0 ? data.marks.reduce((currMax, currValue) => {
+		maxMarkTextLength = marks.length > 0 ? marks.reduce((currMax, currValue) => {
 			return Math.max((typeof currMax == "number" ? currMax : 0), svg.getNodeTextWidth( svg.newTextEl(currValue.name, "0")));
 		}) : 0,
 		diagramHeight = (barsToShow.length + 1) * 25,
@@ -70,15 +66,14 @@ waterfall.setupTimeLine = function(durationMs, blocks, title){
 		dom.removeClass(startline, "active");
 	};
 
-	var createRect = function(width, height, x, y, fill, label, segments){
+	var createRect = function(width, height, x, y, cssClass, label, segments){
 		var rectHolder;
 		var rect = svg.newEl("rect", {
 			width : (width / unit) + "%",
 			height : height-1,
-			x :  (x / unit) + "%",
+			x :  Math.round((x / unit)*100)/100 + "%",
 			y : y,
-			fill : fill,
-			class : (segments && segments.length > 0) ? "time-block" : "segment"
+			class : ((segments && segments.length > 0 ? "time-block" : "segment")) + " " +  (cssClass || "block-undefined")
 		});
 		if(label){
 			rect.appendChild(svg.newEl("title", {
@@ -94,7 +89,7 @@ waterfall.setupTimeLine = function(durationMs, blocks, title){
 			rectHolder.appendChild(rect);
 			segments.forEach((segment) => {
 				if(segment.total > 0 && typeof segment.start === "number"){
-					rectHolder.appendChild(createRect(segment.total, 8, segment.start||0.001, y,  segment.colour, segment.name + " (" + Math.round(segment.start) + "ms - " +  Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
+					rectHolder.appendChild(createRect(segment.total, 8, segment.start||0.001, y, segment.cssClass, segment.name + " (" + Math.round(segment.start) + "ms - " +  Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
 				}
 			});
 			return rectHolder;
@@ -133,7 +128,7 @@ waterfall.setupTimeLine = function(durationMs, blocks, title){
 			class : "marker-holder"
 		});
 
-		data.marks.forEach((mark, i) => {
+		marks.forEach((mark, i) => {
 			//mark.duration
 			var markHolder = svg.newEl("g", {
 				class : "mark-holder"
@@ -155,9 +150,9 @@ waterfall.setupTimeLine = function(durationMs, blocks, title){
 				y2 : diagramHeight
 			}));
 
-			if(data.marks[i-1] && mark.x - data.marks[i-1].x < 1){
-				lineLabel.setAttribute("x", data.marks[i-1].x+1 + "%");
-				mark.x = data.marks[i-1].x+1;
+			if(marks[i-1] && mark.x - marks[i-1].x < 1){
+				lineLabel.setAttribute("x", marks[i-1].x+1 + "%");
+				mark.x = marks[i-1].x+1;
 			}
 
 			//would use polyline but can't use percentage for points 
@@ -194,7 +189,7 @@ waterfall.setupTimeLine = function(durationMs, blocks, title){
 		var blockWidth = block.total||1;
 
 		var y = 25 * i;
-		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.colour, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
+		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.cssClass, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
 
 		var blockLabel = svg.newTextEl(block.name + " (" + block.total + "ms)", (y + (block.segments? 20 : 17)));
 
@@ -214,9 +209,11 @@ waterfall.setupTimeLine = function(durationMs, blocks, title){
 
 	timeLineHolder.appendChild(timeLineLabelHolder);
 	
-	chartHolder.appendChild(dom.newTag("h1", {
-		text : title
-	}));
+	if(title){
+		chartHolder.appendChild(dom.newTag("h1", {
+			text : title
+		}));
+	}
 	chartHolder.appendChild(timeLineHolder);
 
 	

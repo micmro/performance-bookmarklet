@@ -16,6 +16,7 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 .text-right {text-align: right;}
 .text-left {text-align: left;}
 
+/*initiator and file types*/
 .css {background: #afd899;}
 .iframe,
 .html,
@@ -47,6 +48,47 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 .xmlhttprequest-light,
 .ajax-light {background: #f3ecc6;}
 .other-light {background: #dfdfdf;}
+
+/*block colours*/
+.block-css {fill: #afd899;}
+.block-iframe,
+.block-html,
+.block-internal {fill: #85b3f2;}
+.block-img,
+.block-image {fill: #bc9dd6;}
+.block-script,
+.block-js {fill: #e7bd8c;}
+.block-link {fill: #89afe6;}
+.block-swf,
+.block-flash {fill: #4db3ba;}
+.block-font {fill: #e96859;}
+.block-xmlhttprequest,
+.block-ajax {fill: #e7d98c;}
+.block-other {fill: #bebebe;}
+
+.block-total {fill: #ccc;}
+.block-unload {fill: #909;}
+.block-redirect {fill: #ffff60;}
+.block-appcache {fill: #1f831f;}
+.block-dns {fill: #1f7c83;}
+.block-tcp {fill: #e58226;}
+.block-ttfb {fill: #1fe11f;}
+.block-response {fill: #1977dd;}
+.block-dom {fill: #9cc;}
+.block-dom-content-loaded {fill: #d888df;}
+.block-onload {fill: #c0c0ff;}
+
+.block-ssl {fill: #c141cd; }
+.block-ms-first-paint-event {fill: #8fbc83; }
+.block-dom-interactive-event {fill: #d888df; }
+.block-network-server {fill: #8cd18c; }
+.block-custom-measure {fill: #f00; }
+
+.block-navigation-api-total {fill: #ccc;}
+.block-blocking {fill: #cdcdcd;}
+
+.block-undefined {fill: #0f0;} 
+
 
 /*Summary Tiles*/
 .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; }

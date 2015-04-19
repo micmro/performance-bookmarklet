@@ -22,23 +22,23 @@ resourcesTimelineComponent.init = function(){
 		}
 	}
 
-	var resourceSectionSegment = function(name, start, end, colour){
+	var resourceSectionSegment = function(name, start, end, cssClass){
 		return {
 			name : name,
 			start : start,
 			end : end,
 			total : ((typeof start !== "number" || typeof end !== "number") ? undefined : (end - start)),
-			colour : colour
+			cssClass : cssClass
 		}
 	};
 
-	var resourceSection = function(name, start, end, colour, segments, rawResource){
+	var resourceSection = function(name, start, end, cssClass, segments, rawResource){
 		return {
 			name : name,
 			start : start,
 			end : end,
 			total : ((typeof start !== "number" || typeof end !== "number") ? undefined : (end - start)),
-			colour : colour,
+			cssClass : cssClass,
 			segments : segments,
 			rawResource : rawResource
 		}
@@ -73,43 +73,43 @@ resourcesTimelineComponent.init = function(){
 	};
 
 	var navigationApiTotal = [
-		resourceSectionSegment("Unload", calc.unloadEventStart, calc.unloadEventEnd, "#909"),
-		resourceSectionSegment("Redirect", calc.redirectStart, calc.redirectEnd, "#ffff60"),
-		resourceSectionSegment("App cache", calc.fetchStart, calc.domainLookupStart, "#1f831f"),
-		resourceSectionSegment("DNS", calc.domainLookupStart, calc.domainLookupEnd, "#1f7c83"),
-		resourceSectionSegment("TCP", calc.connectStart, calc.connectEnd, "#e58226"),
-		resourceSectionSegment("Timer to First Byte", calc.requestStart, calc.responseStart, "#1fe11f"),
-		resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "#1977dd"),
-		resourceSectionSegment("DOM Processing", calc.domLoading, calc.domComplete, "#9cc"),
-		resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "#d888df"),
-		resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "#c0c0ff")
+		resourceSectionSegment("Unload", calc.unloadEventStart, calc.unloadEventEnd, "block-unload"),
+		resourceSectionSegment("Redirect", calc.redirectStart, calc.redirectEnd, "block-redirect"),
+		resourceSectionSegment("App cache", calc.fetchStart, calc.domainLookupStart, "block-appcache"),
+		resourceSectionSegment("DNS", calc.domainLookupStart, calc.domainLookupEnd, "block-dns"),
+		resourceSectionSegment("TCP", calc.connectStart, calc.connectEnd, "block-tcp"),
+		resourceSectionSegment("Timer to First Byte", calc.requestStart, calc.responseStart, "block-ttfb"),
+		resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "block-response"),
+		resourceSectionSegment("DOM Processing", calc.domLoading, calc.domComplete, "block-dom"),
+		resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "block-dom-content-loaded"),
+		resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "block-onload")
 	];
 
 	if(calc.secureConnectionStart){
-		navigationApiTotal.push(resourceSectionSegment("SSL", calc.connectStart, calc.secureConnectionStart, "#c141cd"));
+		navigationApiTotal.push(resourceSectionSegment("SSL", calc.connectStart, calc.secureConnectionStart, "block-ssl"));
 	}
 	if(calc.msFirstPaint){
-		navigationApiTotal.push(resourceSectionSegment("msFirstPaint Event", calc.msFirstPaint, calc.msFirstPaint, "#8FBC83"));
+		navigationApiTotal.push(resourceSectionSegment("msFirstPaint Event", calc.msFirstPaint, calc.msFirstPaint, "block-ms-first-paint-event"));
 	}
 	if(calc.domInteractive){
-		navigationApiTotal.push(resourceSectionSegment("domInteractive Event", calc.domInteractive, calc.domInteractive, "#d888df"));
+		navigationApiTotal.push(resourceSectionSegment("domInteractive Event", calc.domInteractive, calc.domInteractive, "block-dom-interactive-event"));
 	}
 	if(!calc.redirectEnd && !calc.redirectStart && calc.fetchStart > calc.navigationStart){
-		navigationApiTotal.push(resourceSectionSegment("Cross-Domain Redirect", calc.navigationStart, calc.fetchStart, "#ffff60"));
+		navigationApiTotal.push(resourceSectionSegment("Cross-Domain Redirect", calc.navigationStart, calc.fetchStart, "block-redirect"));
 	}
 
 	calc.blocks = [
-		resourceSection("Navigation API total", 0, calc.loadEventEnd, "#ccc", navigationApiTotal),
+		resourceSection("Navigation API total", 0, calc.loadEventEnd, "block-navigation-api-total", navigationApiTotal),
 	];
 
 	data.allResourcesCalc.forEach((resource, i) => {
 		var segments = [
-			resourceSectionSegment("Redirect", resource.redirectStart, resource.redirectEnd, "#ffff60"),
-			resourceSectionSegment("DNS Lookup", resource.domainLookupStart, resource.domainLookupEnd, "#1f7c83"),
-			resourceSectionSegment("Initial Connection (TCP)", resource.connectStart, resource.connectEnd, "#e58226"),
-			resourceSectionSegment("secureConnect", resource.secureConnectionStart||undefined, resource.connectEnd, "#c141cd"),
-			resourceSectionSegment("Timer to First Byte", resource.requestStart, resource.responseStart, "#1fe11f"),
-			resourceSectionSegment("Content Download", resource.responseStart||undefined, resource.responseEnd, "#1977dd")
+			resourceSectionSegment("Redirect", resource.redirectStart, resource.redirectEnd, "block-redirect"),
+			resourceSectionSegment("DNS Lookup", resource.domainLookupStart, resource.domainLookupEnd, "block-dns"),
+			resourceSectionSegment("Initial Connection (TCP)", resource.connectStart, resource.connectEnd, "block-dns"),
+			resourceSectionSegment("secureConnect", resource.secureConnectionStart||undefined, resource.connectEnd, "block-ssl"),
+			resourceSectionSegment("Timer to First Byte", resource.requestStart, resource.responseStart, "block-ttfb"),
+			resourceSectionSegment("Content Download", resource.responseStart||undefined, resource.responseEnd, "block-response")
 		];
 
 		var resourceTimings = [0, resource.redirectStart, resource.domainLookupStart, resource.connectStart, resource.secureConnectionStart, resource.requestStart, resource.responseStart];
@@ -123,17 +123,17 @@ resourcesTimelineComponent.init = function(){
 		});
 
 		if(resource.startTime < firstTiming){
-			segments.unshift(resourceSectionSegment("Stalled/Blocking", resource.startTime, firstTiming, "#cdcdcd"));
+			segments.unshift(resourceSectionSegment("Stalled/Blocking", resource.startTime, firstTiming, "block-blocking"));
 		}
 
-		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), helper.getInitiatorOrFileTypeColour(resource.initiatorType), segments, resource));
+		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), "block-" + resource.initiatorType, segments, resource));
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
 	});
 
 	calc.loadDuration = Math.round(calc.lastResponseEnd);
 
 
-	var chartHolder = waterfall.setupTimeLine(calc.loadDuration, calc.blocks, "Resource Timing");
+	var chartHolder = waterfall.setupTimeLine(calc.loadDuration, calc.blocks, data.marks, undefined, "Resource Timing");
 
 	chartHolder.appendChild(dom.newTag("h3", {
 		text : "Legend"
