@@ -101,36 +101,36 @@ resourcesTimelineComponent.init = function(){
 	var chartData = getChartData();
 	var chartHolder = waterfall.setupTimeLine(chartData.loadDuration, chartData.blocks, data.marks, chartData.bg, "Resource Timing");
 
-	var selectBox = dom.newTag("select", {
-		class : "domain-selector",
-		onchange : function(){
-			var domain = this.options[this.selectedIndex].value;
-			if(domain === "all"){
-				chartData = getChartData();
-			}else{
-				chartData = getChartData((resource) => resource.domain === domain);
+	if(data.requestsByDomain.length > 1){
+		var selectBox = dom.newTag("select", {
+			class : "domain-selector",
+			onchange : function(){
+				var domain = this.options[this.selectedIndex].value;
+				if(domain === "all"){
+					chartData = getChartData();
+				}else{
+					chartData = getChartData((resource) => resource.domain === domain);
+				}
+				var tempChartHolder = waterfall.setupTimeLine(chartData.loadDuration, chartData.blocks, data.marks, chartData.bg, "Temp");
+				var oldSVG = chartHolder.getElementsByClassName("water-fall-chart")[0];
+				var newSVG = tempChartHolder.getElementsByClassName("water-fall-chart")[0];
+				chartHolder.replaceChild(newSVG, oldSVG);
 			}
-			var tempChartHolder = waterfall.setupTimeLine(chartData.loadDuration, chartData.blocks, data.marks, chartData.bg, "Temp");
-			var oldSVG = chartHolder.getElementsByClassName("water-fall-chart")[0];
-			var newSVG = tempChartHolder.getElementsByClassName("water-fall-chart")[0];
-			chartHolder.replaceChild(newSVG, oldSVG);
-		}
-	});
+		});
 
-	selectBox.appendChild(dom.newTag("option", {
-		text : "show all",
-		value : "all"
-	}));
-
-	data.requestsByDomain.forEach((domain) => {
 		selectBox.appendChild(dom.newTag("option", {
-			text : domain.domain
+			text : "show all",
+			value : "all"
 		}));
-	});
-	var chartSvg = chartHolder.getElementsByTagName("svg")[0];
-	chartSvg.parentNode.insertBefore(selectBox, chartSvg);
 
-	window.xxxx = chartHolder;
+		data.requestsByDomain.forEach((domain) => {
+			selectBox.appendChild(dom.newTag("option", {
+				text : domain.domain
+			}));
+		});
+		var chartSvg = chartHolder.getElementsByClassName("water-fall-chart")[0];
+		chartSvg.parentNode.insertBefore(selectBox, chartSvg);
+	}
 
 	return chartHolder;
 };

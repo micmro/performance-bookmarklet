@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:20/04/2015 */
+   build:21/04/2015 */
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
@@ -347,38 +347,38 @@ resourcesTimelineComponent.init = function () {
 	var chartData = getChartData();
 	var chartHolder = waterfall.setupTimeLine(chartData.loadDuration, chartData.blocks, data.marks, chartData.bg, "Resource Timing");
 
-	var selectBox = dom.newTag("select", {
-		"class": "domain-selector",
-		onchange: function onchange() {
-			var domain = this.options[this.selectedIndex].value;
-			if (domain === "all") {
-				chartData = getChartData();
-			} else {
-				chartData = getChartData(function (resource) {
-					return resource.domain === domain;
-				});
+	if (data.requestsByDomain.length > 1) {
+		var selectBox = dom.newTag("select", {
+			"class": "domain-selector",
+			onchange: function onchange() {
+				var domain = this.options[this.selectedIndex].value;
+				if (domain === "all") {
+					chartData = getChartData();
+				} else {
+					chartData = getChartData(function (resource) {
+						return resource.domain === domain;
+					});
+				}
+				var tempChartHolder = waterfall.setupTimeLine(chartData.loadDuration, chartData.blocks, data.marks, chartData.bg, "Temp");
+				var oldSVG = chartHolder.getElementsByClassName("water-fall-chart")[0];
+				var newSVG = tempChartHolder.getElementsByClassName("water-fall-chart")[0];
+				chartHolder.replaceChild(newSVG, oldSVG);
 			}
-			var tempChartHolder = waterfall.setupTimeLine(chartData.loadDuration, chartData.blocks, data.marks, chartData.bg, "Temp");
-			var oldSVG = chartHolder.getElementsByClassName("water-fall-chart")[0];
-			var newSVG = tempChartHolder.getElementsByClassName("water-fall-chart")[0];
-			chartHolder.replaceChild(newSVG, oldSVG);
-		}
-	});
+		});
 
-	selectBox.appendChild(dom.newTag("option", {
-		text: "show all",
-		value: "all"
-	}));
-
-	data.requestsByDomain.forEach(function (domain) {
 		selectBox.appendChild(dom.newTag("option", {
-			text: domain.domain
+			text: "show all",
+			value: "all"
 		}));
-	});
-	var chartSvg = chartHolder.getElementsByTagName("svg")[0];
-	chartSvg.parentNode.insertBefore(selectBox, chartSvg);
 
-	window.xxxx = chartHolder;
+		data.requestsByDomain.forEach(function (domain) {
+			selectBox.appendChild(dom.newTag("option", {
+				text: domain.domain
+			}));
+		});
+		var chartSvg = chartHolder.getElementsByClassName("water-fall-chart")[0];
+		chartSvg.parentNode.insertBefore(selectBox, chartSvg);
+	}
 
 	return chartHolder;
 };
