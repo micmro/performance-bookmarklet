@@ -7,6 +7,81 @@
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
 /*
+Logic for Legned
+*/
+
+var data = _interopRequire(require("../data"));
+
+var helper = _interopRequire(require("../helpers/helpers"));
+
+var dom = _interopRequire(require("../helpers/dom"));
+
+var waterfall = _interopRequire(require("../helpers/waterfall"));
+
+var legendComponent = {};
+
+var createLegend = function createLegend(className, title, dlArray) {
+	var legendHolder = dom.newTag("div", {
+		"class": "legend-holder"
+	});
+
+	legendHolder.appendChild(dom.newTag("h4", {
+		text: title
+	}));
+
+	var dl = dom.newTag("dl", {
+		"class": "legend " + className
+	});
+
+	dlArray.forEach(function (definition) {
+		dl.appendChild(dom.newTag("dt", {
+			"class": "colorBoxHolder",
+			childElement: dom.newTag("span", {}, "background:" + definition[1])
+		}));
+		dl.appendChild(dom.newTag("dd", {
+			text: definition[0]
+		}));
+	});
+	legendHolder.appendChild(dl);
+
+	return legendHolder;
+};
+
+//Legend
+legendComponent.init = function () {
+
+	var chartHolder = dom.newTag("section", {
+		"class": "resource-timing water-fall-holder chart-holder"
+	});
+
+	chartHolder.appendChild(dom.newTag("h3", {
+		text: "Legend"
+	}));
+
+	var legendsHolder = dom.newTag("div", {
+		"class": "legends-group "
+	});
+
+	legendsHolder.appendChild(createLegend("initiator-type-legend", "Block color: Initiator Type", [["css", "#afd899"], ["iframe", "#85b3f2"], ["img", "#bc9dd6"], ["script", "#e7bd8c"], ["link", "#89afe6"], ["swf", "#4db3ba"],
+	//["font", "#e96859"],
+	["xmlhttprequest", "#e7d98c"]]));
+
+	legendsHolder.appendChild(createLegend("navigation-legend", "Navigation Timing", [["Redirect", "#ffff60"], ["App Cache", "#1f831f"], ["DNS Lookup", "#1f7c83"], ["TCP", "#e58226"], ["SSL Negotiation", "#c141cd"], ["Time to First Byte", "#1fe11f"], ["Content Download", "#1977dd"], ["DOM Processing", "#9cc"], ["DOM Content Loaded", "#d888df"], ["On Load", "#c0c0ff"]]));
+
+	legendsHolder.appendChild(createLegend("resource-legend", "Resource Timing", [["Stalled/Blocking", "#cdcdcd"], ["Redirect", "#ffff60"], ["App Cache", "#1f831f"], ["DNS Lookup", "#1f7c83"], ["TCP", "#e58226"], ["SSL Negotiation", "#c141cd"], ["Initial Connection (TCP)", "#e58226"], ["Time to First Byte", "#1fe11f"], ["Content Download", "#1977dd"]]));
+
+	chartHolder.appendChild(legendsHolder);
+
+	return chartHolder;
+};
+
+module.exports = legendComponent;
+},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/waterfall":15}],2:[function(require,module,exports){
+"use strict";
+
+var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+/*
 Logic for Naviagtion Timing API and Markers Waterfall
 */
 
@@ -47,36 +122,26 @@ navigationTimelineComponent.init = function () {
 		return (a["time (ms)"] || 0) - (b["time (ms)"] || 0);
 	});
 
-	var timeBlock = function timeBlock(name, start, end, cssClass) {
-		return {
-			name: name,
-			start: start,
-			end: end,
-			total: typeof start !== "number" || typeof end !== "number" ? undefined : end - start,
-			cssClass: cssClass
-		};
-	};
-
-	perfTimingCalc.blocks = [timeBlock("Total", 0, perfTimingCalc.pageLoadTime, "block-total"), timeBlock("Unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd, "block-unload"), timeBlock("Redirect (" + performance.navigation.redirectCount + "x)", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd, "block-redirect"), timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart, "block-appcache"), timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd, "block-dns"), timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd, "block-tcp"), timeBlock("Time to First Byte", perfTimingCalc.requestStart, perfTimingCalc.responseStart, "block-ttfb"), timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd, "block-response"), timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete, "block-dom"), timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd, "block-dom-content-loaded"), timeBlock("onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd, "block-onload")];
+	perfTimingCalc.blocks = [waterfall.timeBlock("Total", 0, perfTimingCalc.pageLoadTime, "block-total"), waterfall.timeBlock("Unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd, "block-unload"), waterfall.timeBlock("Redirect (" + performance.navigation.redirectCount + "x)", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd, "block-redirect"), waterfall.timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart, "block-appcache"), waterfall.timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd, "block-dns"), waterfall.timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd, "block-tcp"), waterfall.timeBlock("Time to First Byte", perfTimingCalc.requestStart, perfTimingCalc.responseStart, "block-ttfb"), waterfall.timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd, "block-response"), waterfall.timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete, "block-dom"), waterfall.timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd, "block-dom-content-loaded"), waterfall.timeBlock("onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd, "block-onload")];
 
 	if (perfTimingCalc.secureConnectionStart) {
-		perfTimingCalc.blocks.push(timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "block-ssl"));
+		perfTimingCalc.blocks.push(waterfall.timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "block-ssl"));
 	}
 	if (perfTimingCalc.msFirstPaint) {
-		perfTimingCalc.blocks.push(timeBlock("msFirstPaint Event", perfTimingCalc.msFirstPaint, perfTimingCalc.msFirstPaint, "block-ms-first-paint-event"));
+		perfTimingCalc.blocks.push(waterfall.timeBlock("msFirstPaint Event", perfTimingCalc.msFirstPaint, perfTimingCalc.msFirstPaint, "block-ms-first-paint-event"));
 	}
 	if (perfTimingCalc.domInteractive) {
-		perfTimingCalc.blocks.push(timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive, "block-dom-interactive-event"));
+		perfTimingCalc.blocks.push(waterfall.timeBlock("domInteractive Event", perfTimingCalc.domInteractive, perfTimingCalc.domInteractive, "block-dom-interactive-event"));
 	}
 	if (!perfTimingCalc.redirectEnd && !perfTimingCalc.redirectStart && perfTimingCalc.fetchStart > perfTimingCalc.navigationStart) {
-		perfTimingCalc.blocks.push(timeBlock("Cross-Domain Redirect (and/or other Delay)", perfTimingCalc.navigationStart, perfTimingCalc.fetchStart, "block-redirect"));
+		perfTimingCalc.blocks.push(waterfall.timeBlock("Cross-Domain Redirect (and/or other Delay)", perfTimingCalc.navigationStart, perfTimingCalc.fetchStart, "block-redirect"));
 	}
 
-	perfTimingCalc.blocks.push(timeBlock("Network/Server", perfTimingCalc.navigationStart, perfTimingCalc.responseStart, "block-network-server"));
+	perfTimingCalc.blocks.push(waterfall.timeBlock("Network/Server", perfTimingCalc.navigationStart, perfTimingCalc.responseStart, "block-network-server"));
 
 	//add measures to be added as bars
 	data.measures.forEach(function (measure) {
-		perfTimingCalc.blocks.push(timeBlock("measure:" + measure.name, Math.round(measure.startTime), Math.round(measure.startTime + measure.duration), "block-custom-measure"));
+		perfTimingCalc.blocks.push(waterfall.timeBlock("measure:" + measure.name, Math.round(measure.startTime), Math.round(measure.startTime + measure.duration), "block-custom-measure"));
 	});
 
 	tableLogger.logTables([{ name: "Navigation Timeline", data: perfTimingCalc.blocks, columns: ["name", "start", "end", "total"] }, { name: "Navigation Events", data: perfTimingCalc.output }, { name: "Marks", data: data.marks, columns: ["name", "startTime", "duration"] }]);
@@ -85,7 +150,7 @@ navigationTimelineComponent.init = function () {
 };
 
 module.exports = navigationTimelineComponent;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12,"../helpers/tableLogger":13,"../helpers/waterfall":14}],2:[function(require,module,exports){
+},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/svg":13,"../helpers/tableLogger":14,"../helpers/waterfall":15}],3:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -196,7 +261,7 @@ pieChartComponent.init = function () {
 };
 
 module.exports = pieChartComponent;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/pieChartHelpers":10,"../helpers/svg":12}],3:[function(require,module,exports){
+},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/pieChartHelpers":11,"../helpers/svg":13}],4:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -215,8 +280,7 @@ var waterfall = _interopRequire(require("../helpers/waterfall"));
 
 var resourcesTimelineComponent = {};
 
-resourcesTimelineComponent.init = function () {
-
+var getChartData = function getChartData(filter) {
 	var calc = {
 		pageLoadTime: data.perfTiming.loadEventEnd - data.perfTiming.responseStart,
 		lastResponseEnd: data.perfTiming.loadEventEnd - data.perfTiming.responseStart };
@@ -227,79 +291,32 @@ resourcesTimelineComponent.init = function () {
 		}
 	}
 
-	var resourceSectionSegment = function resourceSectionSegment(name, start, end, cssClass) {
-		return {
-			name: name,
-			start: start,
-			end: end,
-			total: typeof start !== "number" || typeof end !== "number" ? undefined : end - start,
-			cssClass: cssClass
-		};
-	};
-
-	var resourceSection = function resourceSection(name, start, end, cssClass, segments, rawResource) {
-		return {
-			name: name,
-			start: start,
-			end: end,
-			total: typeof start !== "number" || typeof end !== "number" ? undefined : end - start,
-			cssClass: cssClass,
-			segments: segments,
-			rawResource: rawResource
-		};
-	};
-
-	var createLegend = function createLegend(className, title, dlArray) {
-		var legendHolder = dom.newTag("div", {
-			"class": "legend-holder"
-		});
-
-		legendHolder.appendChild(dom.newTag("h4", {
-			text: title
-		}));
-
-		var dl = dom.newTag("dl", {
-			"class": "legend " + className
-		});
-
-		dlArray.forEach(function (definition) {
-			dl.appendChild(dom.newTag("dt", {
-				"class": "colorBoxHolder",
-				childElement: dom.newTag("span", {}, "background:" + definition[1])
-			}));
-			dl.appendChild(dom.newTag("dd", {
-				text: definition[0]
-			}));
-		});
-		legendHolder.appendChild(dl);
-
-		return legendHolder;
-	};
-
-	var onDomLoad = resourceSectionSegment("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "block-dom-content-loaded");
-	var onLoadEvt = resourceSectionSegment("Onload Event", calc.loadEventStart, calc.loadEventEnd, "block-onload");
-	var navigationApiTotal = [resourceSectionSegment("Unload", calc.unloadEventStart, calc.unloadEventEnd, "block-unload"), resourceSectionSegment("Redirect", calc.redirectStart, calc.redirectEnd, "block-redirect"), resourceSectionSegment("App cache", calc.fetchStart, calc.domainLookupStart, "block-appcache"), resourceSectionSegment("DNS", calc.domainLookupStart, calc.domainLookupEnd, "block-dns"), resourceSectionSegment("TCP", calc.connectStart, calc.connectEnd, "block-tcp"), resourceSectionSegment("Timer to First Byte", calc.requestStart, calc.responseStart, "block-ttfb"), resourceSectionSegment("Response", calc.responseStart, calc.responseEnd, "block-response"), resourceSectionSegment("DOM Processing", calc.domLoading, calc.domComplete, "block-dom"), onDomLoad, onLoadEvt];
+	var onDomLoad = waterfall.timeBlock("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "block-dom-content-loaded");
+	var onLoadEvt = waterfall.timeBlock("Onload Event", calc.loadEventStart, calc.loadEventEnd, "block-onload");
+	var navigationApiTotal = [waterfall.timeBlock("Unload", calc.unloadEventStart, calc.unloadEventEnd, "block-unload"), waterfall.timeBlock("Redirect", calc.redirectStart, calc.redirectEnd, "block-redirect"), waterfall.timeBlock("App cache", calc.fetchStart, calc.domainLookupStart, "block-appcache"), waterfall.timeBlock("DNS", calc.domainLookupStart, calc.domainLookupEnd, "block-dns"), waterfall.timeBlock("TCP", calc.connectStart, calc.connectEnd, "block-tcp"), waterfall.timeBlock("Timer to First Byte", calc.requestStart, calc.responseStart, "block-ttfb"), waterfall.timeBlock("Response", calc.responseStart, calc.responseEnd, "block-response"), waterfall.timeBlock("DOM Processing", calc.domLoading, calc.domComplete, "block-dom"), onDomLoad, onLoadEvt];
 
 	if (calc.secureConnectionStart) {
-		navigationApiTotal.push(resourceSectionSegment("SSL", calc.connectStart, calc.secureConnectionStart, "block-ssl"));
+		navigationApiTotal.push(waterfall.timeBlock("SSL", calc.connectStart, calc.secureConnectionStart, "block-ssl"));
 	}
 	if (calc.msFirstPaint) {
-		navigationApiTotal.push(resourceSectionSegment("msFirstPaint Event", calc.msFirstPaint, calc.msFirstPaint, "block-ms-first-paint-event"));
+		navigationApiTotal.push(waterfall.timeBlock("msFirstPaint Event", calc.msFirstPaint, calc.msFirstPaint, "block-ms-first-paint-event"));
 	}
 	if (calc.domInteractive) {
-		navigationApiTotal.push(resourceSectionSegment("domInteractive Event", calc.domInteractive, calc.domInteractive, "block-dom-interactive-event"));
+		navigationApiTotal.push(waterfall.timeBlock("domInteractive Event", calc.domInteractive, calc.domInteractive, "block-dom-interactive-event"));
 	}
 	if (!calc.redirectEnd && !calc.redirectStart && calc.fetchStart > calc.navigationStart) {
-		navigationApiTotal.push(resourceSectionSegment("Cross-Domain Redirect", calc.navigationStart, calc.fetchStart, "block-redirect"));
+		navigationApiTotal.push(waterfall.timeBlock("Cross-Domain Redirect", calc.navigationStart, calc.fetchStart, "block-redirect"));
 	}
 
-	calc.blocks = [resourceSection("Navigation API total", 0, calc.loadEventEnd, "block-navigation-api-total", navigationApiTotal)];
+	calc.blocks = [waterfall.timeBlock("Navigation API total", 0, calc.loadEventEnd, "block-navigation-api-total", navigationApiTotal)];
 
 	data.allResourcesCalc.filter(function (resource) {
 		//do not show items up to 15 seconds after onload - else beacon ping etc make diagram useless
 		return resource.startTime < calc.loadEventEnd + 15000;
+	}).filter(filter || function () {
+		return true;
 	}).forEach(function (resource, i) {
-		var segments = [resourceSectionSegment("Redirect", resource.redirectStart, resource.redirectEnd, "block-redirect"), resourceSectionSegment("DNS Lookup", resource.domainLookupStart, resource.domainLookupEnd, "block-dns"), resourceSectionSegment("Initial Connection (TCP)", resource.connectStart, resource.connectEnd, "block-dns"), resourceSectionSegment("secureConnect", resource.secureConnectionStart || undefined, resource.connectEnd, "block-ssl"), resourceSectionSegment("Timer to First Byte", resource.requestStart, resource.responseStart, "block-ttfb"), resourceSectionSegment("Content Download", resource.responseStart || undefined, resource.responseEnd, "block-response")];
+		var segments = [waterfall.timeBlock("Redirect", resource.redirectStart, resource.redirectEnd, "block-redirect"), waterfall.timeBlock("DNS Lookup", resource.domainLookupStart, resource.domainLookupEnd, "block-dns"), waterfall.timeBlock("Initial Connection (TCP)", resource.connectStart, resource.connectEnd, "block-dns"), waterfall.timeBlock("secureConnect", resource.secureConnectionStart || undefined, resource.connectEnd, "block-ssl"), waterfall.timeBlock("Timer to First Byte", resource.requestStart, resource.responseStart, "block-ttfb"), waterfall.timeBlock("Content Download", resource.responseStart || undefined, resource.responseEnd, "block-response")];
 
 		var resourceTimings = [0, resource.redirectStart, resource.domainLookupStart, resource.connectStart, resource.secureConnectionStart, resource.requestStart, resource.responseStart];
 
@@ -312,40 +329,62 @@ resourcesTimelineComponent.init = function () {
 		});
 
 		if (resource.startTime < firstTiming) {
-			segments.unshift(resourceSectionSegment("Stalled/Blocking", resource.startTime, firstTiming, "block-blocking"));
+			segments.unshift(waterfall.timeBlock("Stalled/Blocking", resource.startTime, firstTiming, "block-blocking"));
 		}
 
-		calc.blocks.push(resourceSection(resource.name, resource.startTime, resource.responseEnd, "block-" + resource.initiatorType, segments, resource));
+		calc.blocks.push(waterfall.timeBlock(resource.name, resource.startTime, resource.responseEnd, "block-" + resource.initiatorType, segments, resource));
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd, resource.responseEnd);
 	});
 
-	calc.loadDuration = Math.round(Math.max(calc.lastResponseEnd, data.perfTiming.loadEventEnd - data.perfTiming.navigationStart));
+	return {
+		loadDuration: Math.round(Math.max(calc.lastResponseEnd, data.perfTiming.loadEventEnd - data.perfTiming.navigationStart)),
+		blocks: calc.blocks,
+		bg: [onDomLoad, onLoadEvt]
+	};
+};
 
-	var chartHolder = waterfall.setupTimeLine(calc.loadDuration, calc.blocks, data.marks, [onDomLoad, onLoadEvt], "Resource Timing");
+resourcesTimelineComponent.init = function () {
+	var chartData = getChartData();
+	var chartHolder = waterfall.setupTimeLine(chartData.loadDuration, chartData.blocks, data.marks, chartData.bg, "Resource Timing");
 
-	chartHolder.appendChild(dom.newTag("h3", {
-		text: "Legend"
-	}));
-
-	var legendsHolder = dom.newTag("div", {
-		"class": "legends-group "
+	var selectBox = dom.newTag("select", {
+		"class": "domain-selector",
+		onchange: function onchange() {
+			var domain = this.options[this.selectedIndex].value;
+			if (domain === "all") {
+				chartData = getChartData();
+			} else {
+				chartData = getChartData(function (resource) {
+					return resource.domain === domain;
+				});
+			}
+			var tempChartHolder = waterfall.setupTimeLine(chartData.loadDuration, chartData.blocks, data.marks, chartData.bg, "Temp");
+			var oldSVG = chartHolder.getElementsByClassName("water-fall-chart")[0];
+			var newSVG = tempChartHolder.getElementsByClassName("water-fall-chart")[0];
+			chartHolder.replaceChild(newSVG, oldSVG);
+		}
 	});
 
-	legendsHolder.appendChild(createLegend("initiator-type-legend", "Block color: Initiator Type", [["css", "#afd899"], ["iframe", "#85b3f2"], ["img", "#bc9dd6"], ["script", "#e7bd8c"], ["link", "#89afe6"], ["swf", "#4db3ba"],
-	//["font", "#e96859"],
-	["xmlhttprequest", "#e7d98c"]]));
+	selectBox.appendChild(dom.newTag("option", {
+		text: "show all",
+		value: "all"
+	}));
 
-	legendsHolder.appendChild(createLegend("navigation-legend", "Navigation Timing", [["Redirect", "#ffff60"], ["App Cache", "#1f831f"], ["DNS Lookup", "#1f7c83"], ["TCP", "#e58226"], ["SSL Negotiation", "#c141cd"], ["Time to First Byte", "#1fe11f"], ["Content Download", "#1977dd"], ["DOM Processing", "#9cc"], ["DOM Content Loaded", "#d888df"], ["On Load", "#c0c0ff"]]));
+	data.requestsByDomain.forEach(function (domain) {
+		selectBox.appendChild(dom.newTag("option", {
+			text: domain.domain
+		}));
+	});
+	var chartSvg = chartHolder.getElementsByTagName("svg")[0];
+	chartSvg.parentNode.insertBefore(selectBox, chartSvg);
 
-	legendsHolder.appendChild(createLegend("resource-legend", "Resource Timing", [["Stalled/Blocking", "#cdcdcd"], ["Redirect", "#ffff60"], ["App Cache", "#1f831f"], ["DNS Lookup", "#1f7c83"], ["TCP", "#e58226"], ["SSL Negotiation", "#c141cd"], ["Initial Connection (TCP)", "#e58226"], ["Time to First Byte", "#1fe11f"], ["Content Download", "#1977dd"]]));
-
-	chartHolder.appendChild(legendsHolder);
+	window.xxxx = chartHolder;
 
 	return chartHolder;
 };
 
 module.exports = resourcesTimelineComponent;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/waterfall":14}],4:[function(require,module,exports){
+},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/waterfall":15}],5:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -404,7 +443,7 @@ summaryTilesComponent.init = function () {
 };
 
 module.exports = summaryTilesComponent;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8}],5:[function(require,module,exports){
+},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9}],6:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -528,7 +567,7 @@ tableComponent.init = function () {
 };
 
 module.exports = tableComponent;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8}],6:[function(require,module,exports){
+},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9}],7:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -708,7 +747,7 @@ if (data.allResourcesCalc.length > 0) {
 }
 
 module.exports = data;
-},{"./helpers/helpers":8}],7:[function(require,module,exports){
+},{"./helpers/helpers":9}],8:[function(require,module,exports){
 /*
 DOM Helpers
 */
@@ -804,7 +843,7 @@ dom.removeClass = function (el, className) {
 };
 
 module.exports = dom;
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /*
 Misc helpers
 */
@@ -975,7 +1014,7 @@ helper.clone = function (obj) {
 };
 
 module.exports = helper;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1068,7 +1107,7 @@ iFrameHolder.getOutputIFrame = function () {
 };
 
 module.exports = iFrameHolder;
-},{"../helpers/dom":7,"../helpers/style":11}],10:[function(require,module,exports){
+},{"../helpers/dom":8,"../helpers/style":12}],11:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1210,15 +1249,15 @@ pieChartHelpers.createChartTable = function (title, data, columns) {
 };
 
 module.exports = pieChartHelpers;
-},{"../data":6,"../helpers/dom":7,"../helpers/helpers":8,"../helpers/svg":12}],11:[function(require,module,exports){
+},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/svg":13}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var style = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .block-css {fill: #afd899;} .block-iframe, .block-html, .block-internal {fill: #85b3f2;} .block-img, .block-image {fill: #bc9dd6;} .block-script, .block-js {fill: #e7bd8c;} .block-link {fill: #89afe6;} .block-swf, .block-flash {fill: #4db3ba;} .block-font {fill: #e96859;} .block-xmlhttprequest, .block-ajax {fill: #e7d98c;} .block-other {fill: #bebebe;} .block-total {fill: #ccc;} .block-unload {fill: #909;} .block-redirect {fill: #ffff60;} .block-appcache {fill: #1f831f;} .block-dns {fill: #1f7c83;} .block-tcp {fill: #e58226;} .block-ttfb {fill: #1fe11f;} .block-response {fill: #1977dd;} .block-dom {fill: #9cc;} .block-dom-content-loaded {fill: #d888df;} .block-onload {fill: #c0c0ff;} .block-ssl {fill: #c141cd; } .block-ms-first-paint-event {fill: #8fbc83; } .block-dom-interactive-event {fill: #d888df; } .block-network-server {fill: #8cd18c; } .block-custom-measure {fill: #f00; } .block-navigation-api-total {fill: #ccc;} .block-blocking {fill: #cdcdcd;} .block-undefined {fill: #0f0;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #pie-request-by-domain {flex-grow: 2; width:772px; max-width: 1272px;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #ccc; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .water-fall-chart .mark-holder text {-webkit-writing-mode: tb; writing-mode:vertical-lr; writing-mode: tb;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}";
+var style = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .block-css {fill: #afd899;} .block-iframe, .block-html, .block-internal {fill: #85b3f2;} .block-img, .block-image {fill: #bc9dd6;} .block-script, .block-js {fill: #e7bd8c;} .block-link {fill: #89afe6;} .block-swf, .block-flash {fill: #4db3ba;} .block-font {fill: #e96859;} .block-xmlhttprequest, .block-ajax {fill: #e7d98c;} .block-other {fill: #bebebe;} .block-total {fill: #ccc;} .block-unload {fill: #909;} .block-redirect {fill: #ffff60;} .block-appcache {fill: #1f831f;} .block-dns {fill: #1f7c83;} .block-tcp {fill: #e58226;} .block-ttfb {fill: #1fe11f;} .block-response {fill: #1977dd;} .block-dom {fill: #9cc;} .block-dom-content-loaded {fill: #d888df;} .block-onload {fill: #c0c0ff;} .block-ssl {fill: #c141cd; } .block-ms-first-paint-event {fill: #8fbc83; } .block-dom-interactive-event {fill: #d888df; } .block-network-server {fill: #8cd18c; } .block-custom-measure {fill: #f00; } .block-navigation-api-total {fill: #ccc;} .block-blocking {fill: #cdcdcd;} .block-undefined {fill: #0f0;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #pie-request-by-domain {flex-grow: 2; width:772px; max-width: 1272px;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #ccc; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .water-fall-chart .mark-holder text {-webkit-writing-mode: tb; writing-mode:vertical-lr; writing-mode: tb;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .domain-selector {float:right; margin: -35px 0 0 0;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}";
 exports.style = style;
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /*
 SVG Helpers
 */
@@ -1262,7 +1301,7 @@ svg.getNodeTextWidth = function (textNode) {
 };
 
 module.exports = svg;
-},{"../helpers/iFrameHolder":9}],13:[function(require,module,exports){
+},{"../helpers/iFrameHolder":10}],14:[function(require,module,exports){
 /*
 Log tables in console
 */
@@ -1283,7 +1322,7 @@ tableLogger.logTables = function (tableArr) {
 };
 
 module.exports = tableLogger;
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1297,6 +1336,19 @@ var svg = _interopRequire(require("../helpers/svg"));
 var dom = _interopRequire(require("../helpers/dom"));
 
 var waterfall = {};
+
+//model for block and segment
+waterfall.timeBlock = function (name, start, end, cssClass, segments, rawResource) {
+	return {
+		name: name,
+		start: start,
+		end: end,
+		total: typeof start !== "number" || typeof end !== "number" ? undefined : end - start,
+		cssClass: cssClass,
+		segments: segments,
+		rawResource: rawResource
+	};
+};
 
 waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 	var unit = durationMs / 100,
@@ -1555,7 +1607,7 @@ waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 };
 
 module.exports = waterfall;
-},{"../helpers/dom":7,"../helpers/svg":12}],15:[function(require,module,exports){
+},{"../helpers/dom":8,"../helpers/svg":13}],16:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1574,6 +1626,8 @@ var tableComponent = _interopRequire(require("./components/table"));
 
 var resourcesTimelineComponent = _interopRequire(require("./components/resourcesTimeline"));
 
+var legendComponent = _interopRequire(require("./components/legend"));
+
 var logger = _interopRequire(require("./logger"));
 
 //skip browser internal pages or when data is invalid
@@ -1582,13 +1636,13 @@ if (location.protocol === "about:" || !data.isValid()) {
 }
 
 var onIFrameReady = function onIFrameReady(addComponentFn) {
-	[summaryTilesComponent.init(), navigationTimelineComponent.init(), pieChartComponent.init(), tableComponent.init(), resourcesTimelineComponent.init()].forEach(function (componentBody) {
+	[summaryTilesComponent.init(), navigationTimelineComponent.init(), pieChartComponent.init(), tableComponent.init(), resourcesTimelineComponent.init(), legendComponent.init()].forEach(function (componentBody) {
 		addComponentFn(componentBody);
 	});
 };
 
 iFrameHolder.setup(onIFrameReady);
-},{"./components/navigationTimeline":1,"./components/pieChart":2,"./components/resourcesTimeline":3,"./components/summaryTiles":4,"./components/table":5,"./data":6,"./helpers/iFrameHolder":9,"./logger":16}],16:[function(require,module,exports){
+},{"./components/legend":1,"./components/navigationTimeline":2,"./components/pieChart":3,"./components/resourcesTimeline":4,"./components/summaryTiles":5,"./components/table":6,"./data":7,"./helpers/iFrameHolder":10,"./logger":17}],17:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1619,4 +1673,4 @@ tableLogger.logTables([{
 	data: data.fileTypeCounts,
 	columns: ["fileType", "count", "perc"]
 }]);
-},{"./data":6,"./helpers/tableLogger":13}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
+},{"./data":7,"./helpers/tableLogger":14}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]);

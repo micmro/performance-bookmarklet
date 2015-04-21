@@ -6,6 +6,20 @@ import dom from "../helpers/dom";
 
 var waterfall = {};
 
+
+//model for block and segment
+waterfall.timeBlock = function(name, start, end, cssClass, segments, rawResource){
+	return {
+		name : name,
+		start : start,
+		end : end,
+		total : ((typeof start !== "number" || typeof end !== "number") ? undefined : (end - start)),
+		cssClass : cssClass,
+		segments : segments,
+		rawResource : rawResource
+	}
+};
+
 waterfall.setupTimeLine = function(durationMs, blocks, marks, lines, title){
 	const unit = durationMs / 100,
 		barsToShow = blocks

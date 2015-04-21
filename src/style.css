@@ -143,6 +143,7 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 .time-scale line {stroke:#0cc; stroke-width:1;}
 .time-scale text {font-weight:bold;}
 
+.domain-selector {float:right; margin: -35px 0 0 0;}
 
 /*Navigation Timing*/
 .navigation-timing {}
