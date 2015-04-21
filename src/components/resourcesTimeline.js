@@ -135,7 +135,7 @@ resourcesTimelineComponent.init = function(){
 			calc.lastResponseEnd = Math.max(calc.lastResponseEnd,resource.responseEnd);
 		});
 
-	calc.loadDuration = Math.round(calc.lastResponseEnd);
+	calc.loadDuration = Math.round(Math.max(calc.lastResponseEnd, (data.perfTiming.loadEventEnd-data.perfTiming.navigationStart)));
 
 
 	var chartHolder = waterfall.setupTimeLine(calc.loadDuration, calc.blocks, data.marks, [

@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:19/04/2015 */
+   build:20/04/2015 */
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
@@ -319,7 +319,7 @@ resourcesTimelineComponent.init = function () {
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd, resource.responseEnd);
 	});
 
-	calc.loadDuration = Math.round(calc.lastResponseEnd);
+	calc.loadDuration = Math.round(Math.max(calc.lastResponseEnd, data.perfTiming.loadEventEnd - data.perfTiming.navigationStart));
 
 	var chartHolder = waterfall.setupTimeLine(calc.loadDuration, calc.blocks, data.marks, [onDomLoad, onLoadEvt], "Resource Timing");
 
