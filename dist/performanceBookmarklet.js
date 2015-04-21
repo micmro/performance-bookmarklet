@@ -315,7 +315,7 @@ resourcesTimelineComponent.init = function () {
 			segments.unshift(resourceSectionSegment("Stalled/Blocking", resource.startTime, firstTiming, "block-blocking"));
 		}
 
-		calc.blocks.push(resourceSection(resource.name, Math.round(resource.startTime), Math.round(resource.responseEnd), "block-" + resource.initiatorType, segments, resource));
+		calc.blocks.push(resourceSection(resource.name, resource.startTime, resource.responseEnd, "block-" + resource.initiatorType, segments, resource));
 		calc.lastResponseEnd = Math.max(calc.lastResponseEnd, resource.responseEnd);
 	});
 
