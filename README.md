@@ -1,7 +1,7 @@
 Performance-Bookmarklet
 =======================
 
-Bookmarklet, [Chrome Extension](https://chrome.google.com/webstore/detail/performance-analyser/djgfmlohefpomchfabngccpbaflcahjf) and [Firefox add-on](https://addons.mozilla.org/en-US/firefox/addon/performance-analyser/) to analyze the current page through the [Resource Timing API](http://www.w3.org/TR/resource-timing), [Navigation Timing API](http://www.w3.org/TR/navigation-timing) and [User-Timing](http://www.w3.org/TR/user-timing/) - requests by type, domain, load times, marks and more. Sort of a light live WebPageTest.
+Bookmarklet, [Chrome Extension](https://chrome.google.com/webstore/detail/performance-analyser/djgfmlohefpomchfabngccpbaflcahjf) and [Firefox add-on](https://addons.mozilla.org/en-US/firefox/addon/performance-analyser/) to analyze the current page through the [Resource Timing API](http://www.w3.org/TR/resource-timing), [Navigation Timing API](http://www.w3.org/TR/navigation-timing) and [User-Timing](http://www.w3.org/TR/user-timing/) - requests by type, domain, load times, marks and more - sort of a light live WebPageTest.
 
 
 Just add this into the URL section of a new bookmark:
@@ -18,7 +18,7 @@ You can use the Performance-Bookmarklet (renamed as Performance-Analyser since i
 Bookmarklet Output in Detail
 ----------------------------
 
-### Navigation Timing API Waterfall
+### Navigation Timing Waterfall
 
 ![alt text](https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/perfbook-navigation-timing-waterfall.png "screenshot of navigation timing API waterfall output of bookmarklet on http://walmart.ca/en")
 
@@ -26,55 +26,47 @@ Bookmarklet Output in Detail
 - Hover over the bars to see a tooltip with the excact Milliseconds/duration
 
 <figure>
-  <a href="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/navigation-timing-overview.svg"><img src="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/navigation-timing-overview.png" alt="Diagram of the Navigation Timing API as seen on W3C site" /></a>
+  <figcaption>Navigation Timing API Details</figcaption>
   <br/>
-  <figcaption>Diagram Timing API Details</figcaption>
+  <a href="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/navigation-timing-overview.svg"><img src="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/navigation-timing-overview.png" alt="Diagram of the Navigation Timing API as seen on W3C site" /></a>
 </figure>
 
 
-### Resource analysis
+### Domain/Resource analysis
 
 ![alt text](https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/perfbook-requests-pie-charts.png "screenshot of pie graph output of bookmarklet on http://velocityconf.com/velocityny2014")
 
-- Requests by domain - handy to find out how many requests are added by 3rd parties (green wedges represent the current TLD and subdomains - hover over them for more information)
+- Requests by domain:
+  - How many requests are added by 3rd parties - green wedges represent the current TLD and subdomains
+  - Avg. Duration: the mean of all request of this domain
+  - Duration Parallel: actual time a domain spends on the wire - de-duping parallel request duration
+  - Duration Sum: simple sum of the duration of all requests of this domain
+  - Percentage: the percentage of all requests coming from this domain
+- Requests by Initiator Type
 - Requests by Type - what content type is accountable for the majority of requests
+- Internal / extenal comparison charts  
+  *external is currently everything except the current host - exluding sub domains*
 
-*external is currently everything except the current host - exluding sub domains*
 
-
-### Resource Timing API with Markers
+### Resource Timing Waterfall with Markers
 
 ![alt text](https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/perfbook-resources-timing-waterfall.png "screenshot of resource timing API waterfall output of bookmarklet on http://stylify.me")
 
-- The small bars inside the resource bar represent the different stages of the request (redirect, domainLookup, connect, secureConnect, requestToResponseStart, response), but are mostly not available for cross domain requests.
-- The resource bar colours visualize the initiatorType
+- The small bars inside the resource bar represent the different stages of the request (redirect, domainLookup, connect, secureConnect, requestToResponseStart, response), but are mostly unavailable for cross-domain requests.
+- The resource bar colours indicates the initiatorType
+- You can filter the waterfall chart by domain
 
 <figure>
-  <a href="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resource-timing-overview.svg"><img src="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resource-timing-overview.png" alt="Diagram of the Resource Timing API as seen on W3C site" /></a>
-  <br/>
   <figcaption>Resource Timing API Details</figcaption>
+  <br/>
+  <a href="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resource-timing-overview.svg"><img src="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resource-timing-overview.png" alt="Diagram of the Resource Timing API as seen on W3C site" /></a>
 </figure>
 
 
 Console Output
 --------------
 
-The bookmarklet also outputs various console tables (in chrome) to analyze the data in detail:
-
-The *All loaded resources* console table for instance contains the following data:
-- Name
-- Domain
-- File Extension
-- Initiator Type
-- Load Time
-- *Request Start Delay*
-- *DNS Lookup*
-- *TCP*
-- *Time To First Byte*
-- *SSL*
-- *Request Duration*
-
-(*some data* is not always available)
+The bookmarklet also outputs various console tables ([where supported](https://developer.mozilla.org/en-US/docs/Web/API/Console/table)) to analyze the data in detail.
 
 ![alt text](https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/perfbook-tables-resources.png "tabular output in console of all resources in the page")
 
@@ -88,7 +80,7 @@ You can use it as bookmarklet. Mozilla has a [step by step description](https://
 javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='https://micmro.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js';el.onerror=function(){alert("Looks like the Content Security Policy directive is blocking the use of bookmarklets\n\nYou can copy and paste the content of:\n\n\"https://micmro.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js\"\n\ninto your console instead\n\n(link is in console already)");console.log("https://micmro.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js");};document.getElementsByTagName('body')[0].appendChild(el);})();
 ```
 
-Or alternatifly just copy and paste the content of [resourceTable.js](https://raw.githubusercontent.com/micmro/resourceTable/master/resourceTable.js) to your browser console and off you go.
+Or alternatifly just copy and paste the content of [performanceBookmarklet.js](https://raw.githubusercontent.com/micmro/resourceTable/master/performanceBookmarklet.js) to your browser console.
 
 **You need to fall back to the browser extension or the copy and paste version for sites that block external scripts in their Content Security Policy directives.**
 
