@@ -26,7 +26,7 @@ Bookmarklet Output in Detail
 - Hover over the bars to see a tooltip with the excact Milliseconds/duration
 
 <figure>
-  <figcaption>Navigation Timing API Details</figcaption>
+  <figcaption><strong>Navigation Timing API Details</strong></figcaption>
   <br/><br/>
   <a href="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/navigation-timing-overview.svg"><img src="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/navigation-timing-overview.png" alt="Diagram of the Navigation Timing API as seen on W3C site" /></a>
 </figure>
@@ -57,7 +57,7 @@ Bookmarklet Output in Detail
 - You can filter the waterfall chart by domain
 
 <figure>
-  <figcaption>Resource Timing API Details</figcaption>
+  <figcaption><strong>Resource Timing API Details</strong></figcaption>
   <br/><br/>
   <a href="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resource-timing-overview.svg"><img src="https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/resource-timing-overview.png" alt="Diagram of the Resource Timing API as seen on W3C site" /></a>
 </figure>
