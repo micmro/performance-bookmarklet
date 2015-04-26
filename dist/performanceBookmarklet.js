@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:21/04/2015 */
+   build:25/04/2015 */
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
@@ -1255,7 +1255,7 @@ module.exports = pieChartHelpers;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var style = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .block-css {fill: #afd899;} .block-iframe, .block-html, .block-internal {fill: #85b3f2;} .block-img, .block-image {fill: #bc9dd6;} .block-script, .block-js {fill: #e7bd8c;} .block-link {fill: #89afe6;} .block-swf, .block-flash {fill: #4db3ba;} .block-font {fill: #e96859;} .block-xmlhttprequest, .block-ajax {fill: #e7d98c;} .block-other {fill: #bebebe;} .block-total {fill: #ccc;} .block-unload {fill: #909;} .block-redirect {fill: #ffff60;} .block-appcache {fill: #1f831f;} .block-dns {fill: #1f7c83;} .block-tcp {fill: #e58226;} .block-ttfb {fill: #1fe11f;} .block-response {fill: #1977dd;} .block-dom {fill: #9cc;} .block-dom-content-loaded {fill: #d888df;} .block-onload {fill: #c0c0ff;} .block-ssl {fill: #c141cd; } .block-ms-first-paint-event {fill: #8fbc83; } .block-dom-interactive-event {fill: #d888df; } .block-network-server {fill: #8cd18c; } .block-custom-measure {fill: #f00; } .block-navigation-api-total {fill: #ccc;} .block-blocking {fill: #cdcdcd;} .block-undefined {fill: #0f0;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #pie-request-by-domain {flex-grow: 2; width:772px; max-width: 1272px;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #ccc; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .water-fall-chart .mark-holder text {-webkit-writing-mode: tb; writing-mode:vertical-lr; writing-mode: tb;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .domain-selector {float:right; margin: -35px 0 0 0;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}";
+var style = "body {overflow: hidden; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em 3em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .block-css {fill: #afd899;} .block-iframe, .block-html, .block-internal {fill: #85b3f2;} .block-img, .block-image {fill: #bc9dd6;} .block-script, .block-js {fill: #e7bd8c;} .block-link {fill: #89afe6;} .block-swf, .block-flash {fill: #4db3ba;} .block-font {fill: #e96859;} .block-xmlhttprequest, .block-ajax {fill: #e7d98c;} .block-other {fill: #bebebe;} .block-total {fill: #ccc;} .block-unload {fill: #909;} .block-redirect {fill: #ffff60;} .block-appcache {fill: #1f831f;} .block-dns {fill: #1f7c83;} .block-tcp {fill: #e58226;} .block-ttfb {fill: #1fe11f;} .block-response {fill: #1977dd;} .block-dom {fill: #9cc;} .block-dom-content-loaded {fill: #d888df;} .block-onload {fill: #c0c0ff;} .block-ssl {fill: #c141cd; } .block-ms-first-paint-event {fill: #8fbc83; } .block-dom-interactive-event {fill: #d888df; } .block-network-server {fill: #8cd18c; } .block-custom-measure {fill: #f00; } .block-navigation-api-total {fill: #ccc;} .block-blocking {fill: #cdcdcd;} .block-undefined {fill: #0f0;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #pie-request-by-domain {flex-grow: 2; width:772px; max-width: 1272px;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #ccc; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .active > rect.time-block {opacity: 0.8;} .water-fall-chart .active > .tooltip {visibility: visible; fill:#ff0;} .water-fall-chart .tooltip text {fill:#f00;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .water-fall-chart .mark-holder text {-webkit-writing-mode: tb; writing-mode:vertical-lr; writing-mode: tb;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .domain-selector {float:right; margin: -35px 0 0 0;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}";
 exports.style = style;
 },{}],13:[function(require,module,exports){
 /*
@@ -1390,7 +1390,7 @@ waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 
 	var onRectMouseEnter = function onRectMouseEnter(evt) {
 		var targetRect = evt.target;
-		dom.addClass(targetRect, "active");
+		dom.addClass(targetRect.parentNode, "active");
 
 		var xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
 		var xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
@@ -1407,13 +1407,14 @@ waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 	};
 
 	var onRectMouseLeave = function onRectMouseLeave(evt) {
-		dom.removeClass(evt.target, "active");
+		dom.removeClass(evt.target.parentNode, "active");
 		dom.removeClass(endline, "active");
 		dom.removeClass(startline, "active");
 	};
 
+	//var createRect = function(width, height, x, y, cssClass, label, segments){
 	var createRect = (function (_createRect) {
-		var _createRectWrapper = function createRect(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
+		var _createRectWrapper = function createRect(_x, _x2, _x3, _x4, _x5) {
 			return _createRect.apply(this, arguments);
 		};
 
@@ -1422,8 +1423,12 @@ waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 		};
 
 		return _createRectWrapper;
-	})(function (width, height, x, y, cssClass, label, segments) {
-		var rectHolder;
+	})(function (timeBlock, width, height, x, y) {
+		var segments = timeBlock.segments;
+		var cssClass = timeBlock.cssClass;
+		var label = timeBlock.name + "\n\r(" + Math.round(timeBlock.start) + "ms - " + Math.round(timeBlock.end) + "ms | total: " + Math.round(timeBlock.total) + "ms)";
+
+		var rectHolder = svg.newEl("g");
 		var rect = svg.newEl("rect", {
 			width: width / unit + "%",
 			height: height - 1,
@@ -1431,27 +1436,63 @@ waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 			y: y,
 			"class": (segments && segments.length > 0 ? "time-block" : "segment") + " " + (cssClass || "block-undefined")
 		});
-		if (label) {
-			rect.appendChild(svg.newEl("title", {
-				text: label
-			})); // Add tile to wedge path
-		}
 
 		rect.addEventListener("mouseenter", onRectMouseEnter);
 		rect.addEventListener("mouseleave", onRectMouseLeave);
 
+		rectHolder.appendChild(rect);
+
+		if (label) {
+			var tootipHolder = svg.newEl("g", {
+				"class": "tooltip",
+				visibility: "hidden"
+			});
+
+			var labelX = x / unit + 0.5 + "%";
+			var labelY = y - 50;
+
+			tootipHolder.appendChild(svg.newEl("rect", {
+				x: labelX,
+				y: labelY,
+				width: 250,
+				height: "3em"
+			}));
+
+			var txt = svg.newEl("text", {
+				x: labelX,
+				y: labelY
+			});
+
+			txt.appendChild(svg.newEl("tspan", {
+				dy: "1.2em",
+				x: labelX,
+				text: timeBlock.name }));
+
+			txt.appendChild(svg.newEl("tspan", {
+				dy: "1.2em",
+				x: labelX,
+				text: "(" + Math.round(timeBlock.start) + "ms - " + Math.round(timeBlock.end) + "ms | total: " + Math.round(timeBlock.total) + "ms)"
+			}));
+
+			tootipHolder.appendChild(txt);
+
+			rectHolder.appendChild(tootipHolder);
+
+			// <text id="thepopup" x="250" y="100" font-size="30" fill="black" visibility="hidden">Change me
+			//   <set attributeName="visibility" from="hidden" to="visible" begin="thingyouhoverover.mouseover" end="thingyouhoverover.mouseout"/>
+			// </text>
+		}
+
 		if (segments && segments.length > 0) {
-			rectHolder = svg.newEl("g");
-			rectHolder.appendChild(rect);
+
 			segments.forEach(function (segment) {
 				if (segment.total > 0 && typeof segment.start === "number") {
-					rectHolder.appendChild(createRect(segment.total, 8, segment.start || 0.001, y, segment.cssClass, segment.name + " (" + Math.round(segment.start) + "ms - " + Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
+					rectHolder.appendChild(createRect(segment, segment.total, 8, segment.start || 0.001, y));
+					//rectHolder.appendChild(createRect(segment.total, 8, segment.start||0.001, y, segment.cssClass, segment.name + " (" + Math.round(segment.start) + "ms - " +  Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
 				}
 			});
-			return rectHolder;
-		} else {
-			return rect;
 		}
+		return rectHolder;
 	});
 
 	var createBgRect = function createBgRect(block) {
@@ -1466,6 +1507,7 @@ waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 		rect.appendChild(svg.newEl("title", {
 			text: block.name
 		})); // Add tile to wedge path
+
 		return rect;
 	};
 
@@ -1576,7 +1618,9 @@ waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 		var blockWidth = block.total || 1;
 
 		var y = 25 * i;
-		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start || 0.001, y, block.cssClass, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
+		timeLineHolder.appendChild(createRect(block, blockWidth, 25, block.start || 0.001, y));
+
+		//timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.cssClass, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
 
 		var blockLabel = svg.newTextEl(block.name + " (" + block.total + "ms)", y + (block.segments ? 20 : 17));
 

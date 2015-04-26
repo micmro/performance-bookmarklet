@@ -58,7 +58,7 @@ waterfall.setupTimeLine = function(durationMs, blocks, marks, lines, title){
 
 	var onRectMouseEnter = function(evt){
 		var targetRect = evt.target;
-		dom.addClass(targetRect, "active");
+		dom.addClass(targetRect.parentNode, "active");
 
 		const xPosEnd = targetRect.x.baseVal.valueInSpecifiedUnits + targetRect.width.baseVal.valueInSpecifiedUnits + "%";
 		const xPosStart = targetRect.x.baseVal.valueInSpecifiedUnits + "%";
@@ -75,13 +75,19 @@ waterfall.setupTimeLine = function(durationMs, blocks, marks, lines, title){
 	};
 
 	var onRectMouseLeave = function(evt){
-		dom.removeClass(evt.target, "active");
+		dom.removeClass(evt.target.parentNode, "active");
 		dom.removeClass(endline, "active");
 		dom.removeClass(startline, "active");
 	};
 
-	var createRect = function(width, height, x, y, cssClass, label, segments){
-		var rectHolder;
+	//var createRect = function(width, height, x, y, cssClass, label, segments){
+	var createRect = function(timeBlock, width, height, x, y){
+		var segments = timeBlock.segments;
+		var cssClass = timeBlock.cssClass;
+		var label = timeBlock.name + "\n\r(" + Math.round(timeBlock.start) + "ms - " +  Math.round(timeBlock.end) + "ms | total: " + Math.round(timeBlock.total) + "ms)";
+
+
+		var rectHolder = svg.newEl("g");
 		var rect = svg.newEl("rect", {
 			width : (width / unit) + "%",
 			height : height-1,
@@ -89,27 +95,66 @@ waterfall.setupTimeLine = function(durationMs, blocks, marks, lines, title){
 			y : y,
 			class : ((segments && segments.length > 0 ? "time-block" : "segment")) + " " +  (cssClass || "block-undefined")
 		});
-		if(label){
-			rect.appendChild(svg.newEl("title", {
-				text : label
-			})); // Add tile to wedge path
-		}
 
 		rect.addEventListener("mouseenter", onRectMouseEnter);
 		rect.addEventListener("mouseleave", onRectMouseLeave);
 
+		rectHolder.appendChild(rect);
+
+		if(label){
+			var tootipHolder = svg.newEl("g", {
+				class : "tooltip",
+				visibility: "hidden"
+			});
+
+			var labelX = (x / unit) + 0.5 + "%";
+			var labelY = y-50;
+
+			tootipHolder.appendChild(svg.newEl("rect", {
+				x : labelX,
+				y : labelY,
+				width : 250,
+				height: "3em"
+			}));
+
+			var txt = svg.newEl("text", {
+				x : labelX,
+				y : labelY
+			}); 
+
+			txt.appendChild(svg.newEl("tspan", {
+				dy : "1.2em",
+				x : labelX,
+				text : timeBlock.name,
+			}));
+
+			txt.appendChild(svg.newEl("tspan", {
+				dy : "1.2em",
+				x : labelX,
+				text : "(" + Math.round(timeBlock.start) + "ms - " +  Math.round(timeBlock.end) + "ms | total: " + Math.round(timeBlock.total) + "ms)"
+			}));
+
+			tootipHolder.appendChild(txt)
+
+			rectHolder.appendChild(tootipHolder);
+
+
+			// <text id="thepopup" x="250" y="100" font-size="30" fill="black" visibility="hidden">Change me
+	  //   <set attributeName="visibility" from="hidden" to="visible" begin="thingyouhoverover.mouseover" end="thingyouhoverover.mouseout"/>
+	  // </text>
+		}
+
 		if(segments && segments.length > 0){
-			rectHolder = svg.newEl("g");
-			rectHolder.appendChild(rect);
+			
 			segments.forEach((segment) => {
 				if(segment.total > 0 && typeof segment.start === "number"){
-					rectHolder.appendChild(createRect(segment.total, 8, segment.start||0.001, y, segment.cssClass, segment.name + " (" + Math.round(segment.start) + "ms - " +  Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
+					rectHolder.appendChild(createRect(segment, segment.total, 8, segment.start||0.001, y));
+					//rectHolder.appendChild(createRect(segment.total, 8, segment.start||0.001, y, segment.cssClass, segment.name + " (" + Math.round(segment.start) + "ms - " +  Math.round(segment.end) + "ms | total: " + Math.round(segment.total) + "ms)"));
 				}
 			});
-			return rectHolder;
-		}else{
-			return rect;
+			
 		}
+		return rectHolder;
 	};
 
 	var createBgRect = function(block){
@@ -124,6 +169,7 @@ waterfall.setupTimeLine = function(durationMs, blocks, marks, lines, title){
 		rect.appendChild(svg.newEl("title", {
 			text : block.name
 		})); // Add tile to wedge path
+
 		return rect;
 	};
 
@@ -237,7 +283,9 @@ waterfall.setupTimeLine = function(durationMs, blocks, marks, lines, title){
 		var blockWidth = block.total||1;
 
 		var y = 25 * i;
-		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.cssClass, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
+		timeLineHolder.appendChild(createRect(block, blockWidth, 25, block.start||0.001, y));
+
+		//timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.cssClass, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
 
 		var blockLabel = svg.newTextEl(block.name + " (" + block.total + "ms)", (y + (block.segments? 20 : 17)));
 
