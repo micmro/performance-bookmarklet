@@ -52,7 +52,11 @@ iFrameHolder.setup = function(onIFrameReady){
 		initHolderEl();
 		onIFrameReady(addComponent);
 		outputIFrame.body.appendChild(outputHolder);
-		iFrameEl.style.height = "100%";
+		if(getComputedStyle(document.body).overflow != "hidden"){
+			iFrameEl.style.height = (outputHolder.clientHeight + 36) + "px";
+		}else{
+			iFrameEl.style.height = "100%";
+		}
 	};
 
 	if(iFrameEl){

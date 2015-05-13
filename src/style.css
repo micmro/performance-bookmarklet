@@ -5,7 +5,7 @@ svg {font:normal 12px/18px sans-serif;}
 th {text-align: left;}
 
 /*General*/
-#perfbook-holder {overflow: auto; width:100%; padding:1em 2em 3em;}
+#perfbook-holder {overflow: hidden; width:100%; padding:1em 2em;}
 #perfbook-content {position:relative;}
 .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;}
 .full-width {width:100%;}
@@ -155,3 +155,4 @@ h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;}
 .legend dt {float: left; clear: left; padding: 0 0 0.5em;}
 .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;}
 .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}
+
