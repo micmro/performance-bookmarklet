@@ -239,7 +239,7 @@ waterfall.setupTimeLine = function(durationMs, blocks, marks, lines, title){
 		var y = 25 * i;
 		timeLineHolder.appendChild(createRect(blockWidth, 25, block.start||0.001, y, block.cssClass, block.name + " (" + block.start + "ms - " + block.end + "ms | total: " + block.total + "ms)", block.segments));
 
-		var blockLabel = svg.newTextEl(block.name + " (" + block.total + "ms)", (y + (block.segments? 20 : 17)));
+		var blockLabel = svg.newTextEl(block.name + " (" + Math.round(block.total) + "ms)", (y + (block.segments? 20 : 17)));
 
 		if(((block.total||1) / unit) > 10 && svg.getNodeTextWidth(blockLabel) < 200){
 			blockLabel.setAttribute("class", "inner-label");
