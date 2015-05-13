@@ -52,7 +52,7 @@ iFrameHolder.setup = function(onIFrameReady){
 		initHolderEl();
 		onIFrameReady(addComponent);
 		outputIFrame.body.appendChild(outputHolder);
-		iFrameEl.style.height = outputHolder.clientHeight + "px";
+		iFrameEl.style.height = "100%";
 	};
 
 	if(iFrameEl){
