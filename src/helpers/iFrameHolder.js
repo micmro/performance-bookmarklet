@@ -83,7 +83,7 @@ iFrameHolder.setup = function(onIFrameReady){
 				outputIFrame.head.appendChild(styleTag);
 				finalize();
 			}
-		}, "position:absolute; top:1%; right:1%; margin-bottom:1em; left:1%; z-index: 9999; width:98%; z-index: 9999; border:0; box-shadow:0 0 25px 0 rgba(0,0,0,0.5); background:#fff;");
+		}, "position:absolute; top:1%; right:1%; margin-bottom:1em; left:1%; z-index:6543210; width:98%; border:0; box-shadow:0 0 25px 0 rgba(0,0,0,0.5); background:#fff;");
 		document.body.appendChild(iFrameEl);
 	}
 };
