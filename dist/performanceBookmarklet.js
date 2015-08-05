@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:12/05/2015 */
+   build:04/08/2015 */
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
@@ -574,6 +574,8 @@ var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["defau
 
 var helper = _interopRequire(require("./helpers/helpers"));
 
+var PageMetric = _interopRequire(require("./pageMetric"));
+
 var data = {
 	resources: [],
 	marks: [],
@@ -746,8 +748,23 @@ if (data.allResourcesCalc.length > 0) {
 	}) / data.slowestCalls.length);
 }
 
+/**
+ * Persist data points to the data store.
+ */
+data.save = function () {
+	var pageMetric = new PageMetric({
+		page: window.location.href,
+		contentLoading: data.perfTiming.domContentLoadedEventStart - data.perfTiming.domLoading,
+		loadStart: data.perfTiming.domComplete - data.perfTiming.domLoading,
+		firstByte: data.perfTiming.responseStart - data.perfTiming.navigationStart,
+		total: data.perfTiming.loadEventEnd - data.perfTiming.navigationStart
+	});
+
+	pageMetric.save();
+};
+
 module.exports = data;
-},{"./helpers/helpers":9}],8:[function(require,module,exports){
+},{"./helpers/helpers":9,"./pageMetric":18}],8:[function(require,module,exports){
 /*
 DOM Helpers
 */
@@ -1634,6 +1651,8 @@ var legendComponent = _interopRequire(require("./components/legend"));
 
 var logger = _interopRequire(require("./logger"));
 
+var PageMetric = _interopRequire(require("./pageMetric"));
+
 //skip browser internal pages or when data is invalid
 if (location.protocol === "about:" || !data.isValid()) {
 	return;
@@ -1646,7 +1665,13 @@ var onIFrameReady = function onIFrameReady(addComponentFn) {
 };
 
 iFrameHolder.setup(onIFrameReady);
-},{"./components/legend":1,"./components/navigationTimeline":2,"./components/pieChart":3,"./components/resourcesTimeline":4,"./components/summaryTiles":5,"./components/table":6,"./data":7,"./helpers/iFrameHolder":10,"./logger":17}],17:[function(require,module,exports){
+data.save();
+
+// Public API
+var PerformanceBookmarklet = {};
+PerformanceBookmarklet.PageMetric = PageMetric;
+window.PerformanceBookmarklet = PerformanceBookmarklet;
+},{"./components/legend":1,"./components/navigationTimeline":2,"./components/pieChart":3,"./components/resourcesTimeline":4,"./components/summaryTiles":5,"./components/table":6,"./data":7,"./helpers/iFrameHolder":10,"./logger":17,"./pageMetric":18}],17:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1677,4 +1702,154 @@ tableLogger.logTables([{
 	data: data.fileTypeCounts,
 	columns: ["fileType", "count", "perc"]
 }]);
-},{"./data":7,"./helpers/tableLogger":14}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]);
+},{"./data":7,"./helpers/tableLogger":14}],18:[function(require,module,exports){
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+/**
+ * Represent and store page performance metrics.
+ * 
+ * @param [Object] metrics Object of metrics to record.
+ * @param [String] metrics.page The current page's URL.
+ * @param [Number] metrics.contentLoading In MS, how long the content was loading.
+ * @param [Number] metrics.loadStart In MS, from dom loading to dom complete.
+ * @param [Number] metrics.firstByte In MS, when the browser received the first byte from the server.
+ * @param [Number] metrics.total In MS, how long the request took.
+ */
+
+var PageMetric = (function () {
+  function PageMetric(metrics) {
+    _classCallCheck(this, PageMetric);
+
+    this.page = metrics.page;
+    this.contentLoading = metrics.contentLoading;
+    this.loadStart = metrics.loadStart;
+    this.firstByte = metrics.firstByte;
+    this.total = metrics.total;
+  }
+
+  _createClass(PageMetric, {
+    save: {
+
+      /**
+       * Save the current record to the data store.
+       */
+
+      value: function save() {
+        var _PageMetric = this.constructor,
+            data = _PageMetric.load();
+
+        data.push(this);
+
+        localStorage.setItem(this.storageKey, JSON.stringify(data));
+      }
+    },
+    toDelimitedValue: {
+
+      /**
+       * Return the current record with the attributes specified in `csvColumns` delimited by the specified delimeter
+       *
+       * @param [String] delimiter Default: \t
+       * @return [String]
+       */
+
+      value: function toDelimitedValue() {
+        var _this = this;
+
+        var delimiter = arguments[0] === undefined ? "\t" : arguments[0];
+
+        var result = "",
+            _PageMetric = this.constructor;
+
+        _PageMetric.prototype.csvColumns.forEach(function (k, ix) {
+          if (ix) {
+            result += delimiter;
+          }
+          result += _this[k];
+        });
+
+        return result;
+      }
+    }
+  }, {
+    storageKey: {
+
+      /**
+       * Convenience method for accessing a PageMetric instance's storageKey.
+       */
+
+      value: function storageKey() {
+        return this.__proto__.storageKey;
+      }
+    },
+    load: {
+
+      /**
+       * Load the page metrics from the data store.
+       * 
+       * @return [Array<PageMetric>]
+       */
+
+      value: function load() {
+        return JSON.parse(localStorage.getItem(this.prototype.storageKey)) || new Array();
+      }
+    },
+    dump: {
+
+      /**
+       * Dump the current page metrics from the data store to the console. 
+       *
+       * Example: 
+       *    PerformanceBookmarklet.PageMetric.dump(); // Dumps the data as TSV and clears the data store.
+       *    PerformanceBookmarklet.PageMetric.dump(',', false); // Dumps the data as CSV and retains the data.
+       *
+       * @param [String] delimiter The delimiter to use for the output columns. Default: '\t'.
+       * @param [Boolean] clear Should the data be cleared from the data store?
+       */
+
+      value: function dump() {
+        var delimiter = arguments[0] === undefined ? "\t" : arguments[0];
+        var clear = arguments[1] === undefined ? true : arguments[1];
+
+        var _PageMetric = this;
+        var storageKey = _PageMetric.prototype.storageKey;
+        var sourceData = _PageMetric.load();
+
+        // Nothing to analyze. Return early.
+        if (sourceData.length === 0) {
+          console.log("There are no page metrics. Try refreshing the page and/or reloading the bookmarklet.");
+          return;
+        }
+
+        // Remove the data from the data store.
+        if (clear === true) {
+          localStorage.removeItem(storageKey);
+          console.log("Storage for %s has been cleared", storageKey);
+        }
+
+        // Build header
+        var result = _PageMetric.prototype.csvColumns.join(delimiter) + "\n";
+
+        // Add the rows
+        sourceData.forEach(function (metricObj) {
+          var pageMetric = new _PageMetric(metricObj);
+          result += pageMetric.toDelimitedValue(delimiter);
+          result += "\n";
+        });
+
+        console.log(result);
+      }
+    }
+  });
+
+  return PageMetric;
+})();
+
+PageMetric.prototype.csvColumns = ["page", "contentLoading", "loadStart", "firstByte", "total"];
+PageMetric.prototype.storageKey = "performance-bookmarklet-metrics";
+
+module.exports = PageMetric;
+},{}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]);
