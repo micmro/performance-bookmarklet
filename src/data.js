@@ -1,4 +1,5 @@
 import helper from "./helpers/helpers";
+import PageMetric from "./pageMetric";
 
 var data = {
 	resources: [],
@@ -163,6 +164,21 @@ if(data.allResourcesCalc.length > 0){
 		}
 		return a + b.duration;
 	}) / data.slowestCalls.length);
+}
+
+/**
+ * Persist data points to the data store.
+ */
+data.save = function() {
+	var pageMetric = new PageMetric({
+		page: window.location.href,
+		contentLoading: data.perfTiming.domContentLoadedEventStart - data.perfTiming.domLoading,
+		loadStart: data.perfTiming.domComplete - data.perfTiming.domLoading,
+		firstByte: data.perfTiming.responseStart - data.perfTiming.navigationStart,
+		total: data.perfTiming.loadEventEnd - data.perfTiming.navigationStart
+	});
+
+	pageMetric.save();
 }
 
 

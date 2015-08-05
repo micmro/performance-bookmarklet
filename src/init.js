@@ -8,6 +8,8 @@ import tableComponent from "./components/table";
 import resourcesTimelineComponent from "./components/resourcesTimeline";
 import legendComponent from "./components/legend";
 import logger from "./logger";
+import PageMetric from "./pageMetric";
+
 
 //skip browser internal pages or when data is invalid
 if(location.protocol === "about:" || !data.isValid()){
@@ -28,3 +30,10 @@ var onIFrameReady = function(addComponentFn){
 };
 
 iFrameHolder.setup(onIFrameReady);
+data.save();
+
+
+// Public API
+var PerformanceBookmarklet = {};
+PerformanceBookmarklet.PageMetric = PageMetric;
+window.PerformanceBookmarklet = PerformanceBookmarklet;
