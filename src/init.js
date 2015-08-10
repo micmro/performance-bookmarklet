@@ -7,8 +7,8 @@ import pieChartComponent from "./components/pieChart";
 import tableComponent from "./components/table";
 import resourcesTimelineComponent from "./components/resourcesTimeline";
 import legendComponent from "./components/legend";
+import PageMetric from "./components/pageMetric";
 import logger from "./logger";
-import PageMetric from "./pageMetric";
 
 
 //skip browser internal pages or when data is invalid
@@ -27,13 +27,11 @@ var onIFrameReady = function(addComponentFn){
 	].forEach(function(componentBody){
 		addComponentFn(componentBody);
 	});
+
+	// Public API
+	var PerformanceBookmarklet = {};
+	PerformanceBookmarklet.PageMetric = new PageMetric();
+	window.PerformanceBookmarklet = PerformanceBookmarklet;
 };
 
 iFrameHolder.setup(onIFrameReady);
-data.save();
-
-
-// Public API
-var PerformanceBookmarklet = {};
-PerformanceBookmarklet.PageMetric = PageMetric;
-window.PerformanceBookmarklet = PerformanceBookmarklet;

@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:04/08/2015 */
+   build:10/08/2015 */
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
@@ -76,7 +76,7 @@ legendComponent.init = function () {
 };
 
 module.exports = legendComponent;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/waterfall":15}],2:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/waterfall":16}],2:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -150,7 +150,172 @@ navigationTimelineComponent.init = function () {
 };
 
 module.exports = navigationTimelineComponent;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/svg":13,"../helpers/tableLogger":14,"../helpers/waterfall":15}],3:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/svg":14,"../helpers/tableLogger":15,"../helpers/waterfall":16}],3:[function(require,module,exports){
+"use strict";
+
+var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+var data = _interopRequire(require("../data"));
+
+/**
+ * Represent and store page performance metrics.
+ * 
+ * @param [Object] metrics Object of metrics to record.
+ * @param [String] metrics.page The current page's URL.
+ * @param [Number] metrics.contentLoading In MS, how long the content was loading.
+ * @param [Number] metrics.loadStart In MS, from dom loading to dom complete.
+ * @param [Number] metrics.firstByte In MS, when the browser received the first byte from the server.
+ * @param [Number] metrics.total In MS, how long the request took.
+ */
+
+var PageMetric = (function () {
+  function PageMetric() {
+    _classCallCheck(this, PageMetric);
+
+    var metrics = {
+      page: window.location.href,
+      contentLoading: data.perfTiming.domContentLoadedEventStart - data.perfTiming.domLoading,
+      loadStart: data.perfTiming.domComplete - data.perfTiming.domLoading,
+      firstByte: data.perfTiming.responseStart - data.perfTiming.navigationStart,
+      total: data.perfTiming.loadEventEnd - data.perfTiming.navigationStart
+    };
+    console.log(metrics);
+    this.page = metrics.page;
+    this.contentLoading = metrics.contentLoading;
+    this.loadStart = metrics.loadStart;
+    this.firstByte = metrics.firstByte;
+    this.total = metrics.total;
+
+    this.save();
+    console.log(metrics, this);
+  }
+
+  _createClass(PageMetric, {
+    save: {
+
+      /**
+       * Save the current record to the data store.
+       */
+
+      value: function save() {
+        var _PageMetric = this.constructor,
+            data = _PageMetric.load();
+
+        data.push(this);
+
+        localStorage.setItem(this.storageKey, JSON.stringify(data));
+      }
+    },
+    toDelimitedValue: {
+
+      /**
+       * Return the current record with the attributes specified in `csvColumns` delimited by the specified delimeter
+       *
+       * @param [String] delimiter Default: \t
+       * @return [String]
+       */
+
+      value: function toDelimitedValue() {
+        var _this = this;
+
+        var delimiter = arguments[0] === undefined ? "\t" : arguments[0];
+
+        var result = "",
+            _PageMetric = this.constructor;
+
+        _PageMetric.prototype.csvColumns.forEach(function (k, ix) {
+          if (ix) {
+            result += delimiter;
+          }
+          result += _this[k];
+        });
+
+        return result;
+      }
+    }
+  }, {
+    storageKey: {
+
+      /**
+       * Convenience method for accessing a PageMetric instance"s storageKey.
+       */
+
+      value: function storageKey() {
+        return this.__proto__.storageKey;
+      }
+    },
+    load: {
+
+      /**
+       * Load the page metrics from the data store.
+       * 
+       * @return [Array<PageMetric>]
+       */
+
+      value: function load() {
+        return JSON.parse(localStorage.getItem(this.prototype.storageKey)) || new Array();
+      }
+    },
+    dump: {
+
+      /**
+       * Dump the current page metrics from the data store to the console. 
+       *
+       * Example: 
+       *    PerformanceBookmarklet.PageMetric.dump(); // Dumps the data as TSV and clears the data store.
+       *    PerformanceBookmarklet.PageMetric.dump(",", false); // Dumps the data as CSV and retains the data.
+       *
+       * @param [String] delimiter The delimiter to use for the output columns. Default: "\t".
+       * @param [Boolean] clear Should the data be cleared from the data store?
+       */
+
+      value: function dump() {
+        var delimiter = arguments[0] === undefined ? "\t" : arguments[0];
+        var clear = arguments[1] === undefined ? true : arguments[1];
+
+        var _PageMetric = this;
+        var storageKey = _PageMetric.prototype.storageKey;
+        var sourceData = _PageMetric.load();
+
+        // Nothing to analyze. Return early.
+        if (sourceData.length === 0) {
+          console.log("There are no page metrics. Try refreshing the page and/or reloading the bookmarklet.");
+          return;
+        }
+
+        // Remove the data from the data store.
+        if (clear === true) {
+          localStorage.removeItem(storageKey);
+          console.log("Storage for %s has been cleared", storageKey);
+        }
+
+        // Build header
+        var result = _PageMetric.prototype.csvColumns.join(delimiter) + "\n";
+
+        // Add the rows
+        sourceData.forEach(function (metricObj) {
+          var pageMetric = new _PageMetric(metricObj);
+          result += pageMetric.toDelimitedValue(delimiter);
+          result += "\n";
+        });
+
+        console.log(result);
+      }
+    }
+  });
+
+  return PageMetric;
+})();
+
+PageMetric.prototype.csvColumns = ["page", "contentLoading", "loadStart", "firstByte", "total"];
+PageMetric.prototype.storageKey = "performance-bookmarklet-metrics";
+
+module.exports = PageMetric;
+},{"../data":8}],4:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -261,7 +426,7 @@ pieChartComponent.init = function () {
 };
 
 module.exports = pieChartComponent;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/pieChartHelpers":11,"../helpers/svg":13}],4:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/pieChartHelpers":12,"../helpers/svg":14}],5:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -384,7 +549,7 @@ resourcesTimelineComponent.init = function () {
 };
 
 module.exports = resourcesTimelineComponent;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/waterfall":15}],5:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/waterfall":16}],6:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -443,7 +608,7 @@ summaryTilesComponent.init = function () {
 };
 
 module.exports = summaryTilesComponent;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9}],6:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10}],7:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -567,14 +732,12 @@ tableComponent.init = function () {
 };
 
 module.exports = tableComponent;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9}],7:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10}],8:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
 var helper = _interopRequire(require("./helpers/helpers"));
-
-var PageMetric = _interopRequire(require("./pageMetric"));
 
 var data = {
 	resources: [],
@@ -748,23 +911,8 @@ if (data.allResourcesCalc.length > 0) {
 	}) / data.slowestCalls.length);
 }
 
-/**
- * Persist data points to the data store.
- */
-data.save = function () {
-	var pageMetric = new PageMetric({
-		page: window.location.href,
-		contentLoading: data.perfTiming.domContentLoadedEventStart - data.perfTiming.domLoading,
-		loadStart: data.perfTiming.domComplete - data.perfTiming.domLoading,
-		firstByte: data.perfTiming.responseStart - data.perfTiming.navigationStart,
-		total: data.perfTiming.loadEventEnd - data.perfTiming.navigationStart
-	});
-
-	pageMetric.save();
-};
-
 module.exports = data;
-},{"./helpers/helpers":9,"./pageMetric":18}],8:[function(require,module,exports){
+},{"./helpers/helpers":10}],9:[function(require,module,exports){
 /*
 DOM Helpers
 */
@@ -860,7 +1008,7 @@ dom.removeClass = function (el, className) {
 };
 
 module.exports = dom;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /*
 Misc helpers
 */
@@ -1031,7 +1179,7 @@ helper.clone = function (obj) {
 };
 
 module.exports = helper;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1128,7 +1276,7 @@ iFrameHolder.getOutputIFrame = function () {
 };
 
 module.exports = iFrameHolder;
-},{"../helpers/dom":8,"../helpers/style":12}],11:[function(require,module,exports){
+},{"../helpers/dom":9,"../helpers/style":13}],12:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1270,7 +1418,7 @@ pieChartHelpers.createChartTable = function (title, data, columns) {
 };
 
 module.exports = pieChartHelpers;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/svg":13}],12:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/svg":14}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1278,7 +1426,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 var style = "body {overflow: auto; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .block-css {fill: #afd899;} .block-iframe, .block-html, .block-internal {fill: #85b3f2;} .block-img, .block-image {fill: #bc9dd6;} .block-script, .block-js {fill: #e7bd8c;} .block-link {fill: #89afe6;} .block-swf, .block-flash {fill: #4db3ba;} .block-font {fill: #e96859;} .block-xmlhttprequest, .block-ajax {fill: #e7d98c;} .block-other {fill: #bebebe;} .block-total {fill: #ccc;} .block-unload {fill: #909;} .block-redirect {fill: #ffff60;} .block-appcache {fill: #1f831f;} .block-dns {fill: #1f7c83;} .block-tcp {fill: #e58226;} .block-ttfb {fill: #1fe11f;} .block-response {fill: #1977dd;} .block-dom {fill: #9cc;} .block-dom-content-loaded {fill: #d888df;} .block-onload {fill: #c0c0ff;} .block-ssl {fill: #c141cd; } .block-ms-first-paint-event {fill: #8fbc83; } .block-dom-interactive-event {fill: #d888df; } .block-network-server {fill: #8cd18c; } .block-custom-measure {fill: #f00; } .block-navigation-api-total {fill: #ccc;} .block-blocking {fill: #cdcdcd;} .block-undefined {fill: #0f0;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #pie-request-by-domain {flex-grow: 2; width:772px; max-width: 1272px;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #ccc; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .water-fall-chart .mark-holder text {-webkit-writing-mode: tb; writing-mode:vertical-lr; writing-mode: tb;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .domain-selector {float:right; margin: -35px 0 0 0;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}";
 exports.style = style;
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /*
 SVG Helpers
 */
@@ -1322,7 +1470,7 @@ svg.getNodeTextWidth = function (textNode) {
 };
 
 module.exports = svg;
-},{"../helpers/iFrameHolder":10}],14:[function(require,module,exports){
+},{"../helpers/iFrameHolder":11}],15:[function(require,module,exports){
 /*
 Log tables in console
 */
@@ -1331,19 +1479,19 @@ Log tables in console
 
 var tableLogger = {};
 
-tableLogger.logTable = function (table) {
-	if (table.data.length > 0 && console.table) {
-		console.log("\n\n\n" + table.name + ":");
-		console.table(table.data, table.columns);
-	}
-};
+tableLogger.logTable = function (table) {};
 
 tableLogger.logTables = function (tableArr) {
 	tableArr.forEach(tableLogger.logTable);
 };
 
 module.exports = tableLogger;
-},{}],15:[function(require,module,exports){
+
+// if(table.data.length > 0 && console.table){
+// 	console.log("\n\n\n" + table.name + ":");
+// 	console.table(table.data, table.columns);
+// }
+},{}],16:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1628,7 +1776,7 @@ waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 };
 
 module.exports = waterfall;
-},{"../helpers/dom":8,"../helpers/svg":13}],16:[function(require,module,exports){
+},{"../helpers/dom":9,"../helpers/svg":14}],17:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1649,9 +1797,9 @@ var resourcesTimelineComponent = _interopRequire(require("./components/resources
 
 var legendComponent = _interopRequire(require("./components/legend"));
 
-var logger = _interopRequire(require("./logger"));
+var PageMetric = _interopRequire(require("./components/pageMetric"));
 
-var PageMetric = _interopRequire(require("./pageMetric"));
+var logger = _interopRequire(require("./logger"));
 
 //skip browser internal pages or when data is invalid
 if (location.protocol === "about:" || !data.isValid()) {
@@ -1662,16 +1810,15 @@ var onIFrameReady = function onIFrameReady(addComponentFn) {
 	[summaryTilesComponent.init(), navigationTimelineComponent.init(), pieChartComponent.init(), tableComponent.init(), resourcesTimelineComponent.init(), legendComponent.init()].forEach(function (componentBody) {
 		addComponentFn(componentBody);
 	});
+
+	// Public API
+	var PerformanceBookmarklet = {};
+	PerformanceBookmarklet.PageMetric = new PageMetric();
+	window.PerformanceBookmarklet = PerformanceBookmarklet;
 };
 
 iFrameHolder.setup(onIFrameReady);
-data.save();
-
-// Public API
-var PerformanceBookmarklet = {};
-PerformanceBookmarklet.PageMetric = PageMetric;
-window.PerformanceBookmarklet = PerformanceBookmarklet;
-},{"./components/legend":1,"./components/navigationTimeline":2,"./components/pieChart":3,"./components/resourcesTimeline":4,"./components/summaryTiles":5,"./components/table":6,"./data":7,"./helpers/iFrameHolder":10,"./logger":17,"./pageMetric":18}],17:[function(require,module,exports){
+},{"./components/legend":1,"./components/navigationTimeline":2,"./components/pageMetric":3,"./components/pieChart":4,"./components/resourcesTimeline":5,"./components/summaryTiles":6,"./components/table":7,"./data":8,"./helpers/iFrameHolder":11,"./logger":18}],18:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1702,154 +1849,4 @@ tableLogger.logTables([{
 	data: data.fileTypeCounts,
 	columns: ["fileType", "count", "perc"]
 }]);
-},{"./data":7,"./helpers/tableLogger":14}],18:[function(require,module,exports){
-"use strict";
-
-var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
-
-/**
- * Represent and store page performance metrics.
- * 
- * @param [Object] metrics Object of metrics to record.
- * @param [String] metrics.page The current page's URL.
- * @param [Number] metrics.contentLoading In MS, how long the content was loading.
- * @param [Number] metrics.loadStart In MS, from dom loading to dom complete.
- * @param [Number] metrics.firstByte In MS, when the browser received the first byte from the server.
- * @param [Number] metrics.total In MS, how long the request took.
- */
-
-var PageMetric = (function () {
-  function PageMetric(metrics) {
-    _classCallCheck(this, PageMetric);
-
-    this.page = metrics.page;
-    this.contentLoading = metrics.contentLoading;
-    this.loadStart = metrics.loadStart;
-    this.firstByte = metrics.firstByte;
-    this.total = metrics.total;
-  }
-
-  _createClass(PageMetric, {
-    save: {
-
-      /**
-       * Save the current record to the data store.
-       */
-
-      value: function save() {
-        var _PageMetric = this.constructor,
-            data = _PageMetric.load();
-
-        data.push(this);
-
-        localStorage.setItem(this.storageKey, JSON.stringify(data));
-      }
-    },
-    toDelimitedValue: {
-
-      /**
-       * Return the current record with the attributes specified in `csvColumns` delimited by the specified delimeter
-       *
-       * @param [String] delimiter Default: \t
-       * @return [String]
-       */
-
-      value: function toDelimitedValue() {
-        var _this = this;
-
-        var delimiter = arguments[0] === undefined ? "\t" : arguments[0];
-
-        var result = "",
-            _PageMetric = this.constructor;
-
-        _PageMetric.prototype.csvColumns.forEach(function (k, ix) {
-          if (ix) {
-            result += delimiter;
-          }
-          result += _this[k];
-        });
-
-        return result;
-      }
-    }
-  }, {
-    storageKey: {
-
-      /**
-       * Convenience method for accessing a PageMetric instance's storageKey.
-       */
-
-      value: function storageKey() {
-        return this.__proto__.storageKey;
-      }
-    },
-    load: {
-
-      /**
-       * Load the page metrics from the data store.
-       * 
-       * @return [Array<PageMetric>]
-       */
-
-      value: function load() {
-        return JSON.parse(localStorage.getItem(this.prototype.storageKey)) || new Array();
-      }
-    },
-    dump: {
-
-      /**
-       * Dump the current page metrics from the data store to the console. 
-       *
-       * Example: 
-       *    PerformanceBookmarklet.PageMetric.dump(); // Dumps the data as TSV and clears the data store.
-       *    PerformanceBookmarklet.PageMetric.dump(',', false); // Dumps the data as CSV and retains the data.
-       *
-       * @param [String] delimiter The delimiter to use for the output columns. Default: '\t'.
-       * @param [Boolean] clear Should the data be cleared from the data store?
-       */
-
-      value: function dump() {
-        var delimiter = arguments[0] === undefined ? "\t" : arguments[0];
-        var clear = arguments[1] === undefined ? true : arguments[1];
-
-        var _PageMetric = this;
-        var storageKey = _PageMetric.prototype.storageKey;
-        var sourceData = _PageMetric.load();
-
-        // Nothing to analyze. Return early.
-        if (sourceData.length === 0) {
-          console.log("There are no page metrics. Try refreshing the page and/or reloading the bookmarklet.");
-          return;
-        }
-
-        // Remove the data from the data store.
-        if (clear === true) {
-          localStorage.removeItem(storageKey);
-          console.log("Storage for %s has been cleared", storageKey);
-        }
-
-        // Build header
-        var result = _PageMetric.prototype.csvColumns.join(delimiter) + "\n";
-
-        // Add the rows
-        sourceData.forEach(function (metricObj) {
-          var pageMetric = new _PageMetric(metricObj);
-          result += pageMetric.toDelimitedValue(delimiter);
-          result += "\n";
-        });
-
-        console.log(result);
-      }
-    }
-  });
-
-  return PageMetric;
-})();
-
-PageMetric.prototype.csvColumns = ["page", "contentLoading", "loadStart", "firstByte", "total"];
-PageMetric.prototype.storageKey = "performance-bookmarklet-metrics";
-
-module.exports = PageMetric;
-},{}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]);
+},{"./data":8,"./helpers/tableLogger":15}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]);
