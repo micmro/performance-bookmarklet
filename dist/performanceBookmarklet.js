@@ -278,8 +278,14 @@ pageMetricComponent.dump = function () {
 	window.PerformanceBookmarklet = {
 		persistedData: sourceData
 	};
-	console.log("Data also accessible via %cwindow.PerformanceBookmarklet.persistedData%c:\n\n%o", "font-family:monospace", "font-family:inherit", window.PerformanceBookmarklet);
-	console.table(sourceData);
+	if (console.table) {
+		console.log("Data also accessible via %cwindow.PerformanceBookmarklet.persistedData%c:\n\n%o", "font-family:monospace", "font-family:inherit", window.PerformanceBookmarklet);
+		console.table(sourceData);
+	} else {
+		//IE fallback
+		console.log("Data also accessible via window.PerformanceBookmarklet.persistedData");
+		console.dir(window.PerformanceBookmarklet.persistedData);
+	}
 };
 
 module.exports = pageMetricComponent;
@@ -1447,18 +1453,18 @@ Log tables in console
 
 var tableLogger = {};
 
-tableLogger.logTable = function (table) {};
+tableLogger.logTable = function (table) {
+	if (table.data.length > 0 && console.table) {
+		console.log("\n\n\n" + table.name + ":");
+		console.table(table.data, table.columns);
+	}
+};
 
 tableLogger.logTables = function (tableArr) {
 	tableArr.forEach(tableLogger.logTable);
 };
 
 module.exports = tableLogger;
-
-// if(table.data.length > 0 && console.table){
-// 	console.log("\n\n\n" + table.name + ":");
-// 	console.table(table.data, table.columns);
-// }
 },{}],16:[function(require,module,exports){
 "use strict";
 

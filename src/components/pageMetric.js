@@ -29,7 +29,7 @@ var getMetrics = function(){
 //init UI
 pageMetricComponent.init = function(){
 	//persistance is off by default
-  	var persistanceEnabled = !!JSON.parse(localStorage.getItem(storageKey));
+	var persistanceEnabled = !!JSON.parse(localStorage.getItem(storageKey));
 
 	var chartHolder = dom.newTag("section", {
 		class : "page-metric chart-holder"
@@ -90,9 +90,9 @@ pageMetricComponent.getStoredValues = function(){
 
 
 pageMetricComponent.saveLatestMetrics = function(){
-    var data = pageMetricComponent.getStoredValues();
-    data.push(getMetrics()); 
-    localStorage.setItem(storageKey, JSON.stringify(data));
+	var data = pageMetricComponent.getStoredValues();
+	data.push(getMetrics()); 
+	localStorage.setItem(storageKey, JSON.stringify(data));
 };
 
 
@@ -106,26 +106,32 @@ pageMetricComponent.saveLatestMetrics = function(){
 * @param [Boolean] clear Should the data be cleared from the data store?
 */
 pageMetricComponent.dump = function(clear = true){
-    var sourceData = pageMetricComponent.getStoredValues();
+	var sourceData = pageMetricComponent.getStoredValues();
 
-    // Nothing to analyze. Return early.
-    if(sourceData.length === 0){
-      console.log("There are no page metrics. Please tick the 'Persist Data' checkbox.");
-      return;
-    }
+	// Nothing to analyze. Return early.
+	if(sourceData.length === 0){
+	  console.log("There are no page metrics. Please tick the 'Persist Data' checkbox.");
+	  return;
+	}
 
-    // Remove the data from the data store.
-    if(clear === true){
-      localStorage.removeItem(storageKey);
-      console.log("Storage for %s has been cleared", storageKey);
-    }
+	// Remove the data from the data store.
+	if(clear === true){
+	  localStorage.removeItem(storageKey);
+	  console.log("Storage for %s has been cleared", storageKey);
+	}
 
-    //make accessible publicly only when button is pressed
-    window.PerformanceBookmarklet = {
-    	persistedData : sourceData
-    };
-    console.log("Data also accessible via %cwindow.PerformanceBookmarklet.persistedData%c:\n\n%o", "font-family:monospace", "font-family:inherit", window.PerformanceBookmarklet);
-    console.table(sourceData);
+	//make accessible publicly only when button is pressed
+	window.PerformanceBookmarklet = {
+		persistedData : sourceData
+	};
+	if(console.table){
+		console.log("Data also accessible via %cwindow.PerformanceBookmarklet.persistedData%c:\n\n%o", "font-family:monospace", "font-family:inherit", window.PerformanceBookmarklet);
+		console.table(sourceData);
+	}else{
+		//IE fallback
+	    console.log("Data also accessible via window.PerformanceBookmarklet.persistedData");
+	    console.dir(window.PerformanceBookmarklet.persistedData);
+	}
 };
 
 
