@@ -70,6 +70,8 @@ The bookmarklet also outputs various console tables ([where supported](https://d
 
 ![alt text](https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/perfbook-tables-resources.png "tabular output in console of all resources in the page")
 
+Various page metrics can be persisted between page refreshes and later displayed in the console, when ticking the `Persist Data?` checkbox.
+
 
 How to use this snippet
 -----------------------
@@ -80,7 +82,7 @@ You can use it as bookmarklet. Mozilla has a [step by step description](https://
 javascript:(function(){var el=document.createElement('script');el.type='text/javascript';el.src='https://micmro.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js';el.onerror=function(){alert("Looks like the Content Security Policy directive is blocking the use of bookmarklets\n\nYou can copy and paste the content of:\n\n\"https://micmro.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js\"\n\ninto your console instead\n\n(link is in console already)");console.log("https://micmro.github.io/performance-bookmarklet/dist/performanceBookmarklet.min.js");};document.getElementsByTagName('body')[0].appendChild(el);})();
 ```
 
-Or alternatifly just copy and paste the content of [performanceBookmarklet.js](https://raw.githubusercontent.com/micmro/resourceTable/master/performanceBookmarklet.js) to your browser console.
+Or alternatifly just copy and paste the content of [performanceBookmarklet.js](https://raw.githubusercontent.com/micmro/performance-bookmarklet/master/dist/performanceBookmarklet.js) to your browser console.
 
 **You need to fall back to the browser extension or the copy and paste version for sites that block external scripts in their Content Security Policy directives.**
 
