@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:12/05/2015 */
+   build:12/08/2015 */
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
@@ -51,7 +51,7 @@ var createLegend = function createLegend(className, title, dlArray) {
 legendComponent.init = function () {
 
 	var chartHolder = dom.newTag("section", {
-		"class": "resource-timing water-fall-holder chart-holder"
+		"class": "resource-timing chart-holder"
 	});
 
 	chartHolder.appendChild(dom.newTag("h3", {
@@ -76,7 +76,7 @@ legendComponent.init = function () {
 };
 
 module.exports = legendComponent;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/waterfall":15}],2:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/waterfall":16}],2:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -150,7 +150,146 @@ navigationTimelineComponent.init = function () {
 };
 
 module.exports = navigationTimelineComponent;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/svg":13,"../helpers/tableLogger":14,"../helpers/waterfall":15}],3:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/svg":14,"../helpers/tableLogger":15,"../helpers/waterfall":16}],3:[function(require,module,exports){
+"use strict";
+
+var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+/*
+Section to allow persistance of subset values
+*/
+
+var dom = _interopRequire(require("../helpers/dom"));
+
+var data = _interopRequire(require("../data"));
+
+var storageKey = "performance-bookmarklet-metrics";
+
+var pageMetricComponent = {};
+
+var getMetrics = function getMetrics() {
+	return {
+		timestamp: new Date(data.perfTiming.navigationStart).toISOString(),
+		url: window.location.href,
+		requests: data.requestsOnly.length,
+		domains: data.requestsByDomain.length,
+		subDomainsOfTdl: data.hostSubdomains,
+		requestsToHost: data.hostRequests,
+		tldAndSubdomainRequests: data.currAndSubdomainRequests,
+		total: data.perfTiming.loadEventEnd - data.perfTiming.navigationStart,
+		timeToFirstByte: data.perfTiming.responseStart - data.perfTiming.navigationStart,
+		domContentLoading: data.perfTiming.domContentLoadedEventStart - data.perfTiming.domLoading,
+		domProcessing: data.perfTiming.domComplete - data.perfTiming.domLoading
+	};
+};
+
+//init UI
+pageMetricComponent.init = function () {
+	//persistance is off by default
+	var persistanceEnabled = !!JSON.parse(localStorage.getItem(storageKey));
+
+	var chartHolder = dom.newTag("section", {
+		"class": "page-metric chart-holder"
+	});
+	chartHolder.appendChild(dom.newTag("h3", { text: "Persist Data" }));
+
+	var persistDataCheckboxLabel = dom.newTag("label", { text: " Persist Data?" });
+	var persistDataCheckbox = dom.newTag("input", {
+		type: "checkbox",
+		id: "persist-data-checkbox",
+		checked: persistanceEnabled
+	});
+	var printDataButton = dom.newTag("button", { text: "Dumb data to console", disabled: !persistanceEnabled });
+
+	//hook up events
+	persistDataCheckbox.addEventListener("change", function (evt) {
+		var checked = evt.target.checked;
+		if (checked) {
+			pageMetricComponent.activatePersistance();
+			printDataButton.disabled = false;
+		} else if (window.confirm("this will wipe out all stored data")) {
+			pageMetricComponent.deactivatePersistance();
+			printDataButton.disabled = true;
+		} else {
+			evt.target.checked = true;
+		}
+	});
+	persistDataCheckboxLabel.insertBefore(persistDataCheckbox, persistDataCheckboxLabel.firstChild);
+
+	printDataButton.addEventListener("click", function (evt) {
+		pageMetricComponent.dump(false);
+	});
+
+	chartHolder.appendChild(persistDataCheckboxLabel);
+	chartHolder.appendChild(printDataButton);
+
+	if (persistanceEnabled) {
+		pageMetricComponent.saveLatestMetrics();
+	}
+
+	return chartHolder;
+};
+
+pageMetricComponent.activatePersistance = function () {
+	pageMetricComponent.saveLatestMetrics();
+};
+
+pageMetricComponent.deactivatePersistance = function () {
+	pageMetricComponent.dump();
+};
+
+pageMetricComponent.getStoredValues = function () {
+	return JSON.parse(localStorage.getItem(storageKey)) || [];
+};
+
+pageMetricComponent.saveLatestMetrics = function () {
+	var data = pageMetricComponent.getStoredValues();
+	data.push(getMetrics());
+	localStorage.setItem(storageKey, JSON.stringify(data));
+};
+
+/**
+* Dump the current page metrics from the data store to the console. 
+*
+* Example: 
+*    PerformanceBookmarklet.PageMetric.dump(); // Dumps the data as TSV and clears the data store.
+*    PerformanceBookmarklet.PageMetric.dump(false); // Dumps the data as CSV and retains the data.
+*
+* @param [Boolean] clear Should the data be cleared from the data store?
+*/
+pageMetricComponent.dump = function () {
+	var clear = arguments[0] === undefined ? true : arguments[0];
+
+	var sourceData = pageMetricComponent.getStoredValues();
+
+	// Nothing to analyze. Return early.
+	if (sourceData.length === 0) {
+		console.log("There are no page metrics. Please tick the 'Persist Data' checkbox.");
+		return;
+	}
+
+	// Remove the data from the data store.
+	if (clear === true) {
+		localStorage.removeItem(storageKey);
+		console.log("Storage for %s has been cleared", storageKey);
+	}
+
+	//make accessible publicly only when button is pressed
+	window.PerformanceBookmarklet = {
+		persistedData: sourceData
+	};
+	if (console.table) {
+		console.log("Data also accessible via %cwindow.PerformanceBookmarklet.persistedData%c:\n\n%o", "font-family:monospace", "font-family:inherit", window.PerformanceBookmarklet);
+		console.table(sourceData);
+	} else {
+		//IE fallback
+		console.log("Data also accessible via window.PerformanceBookmarklet.persistedData");
+		console.dir(window.PerformanceBookmarklet.persistedData);
+	}
+};
+
+module.exports = pageMetricComponent;
+},{"../data":8,"../helpers/dom":9}],4:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -202,7 +341,7 @@ pieChartComponent.init = function () {
 	var colourRangeG = "789abcdef";
 	var colourRangeB = "789abcdef";
 
-	//augment data
+	//argument data
 	var requestsByDomainData = data.requestsByDomain.map(function (sourceDomain) {
 		var domain = helper.clone(sourceDomain);
 		domain.perc = domain.count / requestsUnit;
@@ -261,7 +400,7 @@ pieChartComponent.init = function () {
 };
 
 module.exports = pieChartComponent;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/pieChartHelpers":11,"../helpers/svg":13}],4:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/pieChartHelpers":12,"../helpers/svg":14}],5:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -384,7 +523,7 @@ resourcesTimelineComponent.init = function () {
 };
 
 module.exports = resourcesTimelineComponent;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/waterfall":15}],5:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/waterfall":16}],6:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -425,7 +564,7 @@ summaryTilesComponent.init = function () {
 		"class": "summary-tile-appendix"
 	});
 
-	[createTile("Requests", data.requestsOnly.length || "0"), createTile("Domains", data.requestsByDomain.length || "0"), createTile(dom.combineNodes("Subdomains of ", dom.newTag("abbr", { title: "Top Level Domain", text: "TLD" })), data.hostSubdomains || "0"), createTile(dom.combineNodes("Requests to ", dom.newTag("span", { title: location.host, text: "Host" })), data.hostRequests || "0"), createTile(dom.combineNodes(dom.newTag("abbr", { title: "Top Level Domain", text: "TLD" }), "& Subdomain Requests"), data.currAndSubdomainRequests || "0"), createTile("Total", data.perfTiming.loadEventEnd - data.perfTiming.navigationStart + "ms", 40), createTile("Time to First Byte", data.perfTiming.responseStart - data.perfTiming.navigationStart + "ms", 40), createTile(dom.newTag("span", { title: "domLoading to domContentLoadedEventStart", text: "DOM Content Loading" }), data.perfTiming.domContentLoadedEventStart - data.perfTiming.domLoading + "ms", 40), createTile(dom.newTag("span", { title: "domLoading to loadEventStart", text: "DOM Processing" }), data.perfTiming.domComplete - data.perfTiming.domLoading + "ms", 40)].forEach(function (tile) {
+	[createTile("Requests", data.requestsOnly.length || "0"), createTile("Domains", data.requestsByDomain.length || "0"), createTile(dom.combineNodes("Subdomains of ", dom.newTag("abbr", { title: "Top Level Domain", text: "TLD" })), data.hostSubdomains || "0"), createTile(dom.combineNodes("Requests to ", dom.newTag("span", { title: location.host, text: "Host" })), data.hostRequests || "0"), createTile(dom.combineNodes(dom.newTag("abbr", { title: "Top Level Domain", text: "TLD" }), " & Subdomain Requests"), data.currAndSubdomainRequests || "0"), createTile("Total", data.perfTiming.loadEventEnd - data.perfTiming.navigationStart + "ms", 40), createTile("Time to First Byte", data.perfTiming.responseStart - data.perfTiming.navigationStart + "ms", 40), createTile(dom.newTag("span", { title: "domLoading to domContentLoadedEventStart", text: "DOM Content Loading" }), data.perfTiming.domContentLoadedEventStart - data.perfTiming.domLoading + "ms", 40), createTile(dom.newTag("span", { title: "domLoading to loadEventStart", text: "DOM Processing" }), data.perfTiming.domComplete - data.perfTiming.domLoading + "ms", 40)].forEach(function (tile) {
 		tilesHolder.appendChild(tile);
 	});
 
@@ -443,7 +582,7 @@ summaryTilesComponent.init = function () {
 };
 
 module.exports = summaryTilesComponent;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9}],6:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10}],7:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -567,7 +706,7 @@ tableComponent.init = function () {
 };
 
 module.exports = tableComponent;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9}],7:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10}],8:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -747,7 +886,7 @@ if (data.allResourcesCalc.length > 0) {
 }
 
 module.exports = data;
-},{"./helpers/helpers":9}],8:[function(require,module,exports){
+},{"./helpers/helpers":10}],9:[function(require,module,exports){
 /*
 DOM Helpers
 */
@@ -843,7 +982,7 @@ dom.removeClass = function (el, className) {
 };
 
 module.exports = dom;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /*
 Misc helpers
 */
@@ -1014,7 +1153,7 @@ helper.clone = function (obj) {
 };
 
 module.exports = helper;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1111,7 +1250,7 @@ iFrameHolder.getOutputIFrame = function () {
 };
 
 module.exports = iFrameHolder;
-},{"../helpers/dom":8,"../helpers/style":12}],11:[function(require,module,exports){
+},{"../helpers/dom":9,"../helpers/style":13}],12:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1253,15 +1392,15 @@ pieChartHelpers.createChartTable = function (title, data, columns) {
 };
 
 module.exports = pieChartHelpers;
-},{"../data":7,"../helpers/dom":8,"../helpers/helpers":9,"../helpers/svg":13}],12:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/svg":14}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var style = "body {overflow: auto; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .block-css {fill: #afd899;} .block-iframe, .block-html, .block-internal {fill: #85b3f2;} .block-img, .block-image {fill: #bc9dd6;} .block-script, .block-js {fill: #e7bd8c;} .block-link {fill: #89afe6;} .block-swf, .block-flash {fill: #4db3ba;} .block-font {fill: #e96859;} .block-xmlhttprequest, .block-ajax {fill: #e7d98c;} .block-other {fill: #bebebe;} .block-total {fill: #ccc;} .block-unload {fill: #909;} .block-redirect {fill: #ffff60;} .block-appcache {fill: #1f831f;} .block-dns {fill: #1f7c83;} .block-tcp {fill: #e58226;} .block-ttfb {fill: #1fe11f;} .block-response {fill: #1977dd;} .block-dom {fill: #9cc;} .block-dom-content-loaded {fill: #d888df;} .block-onload {fill: #c0c0ff;} .block-ssl {fill: #c141cd; } .block-ms-first-paint-event {fill: #8fbc83; } .block-dom-interactive-event {fill: #d888df; } .block-network-server {fill: #8cd18c; } .block-custom-measure {fill: #f00; } .block-navigation-api-total {fill: #ccc;} .block-blocking {fill: #cdcdcd;} .block-undefined {fill: #0f0;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #pie-request-by-domain {flex-grow: 2; width:772px; max-width: 1272px;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #ccc; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .water-fall-chart .mark-holder text {-webkit-writing-mode: tb; writing-mode:vertical-lr; writing-mode: tb;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .domain-selector {float:right; margin: -35px 0 0 0;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;}";
+var style = "body {overflow: auto; background: #fff; font:normal 12px/18px sans-serif; color:#333;} * {box-sizing:border-box;} svg {font:normal 12px/18px sans-serif;} th {text-align: left;} button {cursor:pointer;} button:disabled {cursor:default;} #perfbook-holder {overflow: hidden; width:100%; padding:1em 2em;} #perfbook-content {position:relative;} .perfbook-close {position:absolute; top:0; right:0; padding:1em; z-index:1; background:transparent; border:0; cursor:pointer;} .full-width {width:100%;} .chart-holder {margin: 5em 0;} h1 {font:bold 18px/18px sans-serif; margin:1em 0; color:#666;} .text-right {text-align: right;} .text-left {text-align: left;} .css {background: #afd899;} .iframe, .html, .internal {background: #85b3f2;} .img, .image {background: #bc9dd6;} .script, .js {background: #e7bd8c;} .link {background: #89afe6;} .swf, .flash {background: #4db3ba;} .font {background: #e96859;} .xmlhttprequest, .ajax {background: #e7d98c;} .other {background: #bebebe;} .css-light {background: #b9cfa0;} .iframe-light, .html-light, .internal-light {background: #c2d9f9;} .img-light, .image-light {background: #deceeb;} .script-light, .js-light {background: #f3dec6;} .link-light {background: #c4d7f3;} .swf-light, .flash-light {background: #a6d9dd;} .font-light {background: #f4b4ac;} .xmlhttprequest-light, .ajax-light {background: #f3ecc6;} .other-light {background: #dfdfdf;} .block-css {fill: #afd899;} .block-iframe, .block-html, .block-internal {fill: #85b3f2;} .block-img, .block-image {fill: #bc9dd6;} .block-script, .block-js {fill: #e7bd8c;} .block-link {fill: #89afe6;} .block-swf, .block-flash {fill: #4db3ba;} .block-font {fill: #e96859;} .block-xmlhttprequest, .block-ajax {fill: #e7d98c;} .block-other {fill: #bebebe;} .block-total {fill: #ccc;} .block-unload {fill: #909;} .block-redirect {fill: #ffff60;} .block-appcache {fill: #1f831f;} .block-dns {fill: #1f7c83;} .block-tcp {fill: #e58226;} .block-ttfb {fill: #1fe11f;} .block-response {fill: #1977dd;} .block-dom {fill: #9cc;} .block-dom-content-loaded {fill: #d888df;} .block-onload {fill: #c0c0ff;} .block-ssl {fill: #c141cd; } .block-ms-first-paint-event {fill: #8fbc83; } .block-dom-interactive-event {fill: #d888df; } .block-network-server {fill: #8cd18c; } .block-custom-measure {fill: #f00; } .block-navigation-api-total {fill: #ccc;} .block-blocking {fill: #cdcdcd;} .block-undefined {fill: #0f0;} .tiles-holder {margin: 2em -18px 2em 0; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .summary-tile { flex-grow: 1; width:250px; background:#ddd; padding: 1em; margin:0 18px 1em 0; color:#666; text-align:center;} .summary-tile dt {font-weight:bold; font-size:16px; display:block; line-height:1.2em; min-height:2.9em; padding:0 0 0.5em;} .summary-tile dd {font-weight:bold; line-height:60px; margin:0;} .summary-tile-appendix {float:left; clear:both; width:100%; font-size:10px; line-height:1.1em; color:#666;} .summary-tile-appendix dt {float:left; clear:both;} .summary-tile-appendix dd {float:left; margin:0 0 0 1em;} .pie-charts-holder {margin-right: -72px; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap;} .pie-chart-holder {flex-grow: 1; width:350px; max-width: 600px; margin: 0 72px 0 0;} .pie-chart-holder h1 {min-height:2em;} .pie-chart {width:100%;} .table-holder {overflow-x:auto} .table-holder table {float:left; width:100%; font-size:12px; line-height:18px;} .table-holder th, .table-holder td {line-height: 1em; margin:0; padding:0.25em 0.5em 0.25em 0;} #pie-request-by-domain {flex-grow: 2; width:772px; max-width: 1272px;} #filetypes-and-intiators-table {margin: 2em 0 5em;} #filetypes-and-intiators-table table {vertical-align: middle; border-collapse: collapse;} #filetypes-and-intiators-table td {padding:0.5em; border-right: solid 1px #fff;} #filetypes-and-intiators-table td:last-child {padding-right: 0; border-right:0;} #filetypes-and-intiators-table .file-type-row td {border-top: solid 10px #fff;} #filetypes-and-intiators-table .file-type-row:first-child td {border-top: none;} .water-fall-holder {fill:#ccc;} .water-fall-chart {width:100%; background:#f0f5f0;} .water-fall-chart .marker-holder {width:100%;} .water-fall-chart .line-holder {stroke-width:1; stroke: #ccc; stroke-opacity:0.5;} .water-fall-chart .line-holder.active {stroke: #69009e; stroke-width:2; stroke-opacity:1;} .water-fall-chart .labels {width:100%;} .water-fall-chart .labels .inner-label {pointer-events: none;} .water-fall-chart .time-block.active {opacity: 0.8;} .water-fall-chart .line-end, .water-fall-chart .line-start {display: none; stroke-width:1; stroke-opacity:0.5; stroke: #000;} .water-fall-chart .line-end.active, .water-fall-chart .line-start.active {display: block;} .water-fall-chart .mark-holder text {-webkit-writing-mode: tb; writing-mode:vertical-lr; writing-mode: tb;} .time-scale line {stroke:#0cc; stroke-width:1;} .time-scale text {font-weight:bold;} .domain-selector {float:right; margin: -35px 0 0 0;} .navigation-timing {} .legends-group { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-flex-flow: row wrap; flex-flow: row wrap; } .legends-group .legend-holder { flex-grow: 1; width:250px; padding:0 1em 1em; } .legends-group .legend-holder h4 { margin: 0; padding: 0; } .legend dt {float: left; clear: left; padding: 0 0 0.5em;} .legend dd {float: left; display: inline-block; margin: 0 1em; line-height: 1em;} .legend .colorBoxHolder span {display: inline-block; width: 15px; height: 1em;} .page-metric {} .page-metric button {margin-left: 2em;}";
 exports.style = style;
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /*
 SVG Helpers
 */
@@ -1305,7 +1444,7 @@ svg.getNodeTextWidth = function (textNode) {
 };
 
 module.exports = svg;
-},{"../helpers/iFrameHolder":10}],14:[function(require,module,exports){
+},{"../helpers/iFrameHolder":11}],15:[function(require,module,exports){
 /*
 Log tables in console
 */
@@ -1326,7 +1465,7 @@ tableLogger.logTables = function (tableArr) {
 };
 
 module.exports = tableLogger;
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1611,7 +1750,7 @@ waterfall.setupTimeLine = function (durationMs, blocks, marks, lines, title) {
 };
 
 module.exports = waterfall;
-},{"../helpers/dom":8,"../helpers/svg":13}],16:[function(require,module,exports){
+},{"../helpers/dom":9,"../helpers/svg":14}],17:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1632,6 +1771,8 @@ var resourcesTimelineComponent = _interopRequire(require("./components/resources
 
 var legendComponent = _interopRequire(require("./components/legend"));
 
+var pageMetricComponent = _interopRequire(require("./components/pageMetric"));
+
 var logger = _interopRequire(require("./logger"));
 
 //skip browser internal pages or when data is invalid
@@ -1640,13 +1781,13 @@ if (location.protocol === "about:" || !data.isValid()) {
 }
 
 var onIFrameReady = function onIFrameReady(addComponentFn) {
-	[summaryTilesComponent.init(), navigationTimelineComponent.init(), pieChartComponent.init(), tableComponent.init(), resourcesTimelineComponent.init(), legendComponent.init()].forEach(function (componentBody) {
+	[summaryTilesComponent.init(), navigationTimelineComponent.init(), pieChartComponent.init(), tableComponent.init(), resourcesTimelineComponent.init(), legendComponent.init(), pageMetricComponent.init()].forEach(function (componentBody) {
 		addComponentFn(componentBody);
 	});
 };
 
 iFrameHolder.setup(onIFrameReady);
-},{"./components/legend":1,"./components/navigationTimeline":2,"./components/pieChart":3,"./components/resourcesTimeline":4,"./components/summaryTiles":5,"./components/table":6,"./data":7,"./helpers/iFrameHolder":10,"./logger":17}],17:[function(require,module,exports){
+},{"./components/legend":1,"./components/navigationTimeline":2,"./components/pageMetric":3,"./components/pieChart":4,"./components/resourcesTimeline":5,"./components/summaryTiles":6,"./components/table":7,"./data":8,"./helpers/iFrameHolder":11,"./logger":18}],18:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -1677,4 +1818,4 @@ tableLogger.logTables([{
 	data: data.fileTypeCounts,
 	columns: ["fileType", "count", "perc"]
 }]);
-},{"./data":7,"./helpers/tableLogger":14}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]);
+},{"./data":8,"./helpers/tableLogger":15}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]);
