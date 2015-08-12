@@ -43,7 +43,7 @@ pieChartComponent.init = function(){
 	var colourRangeB = "789abcdef";
 
 
-	//augment data
+	//argument data
 	var requestsByDomainData = data.requestsByDomain.map((sourceDomain) => {
 		var domain = helper.clone(sourceDomain);
 		domain.perc = domain.count / requestsUnit;

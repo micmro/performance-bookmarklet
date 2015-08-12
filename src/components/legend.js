@@ -41,7 +41,7 @@ var createLegend = function(className, title, dlArray){
 legendComponent.init = function(){
 
 	var chartHolder = dom.newTag("section", {
-		class : "resource-timing water-fall-holder chart-holder"
+		class : "resource-timing chart-holder"
 	});
 
 	chartHolder.appendChild(dom.newTag("h3", {
