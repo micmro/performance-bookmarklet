@@ -165,5 +165,4 @@ if(data.allResourcesCalc.length > 0){
 	}) / data.slowestCalls.length);
 }
 
-
 export default data;

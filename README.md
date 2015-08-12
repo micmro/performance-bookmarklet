@@ -70,6 +70,11 @@ The bookmarklet also outputs various console tables ([where supported](https://d
 
 ![alt text](https://raw.githubusercontent.com/micmro/resourceTable/gh-pages/readme-assets/perfbook-tables-resources.png "tabular output in console of all resources in the page")
 
+Various page metrics are persisted between page refreshes. This data can be accessed through the console via ```PerformanceBookmarklet.PageMetric.dump(delimiter, clear)```.
+
+Default values:
+* delimiter: ```"\t"``` 
+* clear: ```true```
 
 How to use this snippet
 -----------------------
