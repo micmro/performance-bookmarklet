@@ -60,7 +60,7 @@ module.exports = function( grunt ) {
 		watch: {
 			babel: {
 				files: ["src/**/*", "Gruntfile.js"],
-				tasks: ["inlineCssToJs", "copy", "babel", "browserify", "uglify"],
+				tasks: ["dist"],
 				options: {
 					spawn: false,
 					interrupt: true
@@ -89,5 +89,6 @@ module.exports = function( grunt ) {
 		grunt.file.write(cssFileDestination, cssContent);
 	});
 
-	grunt.registerTask("default", ["inlineCssToJs", "copy", "babel", "browserify", "uglify", "watch:babel"]);
+	grunt.registerTask("dist", ["inlineCssToJs", "copy", "babel", "browserify", "uglify"]);
+	grunt.registerTask("default", ["dist", "watch:babel"]);
 };
