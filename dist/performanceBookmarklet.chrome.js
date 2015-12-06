@@ -1206,12 +1206,11 @@ var getMetrics = function getMetrics() {
 };
 
 var getStoredValues = function getStoredValues() {
-	return JSON.parse(localStorage.getItem(storageKey)) || [];
+	alert("Not impemented");
+	// return JSON.parse(localStorage.getItem(storageKey)) || [];
 };
 
-persistance.persistanceEnabled = function () {
-	return !!JSON.parse(localStorage.getItem(storageKey));
-};
+persistance.persistanceEnabled = function () {};
 
 persistance.activatePersistance = function () {
 	persistance.saveLatestMetrics();
@@ -1222,9 +1221,10 @@ persistance.deactivatePersistance = function () {
 };
 
 persistance.saveLatestMetrics = function (metrics) {
-	var data = getStoredValues();
-	data.push(getMetrics());
-	localStorage.setItem(storageKey, JSON.stringify(data));
+	alert("Not impemented");
+	// var data = getStoredValues();
+	// data.push(getMetrics());
+	// localStorage.setItem(storageKey, JSON.stringify(data));
 };
 
 /**
@@ -1239,35 +1239,12 @@ persistance.saveLatestMetrics = function (metrics) {
 persistance.dump = function () {
 	var clear = arguments[0] === undefined ? true : arguments[0];
 
-	var sourceData = getStoredValues();
-
-	// Nothing to analyze. Return early.
-	if (sourceData.length === 0) {
-		console.log("There are no page metrics. Please tick the 'Persist Data' checkbox.");
-		return;
-	}
-
-	// Remove the data from the data store.
-	if (clear === true) {
-		localStorage.removeItem(storageKey);
-		console.log("Storage for %s has been cleared", storageKey);
-	}
-
-	//make accessible publicly only when button is pressed
-	window.PerformanceBookmarklet = {
-		persistedData: sourceData
-	};
-	if (console.table) {
-		console.log("Data also accessible via %cwindow.PerformanceBookmarklet.persistedData%c:\n\n%o", "font-family:monospace", "font-family:inherit", window.PerformanceBookmarklet);
-		console.table(sourceData);
-	} else {
-		//IE fallback
-		console.log("Data also accessible via window.PerformanceBookmarklet.persistedData");
-		console.dir(window.PerformanceBookmarklet.persistedData);
-	}
+	alert("Not impemented");
 };
 
 module.exports = persistance;
+
+// return !!JSON.parse(localStorage.getItem(storageKey));
 },{"../data":8,"../helpers/dom":9}],13:[function(require,module,exports){
 "use strict";
 

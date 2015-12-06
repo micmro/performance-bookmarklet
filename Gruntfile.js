@@ -7,12 +7,39 @@ module.exports = function( grunt ) {
 
 	grunt.initConfig({
 		copy : {
-			dist: {
+			distBookmarklet: {
 				files: [{
 					expand: true,
 					cwd: "src/",
 					src: ["**/*.js"],
 					dest: "dist/tempCollect",
+					filter: function(fileName){
+						return !fileName.match(/.+\.(?:chromeExtension|firefoxAddon).js$/);
+					},
+					ext: ".js"
+				}]
+			},
+			distFirefoxAddon: {
+				files: [{
+					expand: true,
+					cwd: "src/",
+					src: ["**/*.js"],
+					dest: "dist/tempCollect",
+					filter: function(fileName){
+						return !fileName.match(/.+\.(?:bookmarklet|chromeExtension).js$/);
+					},
+					ext: ".js"
+				}]
+			},
+			distChromeExtension: {
+				files: [{
+					expand: true,
+					cwd: "src/",
+					src: ["**/*.js"],
+					dest: "dist/tempCollect",
+					filter: function(fileName){
+						return !fileName.match(/.+\.(?:bookmarklet|firefoxAddon).js$/);
+					},
 					ext: ".js"
 				}]
 			}
@@ -35,9 +62,19 @@ module.exports = function( grunt ) {
 			options: {
 				banner: banner
 			},
-			dist: {
+			distBookmarklet: {
 				files: {
 					"dist/performanceBookmarklet.js": ["dist/tempEs5/**/*.js"],
+				}
+			},
+			distFirefoxAddon: {
+				files: {
+					"dist/performanceBookmarklet.ff.js": ["dist/tempEs5/**/*.js"],
+				}
+			},
+			distChromeExtension: {
+				files: {
+					"dist/performanceBookmarklet.chrome.js": ["dist/tempEs5/**/*.js"],
 				}
 			}
 		},
@@ -51,16 +88,42 @@ module.exports = function( grunt ) {
 				},
 				banner: banner
 			},
-			dist: {
+			distBookmarklet: {
 				files: {
 					"dist/performanceBookmarklet.min.js": ["dist/performanceBookmarklet.js"]
+				}
+			},
+			distFirefoxAddon: {
+				files: {
+					"dist/performanceBookmarklet.ff.min.js": ["dist/performanceBookmarklet.ff.js"]
+				}
+			},
+			distChromeExtension: {
+				files: {
+					"dist/performanceBookmarklet.chrome.min.js": ["dist/performanceBookmarklet.chrome.js"]
 				}
 			}
 		},
 		watch: {
-			babel: {
+			babelBookmarklet: {
 				files: ["src/**/*", "Gruntfile.js"],
-				tasks: ["dist"],
+				tasks: ["distBookmarklet"],
+				options: {
+					spawn: false,
+					interrupt: true
+				},
+			},
+			babelFirefoxAddon: {
+				files: ["src/**/*", "Gruntfile.js"],
+				tasks: ["distFirefoxAddon"],
+				options: {
+					spawn: false,
+					interrupt: true
+				},
+			},
+			babelChromeExtension: {
+				files: ["src/**/*", "Gruntfile.js"],
+				tasks: ["distChromeExtension"],
 				options: {
 					spawn: false,
 					interrupt: true
@@ -89,6 +152,16 @@ module.exports = function( grunt ) {
 		grunt.file.write(cssFileDestination, cssContent);
 	});
 
-	grunt.registerTask("dist", ["inlineCssToJs", "copy", "babel", "browserify", "uglify"]);
-	grunt.registerTask("default", ["dist", "watch:babel"]);
+	grunt.registerTask("distBookmarklet", ["inlineCssToJs", "copy:distBookmarklet", "babel", "browserify:distBookmarklet", "uglify:distBookmarklet"]);
+	grunt.registerTask("distFirefoxAddon", ["inlineCssToJs", "copy:distFirefoxAddon", "babel", "browserify:distFirefoxAddon", "uglify:distFirefoxAddon"]);
+	grunt.registerTask("distChromeExtension", ["inlineCssToJs", "copy:distChromeExtension", "babel", "browserify:distChromeExtension", "uglify:distChromeExtension"]);
+	grunt.registerTask("distAll", ["distBookmarklet", "distFirefoxAddon", "distChromeExtension"]);
+
+	grunt.registerTask("watchDistBookmarklet", ["distBookmarklet", "watch:babelBookmarklet"]);
+	grunt.registerTask("watchDistFirefoxAddon", ["distFirefoxAddon", "watch:babelFirefoxAddon"]);
+	grunt.registerTask("watchDistChromeExtension", ["distChromeExtension", "watch:babelChromeExtension"]);
+
+
+
+	grunt.registerTask("default", ["watchDistBookmarklet"]);
 };
