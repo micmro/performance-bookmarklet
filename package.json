@@ -7,6 +7,15 @@
     "email": "me@michaelmrowetz.com",
     "url": "https://github.com/micmro"
   },
+  "scripts": {
+    "start": "grunt watchDistBookmarklet",
+    "dist": "grunt distAll",
+    "distBookmarklet": "grunt distBookmarklet",
+    "distFirefoxAddon": "grunt distFirefoxAddon",
+    "distChromeExtension": "grunt distChromeExtension",
+    "watchDistFirefoxAddon": "grunt watchDistFirefoxAddon",
+    "watchDistChromeExtension": "grunt watchDistChromeExtension"
+  },
   "keywords": [
     "performance",
     "bookmarklet",

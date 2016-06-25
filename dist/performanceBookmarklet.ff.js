@@ -332,7 +332,7 @@ module.exports = pieChartComponent;
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
 /*
-Logic for Resource Timing API Waterfall 
+Logic for Resource Timing API Waterfall
 */
 
 var data = _interopRequire(require("../data"));
@@ -1195,7 +1195,7 @@ var getMetrics = function getMetrics() {
 		url: window.location.href,
 		requests: data.requestsOnly.length,
 		domains: data.requestsByDomain.length,
-		subDomainsOfTdl: data.hostSubdomains,
+		subDomainsOfTld: data.hostSubdomains,
 		requestsToHost: data.hostRequests,
 		tldAndSubdomainRequests: data.currAndSubdomainRequests,
 		total: data.perfTiming.loadEventEnd - data.perfTiming.navigationStart,
@@ -1228,9 +1228,9 @@ persistance.saveLatestMetrics = function (metrics) {
 };
 
 /**
-* Dump the current page metrics from the data store to the console. 
+* Dump the current page metrics from the data store to the console.
 *
-* Example: 
+* Example:
 *    PerformanceBookmarklet.PageMetric.dump(); // Dumps the data as TSV and clears the data store.
 *    PerformanceBookmarklet.PageMetric.dump(false); // Dumps the data as CSV and retains the data.
 *
@@ -1466,7 +1466,7 @@ module.exports = tableLogger;
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
 /*
-Helper to create waterfall timelines 
+Helper to create waterfall timelines
 */
 
 var svg = _interopRequire(require("../helpers/svg"));

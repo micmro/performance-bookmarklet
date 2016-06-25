@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:06/12/2015 */
+   build:25/06/2016 */
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
@@ -1195,7 +1195,7 @@ var getMetrics = function getMetrics() {
 		url: window.location.href,
 		requests: data.requestsOnly.length,
 		domains: data.requestsByDomain.length,
-		subDomainsOfTdl: data.hostSubdomains,
+		subDomainsOfTld: data.hostSubdomains,
 		requestsToHost: data.hostRequests,
 		tldAndSubdomainRequests: data.currAndSubdomainRequests,
 		total: data.perfTiming.loadEventEnd - data.perfTiming.navigationStart,
@@ -1228,9 +1228,9 @@ persistance.saveLatestMetrics = function (metrics) {
 };
 
 /**
-* Dump the current page metrics from the data store to the console. 
+* Dump the current page metrics from the data store to the console.
 *
-* Example: 
+* Example:
 *    PerformanceBookmarklet.PageMetric.dump(); // Dumps the data as TSV and clears the data store.
 *    PerformanceBookmarklet.PageMetric.dump(false); // Dumps the data as CSV and retains the data.
 *

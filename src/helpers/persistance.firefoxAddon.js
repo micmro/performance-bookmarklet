@@ -11,14 +11,14 @@ var getMetrics = function(){
 		url: window.location.href,
 		requests: data.requestsOnly.length,
 		domains: data.requestsByDomain.length,
-		subDomainsOfTdl: data.hostSubdomains,
+		subDomainsOfTld: data.hostSubdomains,
 		requestsToHost: data.hostRequests,
 		tldAndSubdomainRequests: data.currAndSubdomainRequests,
 		total: data.perfTiming.loadEventEnd - data.perfTiming.navigationStart,
 		timeToFirstByte: data.perfTiming.responseStart - data.perfTiming.navigationStart,
 		domContentLoading: data.perfTiming.domContentLoadedEventStart - data.perfTiming.domLoading,
 		domProcessing: data.perfTiming.domComplete - data.perfTiming.domLoading
-	};	
+	};
 };
 
 var getStoredValues = function(){
@@ -43,15 +43,15 @@ persistance.deactivatePersistance = function(){
 persistance.saveLatestMetrics = function(metrics){
 	alert("Not impemented");
 	// var data = getStoredValues();
-	// data.push(getMetrics()); 
+	// data.push(getMetrics());
 	// localStorage.setItem(storageKey, JSON.stringify(data));
 };
 
 
 /**
-* Dump the current page metrics from the data store to the console. 
+* Dump the current page metrics from the data store to the console.
 *
-* Example: 
+* Example:
 *    PerformanceBookmarklet.PageMetric.dump(); // Dumps the data as TSV and clears the data store.
 *    PerformanceBookmarklet.PageMetric.dump(false); // Dumps the data as CSV and retains the data.
 *
