@@ -46,14 +46,15 @@ module.exports = function( grunt ) {
 		},
 		babel: {
 			options: {
-				returnUsedHelpers: true
+				sourceMap: true,
+				presets: ['es2015']
 			},
 			dist: {
 				files: [{
 					expand: true,
 					cwd: "dist/tempCollect",
-					src: ["**/*.js"],
-					dest: "dist/tempEs5",
+					src: "**/*.js",
+					dest: "dist/tempEs5/",
 					ext: ".js"
 				}]
 			}
