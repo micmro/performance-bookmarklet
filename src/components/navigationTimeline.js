@@ -9,16 +9,15 @@ import dom from "../helpers/dom";
 import tableLogger from "../helpers/tableLogger";
 import waterfall from "../helpers/waterfall";
 
-var navigationTimelineComponent = {};
+const navigationTimelineComponent = {};
 
-navigationTimelineComponent.init = function(){
+navigationTimelineComponent.init = () => {
 
 	const startTime = data.perfTiming.navigationStart;
-	var perfTimingCalc = {
+	const perfTimingCalc = {
 			"pageLoadTime" : data.perfTiming.loadEventEnd - data.perfTiming.navigationStart,
 			"output" : []
-		},
-		propBaseName;
+		};
 
 	for(let perfProp in data.perfTiming) {
 		if(data.perfTiming[perfProp] && typeof data.perfTiming[perfProp] === "number"){
@@ -65,7 +64,7 @@ navigationTimelineComponent.init = function(){
 	data.measures.forEach((measure) => {
 		perfTimingCalc.blocks.push(waterfall.timeBlock("measure:" + measure.name, Math.round(measure.startTime), Math.round(measure.startTime + measure.duration), "block-custom-measure"));
 	});
-	
+
 	tableLogger.logTables([
 		{name: "Navigation Timeline", data : perfTimingCalc.blocks, columns : ["name", "start", "end", "total"]},
 		{name: "Navigation Events", data : perfTimingCalc.output},

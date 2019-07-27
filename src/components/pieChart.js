@@ -8,17 +8,17 @@ import svg from "../helpers/svg";
 import dom from "../helpers/dom";
 import pieChartHelpers from "../helpers/pieChartHelpers";
 
-var pieChartComponent = {};
+const pieChartComponent = {};
 
-pieChartComponent.init = function(){
+pieChartComponent.init = () => {
 
-	var chartsHolder = dom.newTag("div", {
+	const chartsHolder = dom.newTag("div", {
 		class : "pie-charts-holder chart-holder"
 	});
 
 	// create a chart and table section
-	var setupChart = (title, chartData, countTexts, columns, id) => {
-		var chartHolder = dom.newTag("div", {
+	const setupChart = (title, chartData, countTexts, columns, id) => {
+		const chartHolder = dom.newTag("div", {
 			class : "pie-chart-holder",
 			id : id||""
 		});
@@ -37,15 +37,15 @@ pieChartComponent.init = function(){
 
 	// init data for charts
 
-	var requestsUnit = data.requestsOnly.length / 100;
-	var colourRangeR = "789abcdef";
-	var colourRangeG = "789abcdef";
-	var colourRangeB = "789abcdef";
+	const requestsUnit = data.requestsOnly.length / 100;
+	const colourRangeR = "789abcdef";
+	const colourRangeG = "789abcdef";
+	const colourRangeB = "789abcdef";
 
 
 	//argument data
-	var requestsByDomainData = data.requestsByDomain.map((sourceDomain) => {
-		var domain = helper.clone(sourceDomain);
+	const requestsByDomainData = data.requestsByDomain.map((sourceDomain) => {
+		const domain = helper.clone(sourceDomain);
 		domain.perc = domain.count / requestsUnit;
 		domain.label = domain.domain;
 		if(domain.domain === location.host){
@@ -61,7 +61,7 @@ pieChartComponent.init = function(){
 		domain.durationTotalParallel =  Math.round(domain.durationTotalParallel);
 		return domain;
 	});
-	
+
 	setupChart("Requests by Domain", requestsByDomainData, [
 		"Domains Total: " + data.requestsByDomain.length
 	], [
@@ -71,16 +71,16 @@ pieChartComponent.init = function(){
 		{name: "Duration Sum (ms)", field: "durationTotal"}
 	], "pie-request-by-domain");
 
-	setupChart("Requests by Initiator Type", data.initiatorTypeCounts.map((initiatorype) => {
-		initiatorype.perc = initiatorype.count / requestsUnit;
-		initiatorype.label = initiatorype.initiatorType;
-		initiatorype.colour = helper.getInitiatorOrFileTypeColour((initiatorype.initiatorType), helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
-		initiatorype.id = "reqByInitiatorType-" + initiatorype.label.replace(/[^a-zA-Z]/g, "-");
-		return initiatorype;
+	setupChart("Requests by Initiator Type", data.initiatorTypeCounts.map((initiatorType) => {
+		initiatorType.perc = initiatorType.count / requestsUnit;
+		initiatorType.label = initiatorType.initiatorType;
+		initiatorType.colour = helper.getInitiatorOrFileTypeColour((initiatorType.initiatorType), helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB));
+		initiatorType.id = "reqByInitiatorType-" + initiatorType.label.replace(/[^a-zA-Z]/g, "-");
+		return initiatorType;
 	}));
 
 	setupChart("Requests by Initiator Type (host/external domain)", data.initiatorTypeCountHostExt.map((initiatorype) => {
-		var typeSegments = initiatorype.initiatorType.split(" ");
+		const typeSegments = initiatorype.initiatorType.split(" ");
 		initiatorype.perc = initiatorype.count / requestsUnit;
 		initiatorype.label = initiatorype.initiatorType;
 		initiatorype.colour = helper.getInitiatorOrFileTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");
@@ -100,7 +100,7 @@ pieChartComponent.init = function(){
 	}));
 
 	setupChart("Requests by File Type (host/external domain)", data.fileTypeCountHostExt.map((fileType) => {
-		var typeSegments = fileType.fileType.split(" ");
+		const typeSegments = fileType.fileType.split(" ");
 		fileType.perc = fileType.count / requestsUnit;
 		fileType.label = fileType.fileType;
 		fileType.colour = helper.getInitiatorOrFileTypeColour(typeSegments[0], helper.getRandomColor(colourRangeR, colourRangeG, colourRangeB), typeSegments[1] !== "(host)");

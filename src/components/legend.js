@@ -7,11 +7,11 @@ import helper from "../helpers/helpers";
 import dom from "../helpers/dom";
 import waterfall from "../helpers/waterfall";
 
-var legendComponent = {};
+const legendComponent = {};
 
 
-var createLegend = function(className, title, dlArray){
-	var legendHolder = dom.newTag("div", {
+const createLegend = (className, title, dlArray) => {
+	const legendHolder = dom.newTag("div", {
 		class : "legend-holder"
 	});
 
@@ -19,7 +19,7 @@ var createLegend = function(className, title, dlArray){
 		text : title
 	}));
 
-	var dl = dom.newTag("dl", {
+	const dl = dom.newTag("dl", {
 		class : "legend " + className
 	});
 
@@ -38,9 +38,9 @@ var createLegend = function(className, title, dlArray){
 };
 
 //Legend
-legendComponent.init = function(){
+legendComponent.init = () => {
 
-	var chartHolder = dom.newTag("section", {
+	const chartHolder = dom.newTag("section", {
 		class : "resource-timing chart-holder"
 	});
 
@@ -48,7 +48,7 @@ legendComponent.init = function(){
 		text : "Legend"
 	}));
 
-	var legendsHolder = dom.newTag("div", {
+	const legendsHolder = dom.newTag("div", {
 		class : "legends-group "
 	});
 

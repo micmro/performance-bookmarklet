@@ -6,14 +6,14 @@ import data from "../data";
 import helper from "../helpers/helpers";
 import dom from "../helpers/dom";
 
-var summaryTilesComponent = {};
+const summaryTilesComponent = {};
 
 
-summaryTilesComponent.init = function(){
+summaryTilesComponent.init = () => {
 
-	var createTile = function(title, value, titleFontSize){
+	const createTile = (title, value, titleFontSize) => {
 		titleFontSize = titleFontSize || 60;
-		var dl = dom.newTag("dl", {
+		const dl = dom.newTag("dl", {
 			class : "summary-tile"
 		});
 		dl.appendChild(dom.newTag("dt", {childElement : title}));
@@ -21,15 +21,15 @@ summaryTilesComponent.init = function(){
 		return dl;
 	};
 
-	var createAppendixDefValue = function(a, definition, value){
+	const createAppendixDefValue = (a, definition, value) => {
 		a.appendChild(dom.newTag("dt", {childElement : definition}));
 		a.appendChild(dom.newTag("dd", {text : value}));
 	};
 
-	var tilesHolder = dom.newTag("section", {
+	const tilesHolder = dom.newTag("section", {
 		class : "tiles-holder chart-holder"
 	});
-	var appendix = dom.newTag("dl", {
+	const appendix = dom.newTag("dl", {
 		class : "summary-tile-appendix"
 	});
 
@@ -43,7 +43,7 @@ summaryTilesComponent.init = function(){
 		createTile("Time to First Byte", data.perfTiming.responseStart - data.perfTiming.navigationStart + "ms", 40),
 		createTile(dom.newTag("span", {title : "domLoading to domContentLoadedEventStart", text : "DOM Content Loading"}), data.perfTiming.domContentLoadedEventStart - data.perfTiming.domLoading + "ms", 40),
 		createTile(dom.newTag("span", {title : "domLoading to loadEventStart", text : "DOM Processing"}), data.perfTiming.domComplete - data.perfTiming.domLoading + "ms", 40)
-	].forEach(function(tile){
+	].forEach(tile => {
 		tilesHolder.appendChild(tile);
 	});
 

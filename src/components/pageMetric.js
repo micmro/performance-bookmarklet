@@ -6,31 +6,31 @@ import dom from "../helpers/dom";
 // import data from "../data";
 import persistance from "../helpers/persistance"
 
-var pageMetricComponent = {};
+const pageMetricComponent = {};
 
 
 
 //init UI
-pageMetricComponent.init = function(){
+pageMetricComponent.init = () => {
 	//persistance is off by default
-	var persistanceEnabled = persistance.persistanceEnabled();
+	const persistanceEnabled = persistance.persistanceEnabled();
 
-	var chartHolder = dom.newTag("section", {
+	const chartHolder = dom.newTag("section", {
 		class : "page-metric chart-holder"
 	});
 	chartHolder.appendChild(dom.newTag("h3", {text : "Persist Data"}));
 
-	var persistDataCheckboxLabel = dom.newTag("label", {text : " Persist Data?"});
-	var persistDataCheckbox = dom.newTag("input", {
+	const persistDataCheckboxLabel = dom.newTag("label", {text : " Persist Data?"});
+	const persistDataCheckbox = dom.newTag("input", {
 		type : "checkbox",
 		id : "persist-data-checkbox",
 		checked : persistanceEnabled
 	});
-	var printDataButton = dom.newTag("button", {text : "Dumb data to console", disabled: !persistanceEnabled});
+	const printDataButton = dom.newTag("button", {text : "Dumb data to console", disabled: !persistanceEnabled});
 
 	//hook up events
 	persistDataCheckbox.addEventListener("change", (evt) => {
-		var checked = evt.target.checked;
+		const checked = evt.target.checked;
 		if(checked){
 			persistance.activatePersistance();
 			printDataButton.disabled = false;

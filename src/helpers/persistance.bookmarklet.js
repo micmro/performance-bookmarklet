@@ -3,9 +3,9 @@ import data from "../data";
 
 const storageKey = "performance-bookmarklet-metrics";
 
-var persistance = {};
+const persistance = {};
 
-var getMetrics = function(){
+const getMetrics = () => {
 	return {
 		timestamp: (new Date(data.perfTiming.navigationStart)).toISOString(),
 		url: window.location.href,
@@ -21,26 +21,26 @@ var getMetrics = function(){
 	};
 };
 
-var getStoredValues = function(){
+const getStoredValues = () => {
 	return JSON.parse(localStorage.getItem(storageKey)) || [];
 };
 
-persistance.persistanceEnabled =  function(){
+persistance.persistanceEnabled = () => {
 	return !!JSON.parse(localStorage.getItem(storageKey));
 };
 
-persistance.activatePersistance = function(){
+persistance.activatePersistance = () => {
 	persistance.saveLatestMetrics();
 };
 
 
-persistance.deactivatePersistance = function(){
+persistance.deactivatePersistance = () => {
 	persistance.dump();
 };
 
 
-persistance.saveLatestMetrics = function(metrics){
-	var data = getStoredValues();
+persistance.saveLatestMetrics = () => {
+	const data = getStoredValues();
 	data.push(getMetrics());
 	localStorage.setItem(storageKey, JSON.stringify(data));
 };
@@ -55,8 +55,8 @@ persistance.saveLatestMetrics = function(metrics){
 *
 * @param [Boolean] clear Should the data be cleared from the data store?
 */
-persistance.dump = function(clear = true){
-	var sourceData = getStoredValues();
+persistance.dump = (clear = true) => {
+	const sourceData = getStoredValues();
 
 	// Nothing to analyze. Return early.
 	if(sourceData.length === 0){

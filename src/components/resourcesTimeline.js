@@ -1,18 +1,17 @@
 /*
-Logic for Resource Timing API Waterfall 
+Logic for Resource Timing API Waterfall
 */
 
 import data from "../data";
-import helper from "../helpers/helpers";
 import dom from "../helpers/dom";
 import waterfall from "../helpers/waterfall";
 
-var resourcesTimelineComponent = {};
+const resourcesTimelineComponent = {};
 
-var getChartData = function(filter){
-	var calc = {
-		"pageLoadTime" : data.perfTiming.loadEventEnd - data.perfTiming.responseStart,
-		"lastResponseEnd" : data.perfTiming.loadEventEnd - data.perfTiming.responseStart,
+const getChartData = (filter) => {
+	const calc = {
+		pageLoadTime : data.perfTiming.loadEventEnd - data.perfTiming.responseStart,
+		lastResponseEnd : data.perfTiming.loadEventEnd - data.perfTiming.responseStart,
 	};
 
 
@@ -22,9 +21,9 @@ var getChartData = function(filter){
 		}
 	}
 
-	var onDomLoad = waterfall.timeBlock("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "block-dom-content-loaded");
-	var onLoadEvt = waterfall.timeBlock("Onload Event", calc.loadEventStart, calc.loadEventEnd, "block-onload");
-	var navigationApiTotal = [
+	const onDomLoad = waterfall.timeBlock("domContentLoaded Event", calc.domContentLoadedEventStart, calc.domContentLoadedEventEnd, "block-dom-content-loaded");
+	const onLoadEvt = waterfall.timeBlock("Onload Event", calc.loadEventStart, calc.loadEventEnd, "block-onload");
+	const navigationApiTotal = [
 		waterfall.timeBlock("Unload", calc.unloadEventStart, calc.unloadEventEnd, "block-unload"),
 		waterfall.timeBlock("Redirect", calc.redirectStart, calc.redirectEnd, "block-redirect"),
 		waterfall.timeBlock("App cache", calc.fetchStart, calc.domainLookupStart, "block-appcache"),
@@ -60,7 +59,7 @@ var getChartData = function(filter){
 		})
 		.filter(filter||(() => true))
 		.forEach((resource, i) => {
-			var segments = [
+			const segments = [
 				waterfall.timeBlock("Redirect", resource.redirectStart, resource.redirectEnd, "block-redirect"),
 				waterfall.timeBlock("DNS Lookup", resource.domainLookupStart, resource.domainLookupEnd, "block-dns"),
 				waterfall.timeBlock("Initial Connection (TCP)", resource.connectStart, resource.connectEnd, "block-dns"),
@@ -69,9 +68,9 @@ var getChartData = function(filter){
 				waterfall.timeBlock("Content Download", resource.responseStart||undefined, resource.responseEnd, "block-response")
 			];
 
-			var resourceTimings = [0, resource.redirectStart, resource.domainLookupStart, resource.connectStart, resource.secureConnectionStart, resource.requestStart, resource.responseStart];
+			const resourceTimings = [0, resource.redirectStart, resource.domainLookupStart, resource.connectStart, resource.secureConnectionStart, resource.requestStart, resource.responseStart];
 
-			var firstTiming = resourceTimings.reduce((currMinTiming, currentValue) => {
+			const firstTiming = resourceTimings.reduce((currMinTiming, currentValue) => {
 				if(currentValue > 0 && (currentValue < currMinTiming || currMinTiming <= 0) && currentValue != resource.startTime){
 					return currentValue;
 				} else {
@@ -97,23 +96,23 @@ var getChartData = function(filter){
 	};
 };
 
-resourcesTimelineComponent.init = function(){
-	var chartData = getChartData();
-	var chartHolder = waterfall.setupTimeLine(chartData.loadDuration, chartData.blocks, data.marks, chartData.bg, "Resource Timing");
+resourcesTimelineComponent.init = () => {
+	let chartData = getChartData();
+	const chartHolder = waterfall.setupTimeLine(chartData.loadDuration, chartData.blocks, data.marks, chartData.bg, "Resource Timing");
 
 	if(data.requestsByDomain.length > 1){
-		var selectBox = dom.newTag("select", {
+		const selectBox = dom.newTag("select", {
 			class : "domain-selector",
-			onchange : function(){
-				var domain = this.options[this.selectedIndex].value;
+			onchange : () => {
+				const domain = this.options[this.selectedIndex].value;
 				if(domain === "all"){
 					chartData = getChartData();
 				}else{
 					chartData = getChartData((resource) => resource.domain === domain);
 				}
-				var tempChartHolder = waterfall.setupTimeLine(chartData.loadDuration, chartData.blocks, data.marks, chartData.bg, "Temp");
-				var oldSVG = chartHolder.getElementsByClassName("water-fall-chart")[0];
-				var newSVG = tempChartHolder.getElementsByClassName("water-fall-chart")[0];
+				const tempChartHolder = waterfall.setupTimeLine(chartData.loadDuration, chartData.blocks, data.marks, chartData.bg, "Temp");
+				const oldSVG = chartHolder.getElementsByClassName("water-fall-chart")[0];
+				const newSVG = tempChartHolder.getElementsByClassName("water-fall-chart")[0];
 				chartHolder.replaceChild(newSVG, oldSVG);
 			}
 		});
@@ -128,7 +127,7 @@ resourcesTimelineComponent.init = function(){
 				text : domain.domain
 			}));
 		});
-		var chartSvg = chartHolder.getElementsByClassName("water-fall-chart")[0];
+		const chartSvg = chartHolder.getElementsByClassName("water-fall-chart")[0];
 		chartSvg.parentNode.insertBefore(selectBox, chartSvg);
 	}
 
