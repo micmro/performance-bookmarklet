@@ -1,9 +1,9 @@
-module.exports = function( grunt ) {
+module.exports = (grunt) => {
 	"use strict";
 
 	require("load-grunt-tasks")(grunt);
 
-	var banner = "/* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro\n   build:<%= grunt.template.today(\"dd/mm/yyyy\") %> */\n";
+	const banner = "/* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro\n   build:<%= grunt.template.today(\"dd/mm/yyyy\") %> */\n";
 
 	grunt.initConfig({
 		copy : {
@@ -13,7 +13,7 @@ module.exports = function( grunt ) {
 					cwd: "src/",
 					src: ["**/*.js"],
 					dest: "dist/tempCollect",
-					filter: function(fileName){
+					filter: fileName => {
 						return !fileName.match(/.+\.(?:chromeExtension|firefoxAddon).js$/);
 					},
 					ext: ".js"
@@ -25,7 +25,7 @@ module.exports = function( grunt ) {
 					cwd: "src/",
 					src: ["**/*.js"],
 					dest: "dist/tempCollect",
-					filter: function(fileName){
+					filter: fileName => {
 						return !fileName.match(/.+\.(?:bookmarklet|chromeExtension).js$/);
 					},
 					ext: ".js"
@@ -37,7 +37,7 @@ module.exports = function( grunt ) {
 					cwd: "src/",
 					src: ["**/*.js"],
 					dest: "dist/tempCollect",
-					filter: function(fileName){
+					filter: fileName => {
 						return !fileName.match(/.+\.(?:bookmarklet|firefoxAddon).js$/);
 					},
 					ext: ".js"
@@ -46,14 +46,15 @@ module.exports = function( grunt ) {
 		},
 		babel: {
 			options: {
-				returnUsedHelpers: true
+				sourceMap: true,
+				presets: ['@babel/preset-env']
 			},
 			dist: {
 				files: [{
 					expand: true,
 					cwd: "dist/tempCollect",
-					src: ["**/*.js"],
-					dest: "dist/tempEs5",
+					src: "**/*.js",
+					dest: "dist/tempEs5/",
 					ext: ".js"
 				}]
 			}
@@ -134,12 +135,12 @@ module.exports = function( grunt ) {
 
 
 	//transform CSS file to JS variable
-	grunt.registerTask("inlineCssToJs", function() {
-		var cssFile = "src/style.css";
-		var cssFileDestination = "dist/tempCollect/helpers/style.js";
-		var varName = "style";
+	grunt.registerTask("inlineCssToJs", () => {
+		const cssFile = "src/style.css";
+		const cssFileDestination = "dist/tempCollect/helpers/style.js";
+		const varName = "style";
 
-		var cssContent = grunt.file.read(cssFile);
+		let cssContent = grunt.file.read(cssFile);
 
 		//clean CSS content
 		cssContent = cssContent.replace( /\/\*(?:(?!\*\/)[\s\S])*\*\//g, "").replace(/[\r\n\t]+/g, " ").replace(/[ ]{2,}/g, " ").replace(/\"/g,"\\\"");

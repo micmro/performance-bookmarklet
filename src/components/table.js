@@ -3,15 +3,14 @@ Logic for Request analysis table
 */
 
 import data from "../data";
-import helper from "../helpers/helpers";
 import dom from "../helpers/dom";
 
-var tableComponent = {};
+const tableComponent = {};
 
-tableComponent.init = function(){
+tableComponent.init = () => {
 
-	var output = data.requestsOnly.reduce((collectObj, currR) => {
-		var fileTypeData = collectObj[currR.fileType],
+	const output = data.requestsOnly.reduce((collectObj, currR) => {
+		let fileTypeData = collectObj[currR.fileType],
 			initiatorTypeData;
 
 		if(!fileTypeData){
@@ -48,12 +47,12 @@ tableComponent.init = function(){
 		return collectObj;
 	}, {});
 
-	var sectionHolder = dom.newTag("section", {
+	const sectionHolder = dom.newTag("section", {
 		class : "table-section-holder chart-holder"
 	});
 	sectionHolder.appendChild(dom.newTag("h1", {text : "Request FileTypes & Initiators"}));
 
-	
+
 	sectionHolder.appendChild(dom.tableFactory("filetypes-and-intiators-table", (theadTr) => {
 			[
 				"FileType",
@@ -74,12 +73,12 @@ tableComponent.init = function(){
 
 		}, (tbody) => {
 			Object.keys(output).forEach((key, i) => {
-				var fileTypeData = output[key],
+				const fileTypeData = output[key],
 					initiatorTypeKeys = Object.keys(fileTypeData.initiatorType),
 					firstinitiatorTypeKey = fileTypeData.initiatorType[initiatorTypeKeys[0]],
 					rowspan = initiatorTypeKeys.length;
 
-				var tr = dom.newTag("tr", {
+				const tr = dom.newTag("tr", {
 					class : "file-type-row " + (fileTypeData.fileType||"other") + "-light"
 				});
 
@@ -94,7 +93,7 @@ tableComponent.init = function(){
 					firstinitiatorTypeKey.requestsToExternal,
 
 				].forEach((val, i) => {
-					var settings = {
+					const settings = {
 						text : val
 					};
 					if(i < 4 && initiatorTypeKeys.length > 1){
@@ -109,8 +108,8 @@ tableComponent.init = function(){
 				tbody.appendChild(tr);
 
 				initiatorTypeKeys.slice(1).forEach((initiatorTypeKey) => {
-					var initiatorTypeData = fileTypeData.initiatorType[initiatorTypeKey];
-					var tr2 = dom.newTag("tr", {
+					const initiatorTypeData = fileTypeData.initiatorType[initiatorTypeKey];
+					const tr2 = dom.newTag("tr", {
 						class : "initiator-type-more " + (initiatorTypeKey||"other") + "-light"
 					});
 					tr2.appendChild(dom.newTag("td", {
@@ -121,10 +120,10 @@ tableComponent.init = function(){
 					}));
 					tr2.appendChild(dom.newTag("td", {
 						text : initiatorTypeData.requestsToHost
-					}));  
+					}));
 					tr2.appendChild(dom.newTag("td", {
 						text : initiatorTypeData.requestsToExternal
-					}));  
+					}));
 
 					tbody.appendChild(tr2)
 				});

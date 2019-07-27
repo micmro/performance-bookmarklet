@@ -11,6 +11,8 @@ dist/tempEs5
 # Editor Project Files
 *.sublime-project
 *.sublime-workspace
+.vscode
+jsconfig.json
 
 # Runtime data
 pids

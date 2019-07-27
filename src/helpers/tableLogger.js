@@ -2,16 +2,16 @@
 Log tables in console
 */
 
-var tableLogger = {};
+const tableLogger = {};
 
-tableLogger.logTable = function(table){
+tableLogger.logTable = (table) => {
 	if(table.data.length > 0 && console.table){
 		console.log("\n\n\n" + table.name + ":");
 		console.table(table.data, table.columns);
 	}
 };
 
-tableLogger.logTables = function(tableArr){
+tableLogger.logTables = (tableArr) => {
 	tableArr.forEach(tableLogger.logTable);
 };
 

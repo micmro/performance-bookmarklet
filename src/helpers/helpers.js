@@ -2,10 +2,10 @@
 Misc helpers
 */
 
-var helper = {};
+const helper = {};
 
 //extract a resources file type
-helper.getFileType = function(fileExtension, initiatorType){
+helper.getFileType = (fileExtension, initiatorType) => {
 	if(fileExtension){
 		switch(fileExtension){
 			case "jpg" :
@@ -16,7 +16,7 @@ helper.getFileType = function(fileExtension, initiatorType){
 			case "svg" :
 			case "ico" :
 				return "image";
-			case "js" : 
+			case "js" :
 				return "js"
 			case "css":
 				return "css"
@@ -52,35 +52,35 @@ helper.getFileType = function(fileExtension, initiatorType){
 	return initiatorType;
 };
 
-helper.getRandomColor = function(baseRangeRed, baseRangeGreen, baseRangeBlue){
+helper.getRandomColor = (baseRangeRed, baseRangeGreen, baseRangeBlue) => {
 	const range = [
 		baseRangeRed||"0123456789ABCDEF",
 		baseRangeGreen||"0123456789ABCDEF",
 		baseRangeBlue||"0123456789ABCDEF"
 	];
-	var color = "#",
+	let color = "#",
 		r = 0;
 
-	for (var i = 0; i < 6; i++){
+	for (let i = 0; i < 6; i++){
 		r = Math.floor(i/2);
 		color += range[r].split("")[Math.floor(Math.random() * range[r].length)];
 	}
 	return color;
 };
 
-helper.endsWith = function(str, suffix){
+helper.endsWith = (str, suffix) => {
 	return str.indexOf(suffix, str.length - suffix.length) !== -1;
 };
 
-var getColourVariation = function(hexColour, variation){
+const getColourVariation = (hexColour, variation) => {
 	const r = ((parseInt(hexColour.substr(1,2), 16)) + variation).toString(16),
 		g = ((parseInt(hexColour.substr(3,2), 16)) + variation).toString(16),
 		b = ((parseInt(hexColour.substr(5,2), 16)) + variation).toString(16);
 	return "#" + r + g + b;
 }
 
-helper.getInitiatorOrFileTypeColour = function(initiatorOrFileType, fallbackColour, variation){
-	var colour = fallbackColour||"#bebebe"; //default
+helper.getInitiatorOrFileTypeColour = (initiatorOrFileType, fallbackColour, variation) => {
+	let colour = fallbackColour||"#bebebe"; //default
 
 	//colour the resources by initiator or file type
 	switch(initiatorOrFileType) {
@@ -89,10 +89,10 @@ helper.getInitiatorOrFileTypeColour = function(initiatorOrFileType, fallbackColo
 		case "html" : colour = "#85b3f2"; break;
 		case "img" :
 		case "image" : colour = "#bc9dd6"; break;
-		case "script" : 
-		case "js" : colour = "#e7bd8c"; break; 
+		case "script" :
+		case "js" : colour = "#e7bd8c"; break;
 		case "link" : colour = "#89afe6"; break;
-		case "swf" : colour = "#4db3ba"; break; 
+		case "swf" : colour = "#4db3ba"; break;
 		case "font" : colour = "#e96859"; break; //TODO check if this works
 		case "xmlhttprequest" :
 		case "ajax" : colour = "#e7d98c"; break;
@@ -103,10 +103,10 @@ helper.getInitiatorOrFileTypeColour = function(initiatorOrFileType, fallbackColo
 	return colour;
 };
 
-//counts occurences of items in array arr and returns them as array of key valure pairs
-//keyName overwrites the name of the key attribute 
-helper.getItemCount = function(arr, keyName){
-	var counts = {},
+//counts occurrences of items in array arr and returns them as array of key valure pairs
+//keyName overwrites the name of the key attribute
+helper.getItemCount = (arr, keyName) => {
+	let counts = {},
 		resultArr = [],
 		obj;
 
@@ -115,7 +115,7 @@ helper.getItemCount = function(arr, keyName){
 	});
 
 	//pivot data
-	for(var fe in counts){
+	for(let fe in counts){
 		obj = {};
 		obj[keyName||"key"] = fe;
 		obj.count = counts[fe];
@@ -127,8 +127,8 @@ helper.getItemCount = function(arr, keyName){
 	});
 };
 
-helper.clone = function(obj) {
-	var copy;
+helper.clone = (obj) => {
+	let copy;
 
 	// Handle the 3 simple types, and null or undefined
 	if (null == obj || "object" != typeof obj) return obj;
@@ -143,7 +143,7 @@ helper.clone = function(obj) {
 	// Handle Array
 	if (obj instanceof Array) {
 		copy = [];
-		for (var i = 0, len = obj.length; i < len; i++) {
+		for (let i = 0, len = obj.length; i < len; i++) {
 			copy[i] = helper.clone(obj[i]);
 		}
 		return copy;
@@ -152,7 +152,7 @@ helper.clone = function(obj) {
 	// Handle Object
 	if (obj instanceof Object) {
 		copy = {};
-		for (var attr in obj) {
+		for (let attr in obj) {
 			if (obj.hasOwnProperty(attr)) copy[attr] = helper.clone(obj[attr]);
 		}
 		return copy;
@@ -160,5 +160,5 @@ helper.clone = function(obj) {
 
 	throw new Error("Unable to helper.clone obj");
 };
-	
+
 export default helper;
