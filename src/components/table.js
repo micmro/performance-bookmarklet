@@ -3,7 +3,6 @@ Logic for Request analysis table
 */
 
 import data from "../data";
-import helper from "../helpers/helpers";
 import dom from "../helpers/dom";
 
 const tableComponent = {};

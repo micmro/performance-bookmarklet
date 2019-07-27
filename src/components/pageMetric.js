@@ -3,7 +3,6 @@ Section to allow persistance of subset values
 */
 
 import dom from "../helpers/dom";
-// import data from "../data";
 import persistance from "../helpers/persistance"
 
 const pageMetricComponent = {};

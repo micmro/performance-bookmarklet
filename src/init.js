@@ -8,7 +8,6 @@ import tableComponent from "./components/table";
 import resourcesTimelineComponent from "./components/resourcesTimeline";
 import legendComponent from "./components/legend";
 import pageMetricComponent from "./components/pageMetric";
-import logger from "./logger";
 
 (() => {
 	//skip browser internal pages or when data is invalid

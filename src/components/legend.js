@@ -2,10 +2,7 @@
 Logic for Legned
 */
 
-import data from "../data";
-import helper from "../helpers/helpers";
 import dom from "../helpers/dom";
-import waterfall from "../helpers/waterfall";
 
 const legendComponent = {};
 

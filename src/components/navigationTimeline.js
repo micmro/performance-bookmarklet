@@ -3,9 +3,6 @@ Logic for Naviagtion Timing API and Markers Waterfall
 */
 
 import data from "../data";
-import helper from "../helpers/helpers";
-import svg from "../helpers/svg";
-import dom from "../helpers/dom";
 import tableLogger from "../helpers/tableLogger";
 import waterfall from "../helpers/waterfall";
 

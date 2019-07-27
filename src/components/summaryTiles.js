@@ -3,7 +3,6 @@ Tiles to summarize page performance
 */
 
 import data from "../data";
-import helper from "../helpers/helpers";
 import dom from "../helpers/dom";
 
 const summaryTilesComponent = {};

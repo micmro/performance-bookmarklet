@@ -4,7 +4,6 @@ Logic for Request analysis pie charts
 
 import data from "../data";
 import helper from "../helpers/helpers";
-import svg from "../helpers/svg";
 import dom from "../helpers/dom";
 import pieChartHelpers from "../helpers/pieChartHelpers";
 

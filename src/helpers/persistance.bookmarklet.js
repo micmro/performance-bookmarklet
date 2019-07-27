@@ -1,4 +1,3 @@
-import dom from "../helpers/dom";
 import data from "../data";
 
 const storageKey = "performance-bookmarklet-metrics";

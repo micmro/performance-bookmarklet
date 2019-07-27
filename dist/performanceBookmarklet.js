@@ -9,13 +9,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _data = _interopRequireDefault(require("../data"));
-
-var _helpers = _interopRequireDefault(require("../helpers/helpers"));
-
 var _dom = _interopRequireDefault(require("../helpers/dom"));
-
-var _waterfall = _interopRequireDefault(require("../helpers/waterfall"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -76,7 +70,7 @@ var _default = legendComponent;
 exports["default"] = _default;
 
 
-},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/waterfall":17}],2:[function(require,module,exports){
+},{"../helpers/dom":9}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -85,12 +79,6 @@ Object.defineProperty(exports, "__esModule", {
 exports["default"] = void 0;
 
 var _data = _interopRequireDefault(require("../data"));
-
-var _helpers = _interopRequireDefault(require("../helpers/helpers"));
-
-var _svg = _interopRequireDefault(require("../helpers/svg"));
-
-var _dom = _interopRequireDefault(require("../helpers/dom"));
 
 var _tableLogger = _interopRequireDefault(require("../helpers/tableLogger"));
 
@@ -167,7 +155,7 @@ var _default = navigationTimelineComponent;
 exports["default"] = _default;
 
 
-},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/svg":15,"../helpers/tableLogger":16,"../helpers/waterfall":17}],3:[function(require,module,exports){
+},{"../data":8,"../helpers/tableLogger":16,"../helpers/waterfall":17}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -184,7 +172,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 /*
 Section to allow persistance of subset values
 */
-// import data from "../data";
 var pageMetricComponent = {}; //init UI
 
 pageMetricComponent.init = function () {
@@ -259,8 +246,6 @@ exports["default"] = void 0;
 var _data = _interopRequireDefault(require("../data"));
 
 var _helpers = _interopRequireDefault(require("../helpers/helpers"));
-
-var _svg = _interopRequireDefault(require("../helpers/svg"));
 
 var _dom = _interopRequireDefault(require("../helpers/dom"));
 
@@ -382,7 +367,7 @@ var _default = pieChartComponent;
 exports["default"] = _default;
 
 
-},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/pieChartHelpers":13,"../helpers/svg":15}],5:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10,"../helpers/pieChartHelpers":13}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -528,8 +513,6 @@ exports["default"] = void 0;
 
 var _data = _interopRequireDefault(require("../data"));
 
-var _helpers = _interopRequireDefault(require("../helpers/helpers"));
-
 var _dom = _interopRequireDefault(require("../helpers/dom"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
@@ -617,7 +600,7 @@ var _default = summaryTilesComponent;
 exports["default"] = _default;
 
 
-},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10}],7:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -626,8 +609,6 @@ Object.defineProperty(exports, "__esModule", {
 exports["default"] = void 0;
 
 var _data = _interopRequireDefault(require("../data"));
-
-var _helpers = _interopRequireDefault(require("../helpers/helpers"));
 
 var _dom = _interopRequireDefault(require("../helpers/dom"));
 
@@ -749,7 +730,7 @@ var _default = tableComponent;
 exports["default"] = _default;
 
 
-},{"../data":8,"../helpers/dom":9,"../helpers/helpers":10}],8:[function(require,module,exports){
+},{"../data":8,"../helpers/dom":9}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1436,8 +1417,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _dom = _interopRequireDefault(require("../helpers/dom"));
-
 var _data = _interopRequireDefault(require("../data"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
@@ -1527,7 +1506,7 @@ var _default = persistance;
 exports["default"] = _default;
 
 
-},{"../data":8,"../helpers/dom":9}],13:[function(require,module,exports){
+},{"../data":8}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2147,8 +2126,6 @@ var _legend = _interopRequireDefault(require("./components/legend"));
 
 var _pageMetric = _interopRequireDefault(require("./components/pageMetric"));
 
-var _logger = _interopRequireDefault(require("./logger"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 (function () {
@@ -2167,7 +2144,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 })();
 
 
-},{"./components/legend":1,"./components/navigationTimeline":2,"./components/pageMetric":3,"./components/pieChart":4,"./components/resourcesTimeline":5,"./components/summaryTiles":6,"./components/table":7,"./data":8,"./helpers/iFrameHolder":11,"./logger":19}],19:[function(require,module,exports){
+},{"./components/legend":1,"./components/navigationTimeline":2,"./components/pageMetric":3,"./components/pieChart":4,"./components/resourcesTimeline":5,"./components/summaryTiles":6,"./components/table":7,"./data":8,"./helpers/iFrameHolder":11}],19:[function(require,module,exports){
 "use strict";
 
 var _data = _interopRequireDefault(require("./data"));
