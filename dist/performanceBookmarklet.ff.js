@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:27/07/2019 */
+   build:13/10/2019 */
 
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
@@ -2119,6 +2119,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 
 
 },{"./components/legend":1,"./components/navigationTimeline":2,"./components/pageMetric":3,"./components/pieChart":4,"./components/resourcesTimeline":5,"./components/summaryTiles":6,"./components/table":7,"./data":8,"./helpers/iFrameHolder":11}],19:[function(require,module,exports){
+// clone data
+// setup iframe
+// load payload in iframe
+// send data to iframe
+"use strict";
+
+
+},{}],20:[function(require,module,exports){
 "use strict";
 
 var _data = _interopRequireDefault(require("./data"));
@@ -2151,4 +2159,10 @@ _tableLogger["default"].logTables([{
 }]);
 
 
-},{"./data":8,"./helpers/tableLogger":16}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
+},{"./data":8,"./helpers/tableLogger":16}],21:[function(require,module,exports){
+"use strict";
+
+
+},{}],22:[function(require,module,exports){
+arguments[4][19][0].apply(exports,arguments)
+},{"dup":19}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]);
