@@ -1,0 +1,3 @@
+- Run `npm run distFirefoxAddon`
+- copy `performance-bookmarklet/dist/performanceBookmarklet.ff.js` to `data/performanceBookmarklet.ff.js` in the extension codebase
+- run `web-ext build`
