@@ -1,6 +1,6 @@
 {
   "name": "performance-bookmarklet",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Bookmarklet (or browser snippet) to analyze page loading directly on the page (via Resource and Navigation Timing API)",
   "author": {
     "name": "Michael Mrowetz",
