@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:13/10/2019 */
+   build:06/12/2020 */
 
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
@@ -114,7 +114,7 @@ navigationTimelineComponent.init = function () {
   perfTimingCalc.blocks = [_waterfall["default"].timeBlock("Total", 0, perfTimingCalc.pageLoadTime, "block-total"), _waterfall["default"].timeBlock("Unload", perfTimingCalc.unloadEventStart, perfTimingCalc.unloadEventEnd, "block-unload"), _waterfall["default"].timeBlock("Redirect (" + performance.navigation.redirectCount + "x)", perfTimingCalc.redirectStart, perfTimingCalc.redirectEnd, "block-redirect"), _waterfall["default"].timeBlock("App cache", perfTimingCalc.fetchStart, perfTimingCalc.domainLookupStart, "block-appcache"), _waterfall["default"].timeBlock("DNS", perfTimingCalc.domainLookupStart, perfTimingCalc.domainLookupEnd, "block-dns"), _waterfall["default"].timeBlock("TCP", perfTimingCalc.connectStart, perfTimingCalc.connectEnd, "block-tcp"), _waterfall["default"].timeBlock("Time to First Byte", perfTimingCalc.requestStart, perfTimingCalc.responseStart, "block-ttfb"), _waterfall["default"].timeBlock("Response", perfTimingCalc.responseStart, perfTimingCalc.responseEnd, "block-response"), _waterfall["default"].timeBlock("DOM Processing", perfTimingCalc.domLoading, perfTimingCalc.domComplete, "block-dom"), _waterfall["default"].timeBlock("domContentLoaded Event", perfTimingCalc.domContentLoadedEventStart, perfTimingCalc.domContentLoadedEventEnd, "block-dom-content-loaded"), _waterfall["default"].timeBlock("onload Event", perfTimingCalc.loadEventStart, perfTimingCalc.loadEventEnd, "block-onload")];
 
   if (perfTimingCalc.secureConnectionStart) {
-    perfTimingCalc.blocks.push(_waterfall["default"].timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "block-ssl"));
+    perfTimingCalc.blocks.push(_waterfall["default"].timeBlock("SSL", perfTimingCalc.secureConnectionStart, perfTimingCalc.connectEnd, "block-ssl"));
   }
 
   if (perfTimingCalc.msFirstPaint) {
@@ -406,7 +406,7 @@ var getChartData = function getChartData(filter) {
   var navigationApiTotal = [_waterfall["default"].timeBlock("Unload", calc.unloadEventStart, calc.unloadEventEnd, "block-unload"), _waterfall["default"].timeBlock("Redirect", calc.redirectStart, calc.redirectEnd, "block-redirect"), _waterfall["default"].timeBlock("App cache", calc.fetchStart, calc.domainLookupStart, "block-appcache"), _waterfall["default"].timeBlock("DNS", calc.domainLookupStart, calc.domainLookupEnd, "block-dns"), _waterfall["default"].timeBlock("TCP", calc.connectStart, calc.connectEnd, "block-tcp"), _waterfall["default"].timeBlock("Timer to First Byte", calc.requestStart, calc.responseStart, "block-ttfb"), _waterfall["default"].timeBlock("Response", calc.responseStart, calc.responseEnd, "block-response"), _waterfall["default"].timeBlock("DOM Processing", calc.domLoading, calc.domComplete, "block-dom"), onDomLoad, onLoadEvt];
 
   if (calc.secureConnectionStart) {
-    navigationApiTotal.push(_waterfall["default"].timeBlock("SSL", calc.connectStart, calc.secureConnectionStart, "block-ssl"));
+    navigationApiTotal.push(_waterfall["default"].timeBlock("SSL", calc.secureConnectionStart, calc.connectEnd, "block-ssl"));
   }
 
   if (calc.msFirstPaint) {

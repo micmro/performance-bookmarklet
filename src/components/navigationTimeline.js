@@ -43,7 +43,7 @@ navigationTimelineComponent.init = () => {
 	];
 
 	if(perfTimingCalc.secureConnectionStart){
-		perfTimingCalc.blocks.push(waterfall.timeBlock("SSL", perfTimingCalc.connectStart, perfTimingCalc.secureConnectionStart, "block-ssl"));
+		perfTimingCalc.blocks.push(waterfall.timeBlock("SSL", perfTimingCalc.secureConnectionStart, perfTimingCalc.connectEnd, "block-ssl"));
 	}
 	if(perfTimingCalc.msFirstPaint){
 		perfTimingCalc.blocks.push(waterfall.timeBlock("msFirstPaint Event", perfTimingCalc.msFirstPaint, perfTimingCalc.msFirstPaint, "block-ms-first-paint-event"));

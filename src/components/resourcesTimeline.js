@@ -37,7 +37,7 @@ const getChartData = (filter) => {
 	];
 
 	if(calc.secureConnectionStart){
-		navigationApiTotal.push(waterfall.timeBlock("SSL", calc.connectStart, calc.secureConnectionStart, "block-ssl"));
+		navigationApiTotal.push(waterfall.timeBlock("SSL", calc.secureConnectionStart, calc.connectEnd, "block-ssl"));
 	}
 	if(calc.msFirstPaint){
 		navigationApiTotal.push(waterfall.timeBlock("msFirstPaint Event", calc.msFirstPaint, calc.msFirstPaint, "block-ms-first-paint-event"));
