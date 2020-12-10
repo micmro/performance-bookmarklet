@@ -1,5 +1,5 @@
 /* https://github.com/micmro/performance-bookmarklet by Michael Mrowetz @MicMro
-   build:06/12/2020 */
+   build:09/12/2020 */
 
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
@@ -163,79 +163,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _dom = _interopRequireDefault(require("../helpers/dom"));
-
-var _persistance = _interopRequireDefault(require("../helpers/persistance"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
 /*
 Section to allow persistance of subset values
 */
 var pageMetricComponent = {}; //init UI
 
-pageMetricComponent.init = function () {
-  //persistance is off by default
-  var persistanceEnabled = _persistance["default"].persistanceEnabled();
-
-  var chartHolder = _dom["default"].newTag("section", {
-    "class": "page-metric chart-holder"
-  });
-
-  chartHolder.appendChild(_dom["default"].newTag("h3", {
-    text: "Persist Data"
-  }));
-
-  var persistDataCheckboxLabel = _dom["default"].newTag("label", {
-    text: " Persist Data?"
-  });
-
-  var persistDataCheckbox = _dom["default"].newTag("input", {
-    type: "checkbox",
-    id: "persist-data-checkbox",
-    checked: persistanceEnabled
-  });
-
-  var printDataButton = _dom["default"].newTag("button", {
-    text: "Dumb data to console",
-    disabled: !persistanceEnabled
-  }); //hook up events
-
-
-  persistDataCheckbox.addEventListener("change", function (evt) {
-    var checked = evt.target.checked;
-
-    if (checked) {
-      _persistance["default"].activatePersistance();
-
-      printDataButton.disabled = false;
-    } else if (window.confirm("this will wipe out all stored data")) {
-      _persistance["default"].deactivatePersistance();
-
-      printDataButton.disabled = true;
-    } else {
-      evt.target.checked = true;
-    }
-  });
-  persistDataCheckboxLabel.insertBefore(persistDataCheckbox, persistDataCheckboxLabel.firstChild);
-  printDataButton.addEventListener("click", function (evt) {
-    _persistance["default"].dump(false);
-  });
-  chartHolder.appendChild(persistDataCheckboxLabel);
-  chartHolder.appendChild(printDataButton);
-
-  if (persistanceEnabled) {
-    _persistance["default"].saveLatestMetrics();
-  }
-
-  return chartHolder;
-};
+pageMetricComponent.init = function () {};
 
 var _default = pageMetricComponent;
 exports["default"] = _default;
 
 
-},{"../helpers/dom":9,"../helpers/persistance":12}],4:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1354,7 +1293,9 @@ var initHolderEl = function initHolderEl() {
 };
 
 var addComponent = function addComponent(domEl) {
-  outputContent.appendChild(domEl);
+  if (domEl) {
+    outputContent.appendChild(domEl);
+  }
 };
 
 var getOutputIFrame = function getOutputIFrame() {
@@ -1416,71 +1357,12 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports["default"] = void 0;
-
-var _data = _interopRequireDefault(require("../data"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-var storageKey = "performance-bookmarklet-metrics";
-var persistance = {};
-
-var getMetrics = function getMetrics() {
-  return {
-    timestamp: new Date(_data["default"].perfTiming.navigationStart).toISOString(),
-    url: window.location.href,
-    requests: _data["default"].requestsOnly.length,
-    domains: _data["default"].requestsByDomain.length,
-    subDomainsOfTld: _data["default"].hostSubdomains,
-    requestsToHost: _data["default"].hostRequests,
-    tldAndSubdomainRequests: _data["default"].currAndSubdomainRequests,
-    total: _data["default"].perfTiming.loadEventEnd - _data["default"].perfTiming.navigationStart,
-    timeToFirstByte: _data["default"].perfTiming.responseStart - _data["default"].perfTiming.navigationStart,
-    domContentLoading: _data["default"].perfTiming.domContentLoadedEventStart - _data["default"].perfTiming.domLoading,
-    domProcessing: _data["default"].perfTiming.domComplete - _data["default"].perfTiming.domLoading
-  };
-};
-
-var getStoredValues = function getStoredValues() {
-  alert("Not impemented"); // return JSON.parse(localStorage.getItem(storageKey)) || [];
-};
-
-persistance.persistanceEnabled = function () {// return !!JSON.parse(localStorage.getItem(storageKey));
-};
-
-persistance.activatePersistance = function () {
-  persistance.saveLatestMetrics();
-};
-
-persistance.deactivatePersistance = function () {
-  persistance.dump();
-};
-
-persistance.saveLatestMetrics = function (metrics) {
-  alert("Not impemented"); // const data = getStoredValues();
-  // data.push(getMetrics());
-  // localStorage.setItem(storageKey, JSON.stringify(data));
-};
-/**
-* Dump the current page metrics from the data store to the console.
-*
-* Example:
-*    PerformanceBookmarklet.PageMetric.dump(); // Dumps the data as TSV and clears the data store.
-*    PerformanceBookmarklet.PageMetric.dump(false); // Dumps the data as CSV and retains the data.
-*
-* @param [Boolean] clear Should the data be cleared from the data store?
-*/
-
-
-persistance.dump = function () {
-  var clear = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-  alert("Not impemented");
-};
-
-var _default = persistance;
+// Do not add to FF addon
+var _default = {};
 exports["default"] = _default;
 
 
-},{"../data":8}],13:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

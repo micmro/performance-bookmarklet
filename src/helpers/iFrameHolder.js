@@ -53,7 +53,9 @@ const initHolderEl = () => {
 };
 
 let addComponent = (domEl) => {
-	outputContent.appendChild(domEl);
+	if(domEl) {
+		outputContent.appendChild(domEl);
+	}
 };
 
 let getOutputIFrame = () => {
